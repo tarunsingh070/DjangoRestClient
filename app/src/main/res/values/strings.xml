@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">DjangoRestClient</string>
+
+    <!--Navigation drawer menu items titles-->
+    <string name="rest_requests">Rest Requests</string>
+    <string name="settings">Settings</string>
+    <string name="about">About</string>
+    <string name="rate_app">Rate App</string>
+
+
+</resources>
