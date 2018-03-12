@@ -1,18 +1,25 @@
-package tarun.djangorestclient.com.djangorestclient;
+package tarun.djangorestclient.com.djangorestclient.activity;
 
+import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+
+import tarun.djangorestclient.com.djangorestclient.R;
+import tarun.djangorestclient.com.djangorestclient.fragment.RestCallsFragment;
 
 /**
  * This is the home activity which would allow user to navigate to other screens through its navigation drawer.
  */
 public class HomeActivity extends AppCompatActivity {
+
+    private static final String TAG = HomeActivity.class.getSimpleName();
 
     private DrawerLayout mDrawerLayout;
     private NavigationView navigationView;
@@ -89,16 +96,41 @@ public class HomeActivity extends AppCompatActivity {
                         // close drawer when item is tapped
                         mDrawerLayout.closeDrawers();
 
-                        // Add code here to update the UI based on the item selected
-                        // For example, swap UI fragments here
+                        // Swap the fragments to update the UI based on the item selected.
+
+                        Fragment fragment = null;
+
+                        switch (menuItem.getItemId()) {
+                            case R.id.nav_rest_calls :
+                                fragment = RestCallsFragment.newInstance();
+                                break;
+                            case R.id.nav_settings :
+                                // Todo: Implement Settings fragment.
+//                                fragment = new SettingsFragment();
+                                break;
+                            case R.id.nav_about :
+                                // Todo: Implement About fragment.
+//                                fragment = new AboutFragment();
+                                break;
+                            case R.id.nav_rate_app :
+                                // Todo: Implement RateApp fragment.
+//                                fragment = new RateAppFragment();
+                                break;
+                            default :
+                                throw new IllegalArgumentException(TAG);
+                        }
+
+                        if (fragment != null) {
+                            FragmentManager fragmentManager = getSupportFragmentManager();
+                            fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+                        }
 
                         return true;
                     }
                 });
 
-        // Set the Rest Calls menu item as checked by default and set activity title accordingly.
-        navigationView.setCheckedItem(R.id.nav_rest_calls);
-        setTitle(navigationView.getMenu().findItem(R.id.nav_rest_calls).getTitle());
+        // Select the Rest Calls menu item in the navigation menu by default.
+        navigationView.getMenu().performIdentifierAction(R.id.nav_rest_calls, 0);
     }
 
     @Override

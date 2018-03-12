@@ -1,0 +1,48 @@
+package tarun.djangorestclient.com.djangorestclient.adapter;
+
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+
+import tarun.djangorestclient.com.djangorestclient.fragment.RequestFragment;
+import tarun.djangorestclient.com.djangorestclient.fragment.ResponseFragment;
+
+/**
+ * Adapter class for the viewpager displaying the Request and Response Fragments in adjacent tabs.
+ */
+
+public class RequestResponsePagerAdapter extends FragmentPagerAdapter {
+
+    private static final int NUM_TABS = 2;
+
+    private static final String TAG = RequestResponsePagerAdapter.class.getSimpleName();
+
+    public RequestResponsePagerAdapter(FragmentManager fm) {
+        super(fm);
+    }
+
+    @Override
+    public int getCount() {
+        return NUM_TABS;
+    }
+
+    @Override
+    public Fragment getItem(int position) {
+        if (position == 0) {
+            return RequestFragment.newInstance();
+        } else {
+            return ResponseFragment.newInstance();
+        }
+    }
+
+    // This determines the title for each tab.
+    @Override
+    public CharSequence getPageTitle(int position) {
+        // Generate title based on TAB position
+        if (position == 0) {
+            return RequestFragment.TITLE;
+        } else {
+            return ResponseFragment.TITLE;
+        }
+    }
+}

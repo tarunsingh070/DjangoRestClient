@@ -7,5 +7,8 @@
     <string name="about">About</string>
     <string name="rate_app">Rate App</string>
 
+    <!-- Miscellaneous strings -->
+    <string name="request">Request</string>
+
 
 </resources>
