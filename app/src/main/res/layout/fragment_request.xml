@@ -2,12 +2,80 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="tarun.djangorestclient.com.djangorestclient.fragment.RequestFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Request" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="10dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/RequestScreenLabelsStyle"
+            android:text="@string/request_type" />
+
+        <Spinner
+            android:id="@+id/spinner_request_types"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:entries="@array/requestTypes"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="10dp">
+
+        <Spinner
+            android:id="@+id/spinner_method_types"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:entries="@array/methodTypes"/>
+
+        <EditText
+            android:id="@+id/et_input_url"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="10dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            style="@style/RequestScreenLabelsStyle"
+            android:text="@string/headers" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_addHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_add_black"/>
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <Button
+        android:id="@+id/button_send"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/send"
+        style="@style/FullWidthButtonStyle"/>
 
 </LinearLayout>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="requestTypes">
+        <item>GET</item>
+        <item>POST</item>
+        <item>PUT</item>
+        <item>DELETE</item>
+        <item>PATCH</item>
+    </string-array>
+
+    <string-array name="methodTypes">
+        <item>https://</item>
+        <item>http://</item>
+    </string-array>
+
+    <string-array name="headerTypes">
+        <item>Accept</item>
+        <item>Content-Type</item>
+        <item>Authorization</item>
+        <item>Authorization (Basic)</item>
+        <item>Custom</item>
+    </string-array>
+</resources>
