@@ -24,13 +24,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/AddHeaderDialogLabelsStyle"
+            android:labelFor="@+id/spinner_header_types"
             android:text="@string/type" />
 
         <Spinner
             android:id="@+id/spinner_header_types"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:entries="@array/headerTypes"/>
+            android:layout_height="wrap_content"/>
 
     </LinearLayout>
 
@@ -45,6 +45,7 @@
             android:id="@+id/tv_header_label_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:labelFor="@+id/et_header_value_1"
             style="@style/AddHeaderDialogLabelsStyle"
             android:text="@string/value" />
 
@@ -52,7 +53,8 @@
             android:id="@+id/et_header_value_1"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:inputType="textNoSuggestions"/>
 
     </LinearLayout>
 
@@ -68,6 +70,7 @@
             android:id="@+id/tv_header_label_2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:labelFor="@+id/et_header_value_2"
             style="@style/AddHeaderDialogLabelsStyle"
             android:text="@string/password" />
 
@@ -75,7 +78,8 @@
             android:id="@+id/et_header_value_2"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:inputType="textNoSuggestions"/>
 
     </LinearLayout>
 
