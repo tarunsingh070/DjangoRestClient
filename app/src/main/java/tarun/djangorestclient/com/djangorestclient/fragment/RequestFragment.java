@@ -16,6 +16,7 @@ import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -137,6 +138,8 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
         headersRecyclerView.addItemDecoration(dividerItemDecoration);
         headersRecyclerView.setAdapter(headersRecyclerViewAdapter);
 
+        etRequestBody.setOnTouchListener(getTouchListenerForScrollableViews());
+
         addHeaderFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -146,6 +149,21 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
         requestTypesSpinner.setOnItemSelectedListener(getRequestTypesSpinnerListener());
 
         sendButton.setOnClickListener(getSendButtonClickListener());
+    }
+
+    /**
+     * Touch listener for the scrollable views to be able scroll independently inside the parent scroll view.
+     */
+    private View.OnTouchListener getTouchListenerForScrollableViews() {
+        return new View.OnTouchListener() {
+            // Setting on Touch Listener for handling the touch inside ScrollView
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                // Disallow the touch request for parent scroll on touch of child view.
+                v.getParent().requestDisallowInterceptTouchEvent(true);
+                return false;
+            }
+        };
     }
 
     /**

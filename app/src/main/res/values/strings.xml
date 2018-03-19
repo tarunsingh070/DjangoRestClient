@@ -19,7 +19,7 @@
     <string name="hint_input_url">www.djangorestclient.com</string>
     <string name="hint_request_body">Enter request body text</string>
     <string name="request_type">Request Type</string>
-    <string name="send">Send</string>
+    <string name="send">Send Request</string>
     <string name="sending">Sending…</string>
 
     <!--Add Header dialog strings-->
@@ -50,5 +50,7 @@
     <string name="rate_me">Rate Me!</string>
     <string name="request">Request</string>
     <string name="space_separated_strings">%1$s %2$s</string>
+    <string name="confirmation_dialog_title">Confirm Exit !</string>
+    <string name="confirmation_dialog_message">All input data (if any) will be discarded. \nAre you sure you want to exit ?</string>
 
 </resources>

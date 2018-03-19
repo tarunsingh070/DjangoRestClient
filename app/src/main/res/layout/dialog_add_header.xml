@@ -23,7 +23,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="@style/AddHeaderDialogLabelsStyle"
+            style="@style/ScreenLabelsStyle.AddHeaderDialogLabelsStyle"
             android:labelFor="@+id/spinner_header_types"
             android:text="@string/type" />
 
@@ -46,7 +46,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:labelFor="@+id/et_header_value_1"
-            style="@style/AddHeaderDialogLabelsStyle"
+            style="@style/ScreenLabelsStyle.AddHeaderDialogLabelsStyle"
             android:text="@string/value" />
 
         <EditText
@@ -71,7 +71,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:labelFor="@+id/et_header_value_2"
-            style="@style/AddHeaderDialogLabelsStyle"
+            style="@style/ScreenLabelsStyle.AddHeaderDialogLabelsStyle"
             android:text="@string/password" />
 
         <EditText

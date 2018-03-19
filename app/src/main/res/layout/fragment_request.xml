@@ -1,7 +1,14 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:scrollbars="vertical">
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:context="tarun.djangorestclient.com.djangorestclient.fragment.RequestFragment">
 
@@ -12,7 +19,7 @@
         android:orientation="horizontal">
 
         <TextView
-            style="@style/RequestScreenLabelsStyle"
+            style="@style/ScreenLabelsStyle.RequestScreenLabelsStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:labelFor="@+id/spinner_request_types"
@@ -22,6 +29,7 @@
             android:id="@+id/spinner_request_types"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
             android:entries="@array/requestTypes" />
 
     </LinearLayout>
@@ -58,10 +66,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
+            android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <TextView
-                style="@style/RequestScreenLabelsStyle"
+                style="@style/ScreenLabelsStyle.RequestScreenLabelsStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -71,6 +80,9 @@
                 android:id="@+id/fab_addHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                app:fabSize="mini"
+                android:tint="@android:color/white"
                 android:src="@drawable/ic_add_black" />
 
         </LinearLayout>
@@ -107,3 +119,5 @@
         android:text="@string/send" />
 
 </LinearLayout>
+
+</ScrollView>

@@ -1,5 +1,7 @@
 package tarun.djangorestclient.com.djangorestclient.activity;
 
+import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -7,6 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
@@ -156,5 +159,36 @@ public class HomeActivity extends AppCompatActivity implements RequestFragment.O
         RestCallsFragment restCallsFragment = (RestCallsFragment)
                 getSupportFragmentManager().findFragmentById(R.id.content_frame);
         restCallsFragment.switchToResponseScreenTab(restResponse);
+    }
+
+    @Override
+    public void onBackPressed() {
+        displayConfirmationDialog();
+    }
+
+    /**
+     * Display a confirmation dialog to the user when user presses back button to exit the app.
+     */
+    private void displayConfirmationDialog() {
+        AlertDialog.Builder builder;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert);
+        } else {
+            builder = new AlertDialog.Builder(this);
+        }
+        builder.setTitle(R.string.confirmation_dialog_title)
+                .setMessage(R.string.confirmation_dialog_message)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        HomeActivity.super.onBackPressed();
+                    }
+                })
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
     }
 }
