@@ -1,6 +1,7 @@
 package tarun.djangorestclient.com.djangorestclient.fragment;
 
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -8,7 +9,11 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +27,13 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Headers;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 import tarun.djangorestclient.com.djangorestclient.R;
 import tarun.djangorestclient.com.djangorestclient.adapter.HeadersRecyclerViewAdapter;
 import tarun.djangorestclient.com.djangorestclient.model.AuthBasicHeader;
@@ -29,8 +41,11 @@ import tarun.djangorestclient.com.djangorestclient.model.CustomHeader;
 import tarun.djangorestclient.com.djangorestclient.model.Header;
 import tarun.djangorestclient.com.djangorestclient.model.Header.HeaderType;
 import tarun.djangorestclient.com.djangorestclient.model.Request;
+import tarun.djangorestclient.com.djangorestclient.model.Request.RequestType;
+import tarun.djangorestclient.com.djangorestclient.model.RestResponse;
 import tarun.djangorestclient.com.djangorestclient.utils.HttpUtil;
 import tarun.djangorestclient.com.djangorestclient.utils.MiscUtil;
+import tarun.djangorestclient.com.djangorestclient.utils.RestClient;
 
 /**
  * This fragment shows user all necessary fields to make REST requests.
@@ -43,16 +58,18 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
 
     private static final int NEW_HEADER_POSITION = -1;
 
-    private String url;
-    private String body;
-
+    private EditText etInputUrl;
     private EditText etRequestBody;
     private FloatingActionButton addHeaderFab;
-    private Spinner methodTypesSpinner;
+    private Spinner requestTypesSpinner;
+    private Spinner protocolTypesSpinner;
     private RecyclerView headersRecyclerView;
     private HeadersRecyclerViewAdapter headersRecyclerViewAdapter;
+    private Button sendButton;
 
     private Request request;
+
+    private OnResponseReceivedListener mListener;
 
     public RequestFragment() {
         // Required empty public constructor
@@ -81,16 +98,32 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_request, container, false);
 
+        etInputUrl = rootView.findViewById(R.id.et_input_url);
         etRequestBody = rootView.findViewById(R.id.et_request_body);
         headersRecyclerView = rootView.findViewById(R.id.rv_headers);
         addHeaderFab = rootView.findViewById(R.id.fab_addHeader);
-        methodTypesSpinner = rootView.findViewById(R.id.spinner_request_types);
+        requestTypesSpinner = rootView.findViewById(R.id.spinner_request_types);
+        protocolTypesSpinner = rootView.findViewById(R.id.spinner_protocol_types);
+        sendButton = rootView.findViewById(R.id.button_send);
 
         headersRecyclerViewAdapter = new HeadersRecyclerViewAdapter(this, request.getHeaders());
 
         bindViews();
 
         return rootView;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        // This makes sure that the container activity has implemented
+        // the callback interface. If not, it throws an exception
+        try {
+            mListener = (OnResponseReceivedListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString()
+                    + " must implement OnResponseReceivedListener");
+        }
     }
 
     /**
@@ -110,7 +143,169 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
                 displayAddHeaderDialog();
             }
         });
-        methodTypesSpinner.setOnItemSelectedListener(getRequestTypesSpinnerListener());
+        requestTypesSpinner.setOnItemSelectedListener(getRequestTypesSpinnerListener());
+
+        sendButton.setOnClickListener(getSendButtonClickListener());
+    }
+
+    /**
+     * Create and return the click listener for Send button which makes the appropriate type of
+     * rest call based on the request type chosen by user.
+     *
+     * @return
+     */
+    private View.OnClickListener getSendButtonClickListener() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Verify that the input url is not empty before proceeding.
+                if (TextUtils.isEmpty(etInputUrl.getText())) {
+                    Toast.makeText(getContext(), getString(R.string.input_fields_empty_msg), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                Request request = prepareRequestObject();
+
+                switch (request.getRequestType()) {
+                    case GET:
+                        RestClient.get(request.getUrl(), request.getHeaders(), getRequestCallback());
+                        break;
+
+                    case POST:
+                        RestClient.post(request.getUrl(), request.getHeaders(), request.getBody(), getRequestCallback());
+                        break;
+
+                    case PUT:
+                        RestClient.put(request.getUrl(), request.getHeaders(), request.getBody(), getRequestCallback());
+                        break;
+
+                    case DELETE:
+                        RestClient.delete(request.getUrl(), request.getHeaders(), request.getBody(), getRequestCallback());
+                        break;
+
+                    case HEAD:
+                        RestClient.head(request.getUrl(), request.getHeaders(), getRequestCallback());
+                        break;
+
+                    case PATCH:
+                        RestClient.patch(request.getUrl(), request.getHeaders(), request.getBody(), getRequestCallback());
+                        break;
+                }
+            }
+        };
+    }
+
+    private Request prepareRequestObject() {
+        String protocolType = (String) protocolTypesSpinner.getSelectedItem();
+        String url = protocolType + etInputUrl.getText().toString();
+        request.setUrl(url);
+
+        String requestTypeString = (String) requestTypesSpinner.getSelectedItem();
+        RequestType requestType = getRequestType(requestTypeString);
+        request.setRequestType(requestType);
+
+        if (requestType != RequestType.GET && requestType != RequestType.HEAD) {
+            request.setBody(etRequestBody.getText().toString());
+        }
+
+        return request;
+    }
+
+    private Callback getRequestCallback() {
+        MiscUtil.showSpinner(getActivity());
+
+        return new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                if (!isVisible()) {
+                    return;
+                }
+
+                MiscUtil.hideSpinner(getActivity());
+                if (call.isCanceled()) {
+                    return;
+                }
+
+                handleError(e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (!isVisible()) {
+                    return;
+                }
+
+                ResponseBody responseBody = response.body();
+                if (response.isSuccessful() && responseBody != null) {
+
+                    String url = response.request().url().toString();
+                    long requestTime = response.receivedResponseAtMillis() - response.sentRequestAtMillis();
+                    CharSequence responseHeaders = headersToCharSequence(response.headers());
+
+                    final RestResponse restResponse = new RestResponse(response.code(), requestTime, url
+                            , responseHeaders, responseBody.string());
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mListener.onResponseReceived(restResponse);
+                        }
+                    });
+                }
+
+                MiscUtil.hideSpinner(getActivity());
+            }
+
+            /**
+             * Convert the list of response headers received into CharSequence format to be displayed to user.
+             * @param headers: List of headers received in response.
+             * @return
+             */
+            private CharSequence headersToCharSequence(Headers headers) {
+                if (headers == null) return null;
+                SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
+                for (int i = 0, size = headers.size(); i < size; i++) {
+                    Spannable value = new SpannableString(headers.value(i));
+                    value.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorAccent))
+                            , 0, value.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    spannableStringBuilder.append(headers.name(i)).append(": ").append(value).append("\n");
+                }
+                spannableStringBuilder.delete(spannableStringBuilder.length() - 1, spannableStringBuilder
+                        .length());
+                return spannableStringBuilder;
+            }
+        };
+    }
+
+    /**
+     * Handle the error on main thread.
+     *
+     * @param exception The exception that caused the rest call to fail.
+     */
+    private void handleError(final IOException exception) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getContext(), exception.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    /**
+     * Get the corresponding RequestTypeEnum instance based on the String parameter received.
+     *
+     * @return: RequestType enum instance.
+     */
+    private Request.RequestType getRequestType(String requestTypeString) {
+        for (RequestType type : RequestType.values()) {
+            if (TextUtils.equals(requestTypeString, type.toString())) {
+                return type;
+            }
+        }
+
+        // We shouldn't reach here.
+        Log.e(TAG, " : Unidentified Request type : " + requestTypeString);
+        return null;
     }
 
     private AdapterView.OnItemSelectedListener getRequestTypesSpinnerListener() {
@@ -120,7 +315,9 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
                 /*
                   Show/hide request body area based on the request type chosen by user.
                  */
-                if (TextUtils.equals(((String) parent.getItemAtPosition(position)), getString(R.string.get))) {
+                String selectedRequestTypeString = (String) parent.getItemAtPosition(position);
+                if (TextUtils.equals(selectedRequestTypeString, RequestType.GET.toString())
+                        || TextUtils.equals(selectedRequestTypeString, RequestType.HEAD.toString())) {
                     etRequestBody.setVisibility(View.GONE);
                 } else {
                     etRequestBody.setVisibility(View.VISIBLE);
@@ -144,6 +341,7 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
 
     /**
      * Display the edit header dialog with pre-filled info to allow a user to edit an existing header.
+     *
      * @param position : The current position of this header in the list of headers already added by user.
      */
     private void displayEditHeaderDialog(int position) {
@@ -279,7 +477,7 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
                 }
 
                 // We shouldn't reach here.
-                Log.e(TAG," : Unidentified Header type : " + headerTypeString);
+                Log.e(TAG, " : Unidentified Header type : " + headerTypeString);
                 return null;
             }
         };
@@ -319,6 +517,7 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
 
     /**
      * Update the header in the list of headers with the new info provided.
+     *
      * @param position: The position of existing header.
      */
     private void updateHeader(HeaderType headerType, String userInput1, int position) {
@@ -330,6 +529,7 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
 
     /**
      * Update the header in the list of headers with the new info provided.
+     *
      * @param position: The position of existing header.
      */
     private void updateHeader(HeaderType headerType, String userInput1, String userInput2, int position) {
@@ -359,6 +559,7 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
 
     /**
      * Create a new header object based on user provided info.
+     *
      * @return: The newly created Header object.
      */
     private Header getNewHeader(HeaderType headerType, String userInput1) {
@@ -367,6 +568,7 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
 
     /**
      * Create a new header object based on user provided info.
+     *
      * @return: The newly created Header object.
      */
     private Header getNewHeader(HeaderType headerType, String userInput1, String userInput2) {
@@ -390,6 +592,13 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
     @Override
     public void onEditHeaderClicked(int position) {
         displayEditHeaderDialog(position);
+    }
+
+    /**
+     * Interface to listen for the event when the response for the corresponding request made is available.
+     */
+    public interface OnResponseReceivedListener {
+        void onResponseReceived(RestResponse restResponse);
     }
 
 }

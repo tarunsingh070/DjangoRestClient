@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public class Request {
 
     public enum RequestType {
-        GET, POST, PUT, DELETE, PATCH
+        GET, POST, PUT, DELETE, HEAD, PATCH
     }
 
     private String url;

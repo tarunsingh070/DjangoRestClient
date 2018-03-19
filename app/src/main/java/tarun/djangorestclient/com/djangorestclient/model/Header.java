@@ -18,7 +18,8 @@ public class Header {
         private String name;
 
         HeaderType(String name){
-            this.name = name;}
+            this.name = name;
+        }
 
         @Override
         public String toString() {

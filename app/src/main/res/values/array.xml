@@ -5,10 +5,11 @@
         <item>POST</item>
         <item>PUT</item>
         <item>DELETE</item>
+        <item>HEAD</item>
         <item>PATCH</item>
     </string-array>
 
-    <string-array name="methodTypes">
+    <string-array name="protocolTypes">
         <item>https://</item>
         <item>http://</item>
     </string-array>

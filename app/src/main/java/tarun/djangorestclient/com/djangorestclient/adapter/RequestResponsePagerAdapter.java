@@ -17,8 +17,13 @@ public class RequestResponsePagerAdapter extends FragmentPagerAdapter {
 
     private static final String TAG = RequestResponsePagerAdapter.class.getSimpleName();
 
-    public RequestResponsePagerAdapter(FragmentManager fm) {
+    private RequestFragment requestFragment;
+    private ResponseFragment responseFragment;
+
+    public RequestResponsePagerAdapter(FragmentManager fm, RequestFragment requestFragment, ResponseFragment responseFragment) {
         super(fm);
+        this.requestFragment = requestFragment;
+        this.responseFragment = responseFragment;
     }
 
     @Override
@@ -29,9 +34,9 @@ public class RequestResponsePagerAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         if (position == 0) {
-            return RequestFragment.newInstance();
+            return requestFragment;
         } else {
-            return ResponseFragment.newInstance();
+            return responseFragment;
         }
     }
 

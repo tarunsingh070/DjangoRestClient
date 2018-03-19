@@ -33,17 +33,18 @@
         android:orientation="horizontal">
 
         <Spinner
-            android:id="@+id/spinner_method_types"
+            android:id="@+id/spinner_protocol_types"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:entries="@array/methodTypes" />
+            android:entries="@array/protocolTypes" />
 
         <EditText
             android:id="@+id/et_input_url"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:inputType="textUri"/>
+            android:inputType="textUri"
+            android:hint="@string/hint_input_url"/>
 
     </LinearLayout>
 

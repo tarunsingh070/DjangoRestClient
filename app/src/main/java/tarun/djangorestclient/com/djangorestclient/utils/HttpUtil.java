@@ -5,8 +5,13 @@ import android.util.Base64;
 import android.util.Log;
 
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 
+import okhttp3.Headers;
 import tarun.djangorestclient.com.djangorestclient.R;
+import tarun.djangorestclient.com.djangorestclient.model.CustomHeader;
+import tarun.djangorestclient.com.djangorestclient.model.Header;
+import tarun.djangorestclient.com.djangorestclient.model.Header.HeaderType;
 
 /**
  * Utility class with common http related utility methods.
@@ -33,6 +38,28 @@ public class HttpUtil {
         String encodedCreds = Base64.encodeToString(data, Base64.DEFAULT);
 
         return context.getString(R.string.space_separated_strings,"Basic", encodedCreds);
+    }
+
+    /**
+     * Parse the list of headers added by user to be sent as part of rest request.
+     * @param headers: List of headers added by user.
+     * @return: List of okhttp3 headers.
+     */
+    public static Headers getParsedHeaders(List<Header> headers) {
+        Headers.Builder headerBuilder = new Headers.Builder();
+        for (Header header : headers) {
+            String headerName;
+            if (header.getHeaderType() == HeaderType.AUTHORIZATION_BASIC) {
+                headerName = "Authorization";
+            } else if (header.getHeaderType() == HeaderType.CUSTOM) {
+                headerName = ((CustomHeader) header).getCustomHeaderType();
+            } else {
+                headerName = header.getHeaderType().toString();
+            }
+
+            headerBuilder.add(headerName, header.getHeaderValue());
+        }
+        return headerBuilder.build();
     }
 
 }

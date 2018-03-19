@@ -12,12 +12,14 @@ import android.view.MenuItem;
 import android.view.View;
 
 import tarun.djangorestclient.com.djangorestclient.R;
+import tarun.djangorestclient.com.djangorestclient.fragment.RequestFragment;
 import tarun.djangorestclient.com.djangorestclient.fragment.RestCallsFragment;
+import tarun.djangorestclient.com.djangorestclient.model.RestResponse;
 
 /**
  * This is the home activity which would allow user to navigate to other screens through its navigation drawer.
  */
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity implements RequestFragment.OnResponseReceivedListener {
 
     private static final String TAG = HomeActivity.class.getSimpleName();
 
@@ -145,5 +147,14 @@ public class HomeActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onResponseReceived(RestResponse restResponse) {
+        // Get the reference to RestCallsFragment and call method to switch to the Response Screen tab,
+        // and pass the response information.
+        RestCallsFragment restCallsFragment = (RestCallsFragment)
+                getSupportFragmentManager().findFragmentById(R.id.content_frame);
+        restCallsFragment.switchToResponseScreenTab(restResponse);
     }
 }

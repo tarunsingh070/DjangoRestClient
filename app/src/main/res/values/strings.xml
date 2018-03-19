@@ -4,6 +4,9 @@
 
     <string name="app_name">DjangoRestClient</string>
 
+    <!--Menu titles-->
+    <string name="action_show_extra_info">Extra info</string>
+
     <!--Navigation drawer menu items titles-->
     <string name="about">About</string>
     <string name="rate_app">Rate App</string>
@@ -13,9 +16,11 @@
     <!--Request Screen Strings-->
     <string name="get">GET</string>
     <string name="headers">Headers</string>
+    <string name="hint_input_url">www.djangorestclient.com</string>
     <string name="hint_request_body">Enter request body text</string>
     <string name="request_type">Request Type</string>
     <string name="send">Send</string>
+    <string name="sending">Sending…</string>
 
     <!--Add Header dialog strings-->
     <string name="add_header">Add Header</string>
@@ -30,6 +35,14 @@
     <string name="username">Username</string>
     <string name="username_pwd_append">%1$s:%2$s</string>
     <string name="value">Value</string>
+
+    <!--Response Screen Strings-->
+    <string name="request_url">Request URL</string>
+    <string name="response_code_label">Response Code\n</string>
+    <string name="response_code_label_with_value">Response Code\n%d</string>
+    <string name="response_headers">Response Headers</string>
+    <string name="response_time_ms_label">Response Time(ms)\n</string>
+    <string name="response_time_ms_label_with_value">Response Time(ms)\n%d</string>
 
     <!-- Miscellaneous strings -->
     <string name="basic">Basic</string>

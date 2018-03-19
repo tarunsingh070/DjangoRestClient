@@ -1,8 +1,11 @@
 package tarun.djangorestclient.com.djangorestclient.utils;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+
+import tarun.djangorestclient.com.djangorestclient.R;
 
 /**
  * Utility class with miscellaneous utility methods.
@@ -34,4 +37,23 @@ public class MiscUtil {
 //        }
     }
 
+    public static void showSpinner(Activity activity) {
+        final View progressBar = activity.findViewById(R.id.progress_layout);
+        if (progressBar != null) {
+            progressBar.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public static void hideSpinner(Activity activity) {
+        final View progressBar = activity.findViewById(R.id.progress_layout);
+
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (progressBar != null) {
+                    progressBar.setVisibility(View.GONE);
+                }
+            }
+        });
+    }
 }
