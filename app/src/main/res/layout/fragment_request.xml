@@ -52,6 +52,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:inputType="textUri"
+            android:imeOptions="actionDone"
             android:hint="@string/hint_input_url"/>
 
     </LinearLayout>

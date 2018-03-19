@@ -169,16 +169,18 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
     /**
      * Create and return the click listener for Send button which makes the appropriate type of
      * rest call based on the request type chosen by user.
-     *
-     * @return
      */
     private View.OnClickListener getSendButtonClickListener() {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Verify that the input url is not empty before proceeding.
+
+                // Verify that the input url is not empty and internet connectivity is available before proceeding.
                 if (TextUtils.isEmpty(etInputUrl.getText())) {
-                    Toast.makeText(getContext(), getString(R.string.input_fields_empty_msg), Toast.LENGTH_SHORT).show();
+                    MiscUtil.displayShortToast(getContext(), R.string.input_fields_empty_msg);
+                    return;
+                } else if (!HttpUtil.isNetworkAvailable(getContext())) {
+                    MiscUtil.displayShortToast(getContext(), R.string.no_connection_msg);
                     return;
                 }
 
@@ -277,14 +279,14 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
             /**
              * Convert the list of response headers received into CharSequence format to be displayed to user.
              * @param headers: List of headers received in response.
-             * @return
+             * @return: List of headers received in CharSequence format.
              */
             private CharSequence headersToCharSequence(Headers headers) {
                 if (headers == null) return null;
                 SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
                 for (int i = 0, size = headers.size(); i < size; i++) {
                     Spannable value = new SpannableString(headers.value(i));
-                    value.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorAccent))
+                    value.setSpan(new ForegroundColorSpan(getResources().getColor(android.R.color.tertiary_text_light))
                             , 0, value.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                     spannableStringBuilder.append(headers.name(i)).append(": ").append(value).append("\n");
                 }
@@ -296,7 +298,7 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
     }
 
     /**
-     * Handle the error on main thread.
+     * Handle the error on UI thread.
      *
      * @param exception The exception that caused the rest call to fail.
      */
@@ -304,7 +306,7 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(getContext(), exception.getMessage(), Toast.LENGTH_LONG).show();
+                MiscUtil.displayLongToast(getContext(), exception.getMessage());
             }
         });
     }
@@ -406,7 +408,7 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MiscUtil.showOrHideKeyboard(getContext(), getActivity().getCurrentFocus(), false);
+                MiscUtil.hideKeyboard(getContext(), getActivity());
                 if (alertDialog != null && alertDialog.isShowing()) {
                     alertDialog.dismiss();
                 }
@@ -451,7 +453,7 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
                 // Perform add/update operations on the current header based on header type.
                 if (isAuthBasicHeader || isCustomHeader) {
                     if (TextUtils.isEmpty(userInput1) || TextUtils.isEmpty(userInput2)) {
-                        Toast.makeText(getContext(), R.string.input_fields_empty_msg, Toast.LENGTH_SHORT).show();
+                        MiscUtil.displayShortToast(getContext(), R.string.input_fields_empty_msg);
                         return;
                     }
 
@@ -464,7 +466,7 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
 
                 } else {
                     if (TextUtils.isEmpty(userInput1)) {
-                        Toast.makeText(getContext(), R.string.input_fields_empty_msg, Toast.LENGTH_SHORT).show();
+                        MiscUtil.displayShortToast(getContext(), R.string.input_fields_empty_msg);
                         return;
                     }
 
@@ -477,7 +479,7 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
                 }
 
                 // Hide the keyboard and dismiss dialog since header has been added/updated at this point.
-                MiscUtil.showOrHideKeyboard(getContext(), getActivity().getCurrentFocus(), false);
+                MiscUtil.hideKeyboard(getContext(), getActivity());
                 if (alertDialog != null && alertDialog.isShowing()) {
                     alertDialog.dismiss();
                 }

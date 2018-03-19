@@ -74,7 +74,8 @@ public class RestCallsFragment extends Fragment {
      * @param restResponse: RestResponse object containing Response information from RequestScreen.
      */
     public void switchToResponseScreenTab(RestResponse restResponse) {
-        // Todo: Switch to response screen tab and update UI.
+        tabLayout.getTabAt(1).select();
+        responseFragment.updateUI(restResponse);
     }
 
 }

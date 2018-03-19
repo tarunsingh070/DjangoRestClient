@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
 import tarun.djangorestclient.com.djangorestclient.R;
 
@@ -14,29 +15,21 @@ import tarun.djangorestclient.com.djangorestclient.R;
 public class MiscUtil {
 
     /**
-     * Utility method to show or hide soft keyboard.
-     *
-     * @param shouldShow if true, keyboard is shown, hidden otherwise.
+     * Utility method to explicitly hide soft keyboard.
      */
-    public static void showOrHideKeyboard(Context context, View view, boolean shouldShow) {
-        // FixMe: Doesn't seem to work currently.
-        InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (shouldShow) {
-            imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
-        } else {
+    public static void hideKeyboard(Context context, Activity activity) {
+        // Check if no view has focus:
+        View view = activity.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            view.clearFocus();
         }
-
-//        // Check if no view has focus:
-//        View view = activity.getCurrentFocus();
-//        if (view != null) {
-//            InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-//            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-////            imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
-//            view.clearFocus();
-//        }
     }
 
+    /**
+     * Show the cyclic animation progress bar.
+     */
     public static void showSpinner(Activity activity) {
         final View progressBar = activity.findViewById(R.id.progress_layout);
         if (progressBar != null) {
@@ -44,9 +37,11 @@ public class MiscUtil {
         }
     }
 
+    /**
+     * Hide the cyclic animation progress bar on UI thread.
+     */
     public static void hideSpinner(Activity activity) {
         final View progressBar = activity.findViewById(R.id.progress_layout);
-
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -55,5 +50,21 @@ public class MiscUtil {
                 }
             }
         });
+    }
+
+    public static void displayShortToast(Context context, int message) {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+    }
+
+    public static void displayLongToast(Context context, int message) {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+    }
+
+    public static void displayShortToast(Context context, String message) {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+    }
+
+    public static void displayLongToast(Context context, String message) {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     }
 }

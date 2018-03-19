@@ -1,6 +1,8 @@
 package tarun.djangorestclient.com.djangorestclient.utils;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Base64;
 import android.util.Log;
 
@@ -60,6 +62,20 @@ public class HttpUtil {
             headerBuilder.add(headerName, header.getHeaderValue());
         }
         return headerBuilder.build();
+    }
+
+    /**
+     * Checks the internet connectivity status of user's device.
+     * @return True if connected, False otherwise.
+     */
+    public static boolean isNetworkAvailable(Context context) {
+        ConnectivityManager cm =
+                (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = (activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting());
+        return isConnected;
     }
 
 }

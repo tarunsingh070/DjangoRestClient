@@ -25,11 +25,9 @@
     <!--Add Header dialog strings-->
     <string name="add_header">Add Header</string>
     <string name="auth_basic">Authorization (Basic)</string>
-    <string name="cancel">Cancel</string>
     <string name="custom">Custom</string>
     <string name="header_name">Header Name</string>
     <string name="header_value">Header Value</string>
-    <string name="ok">Ok</string>
     <string name="password">Password</string>
     <string name="type">Type</string>
     <string name="username">Username</string>
@@ -38,6 +36,7 @@
 
     <!--Response Screen Strings-->
     <string name="request_url">Request URL</string>
+    <string name="response_body_label">Response Body</string>
     <string name="response_code_label">Response Code\n</string>
     <string name="response_code_label_with_value">Response Code\n%d</string>
     <string name="response_headers">Response Headers</string>
@@ -52,5 +51,6 @@
     <string name="space_separated_strings">%1$s %2$s</string>
     <string name="confirmation_dialog_title">Confirm Exit !</string>
     <string name="confirmation_dialog_message">All input data (if any) will be discarded. \nAre you sure you want to exit ?</string>
+    <string name="no_connection_msg">Internet connectivity not available.</string>
 
 </resources>
