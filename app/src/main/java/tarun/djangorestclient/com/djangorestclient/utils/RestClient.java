@@ -1,6 +1,7 @@
 package tarun.djangorestclient.com.djangorestclient.utils;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -18,6 +19,27 @@ import tarun.djangorestclient.com.djangorestclient.model.Header;
  */
 
 public class RestClient {
+
+    // Fixme: Set the timeout values from shared preferences when class loads.
+//    private static final RestClient instance = new RestClient();
+//
+//    public static RestClient getInstance(Context context) {
+//        return instance;
+//    }
+
+//    static {
+//        Context context = DjangoRestClientApplication.getAppContext();
+//        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+//        String timeoutConnectPrefValueString = sharedPreferences.getString(context.getString(R.string.key_timeout_connect_preference), "");
+//        String timeoutReadPrefValueString = sharedPreferences.getString(context.getString(R.string.key_timeout_read_preference), "");
+//        String timeoutWritePrefValueString = sharedPreferences.getString(context.getString(R.string.key_timeout_write_preference), "");
+//        updateOkHttpClientConfigurations(timeoutConnectPrefValueString, timeoutReadPrefValueString, timeoutWritePrefValueString);
+//    }
+
+//    private RestClient() {
+//        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+//        String language = settings.getString("language", "");
+//    }
 
     private static OkHttpClient client = new OkHttpClient.Builder().build();
 
@@ -75,52 +97,47 @@ public class RestClient {
 
     }
 
-    public static Call get(String url, List<Header> headers, Callback callback) {
+    public static void get(String url, List<Header> headers, Callback callback) {
         Request request = new Request.Builder().url(url).headers(HttpUtil.getParsedHeaders(headers)).get()
                 .build();
+        Log.d("RestClient", "Timeout set: " + client.connectTimeoutMillis());
         Call call = client.newCall(request);
         call.enqueue(callback);
-        return call;
     }
 
-    public static Call post(String url, List<Header> headers, String body, Callback callback) {
+    public static void post(String url, List<Header> headers, String body, Callback callback) {
         Request request = new Request.Builder().url(url).headers(HttpUtil.getParsedHeaders(headers)).post
                 (body == null ? Util.EMPTY_REQUEST : RequestBody.create(null, body)).build();
         Call call = client.newCall(request);
         call.enqueue(callback);
-        return call;
     }
 
-    public static Call head(String url, List<Header> headers, Callback callback) {
+    public static void head(String url, List<Header> headers, Callback callback) {
         Request request = new Request.Builder().url(url).headers(HttpUtil.getParsedHeaders(headers)).head()
                 .build();
         Call call = client.newCall(request);
         call.enqueue(callback);
-        return call;
     }
 
-    public static Call put(String url, List<Header> headers, String body, Callback callback) {
+    public static void put(String url, List<Header> headers, String body, Callback callback) {
         Request request = new Request.Builder().url(url).headers(HttpUtil.getParsedHeaders(headers)).put
                 (body == null ? Util.EMPTY_REQUEST : RequestBody.create(null, body)).build();
         Call call = client.newCall(request);
         call.enqueue(callback);
-        return call;
     }
 
-    public static Call delete(String url, List<Header> headers, String body, Callback callback) {
+    public static void delete(String url, List<Header> headers, String body, Callback callback) {
         Request request = new Request.Builder().url(url).headers(HttpUtil.getParsedHeaders(headers)).delete
                 (body == null ? null : RequestBody.create(null, body)).build();
         Call call = client.newCall(request);
         call.enqueue(callback);
-        return call;
     }
 
-    public static Call patch(String url, List<Header> headers, String body, Callback callback) {
+    public static void patch(String url, List<Header> headers, String body, Callback callback) {
         Request request = new Request.Builder().url(url).headers(HttpUtil.getParsedHeaders(headers)).patch
                 (body == null ? Util.EMPTY_REQUEST : RequestBody.create(null, body)).build();
         Call call = client.newCall(request);
         call.enqueue(callback);
-        return call;
     }
 
 }

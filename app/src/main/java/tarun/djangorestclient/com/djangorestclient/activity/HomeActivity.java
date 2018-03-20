@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import tarun.djangorestclient.com.djangorestclient.R;
+import tarun.djangorestclient.com.djangorestclient.fragment.AboutFragment;
 import tarun.djangorestclient.com.djangorestclient.fragment.RequestFragment;
 import tarun.djangorestclient.com.djangorestclient.fragment.RestCallsFragment;
 import tarun.djangorestclient.com.djangorestclient.fragment.SettingsPreferenceFragment;
@@ -104,7 +105,7 @@ public class HomeActivity extends AppCompatActivity implements RequestFragment.O
 
                         // Swap the fragments to update the UI based on the item selected.
 
-                        Fragment fragment = null;
+                        Fragment fragment;
 
                         switch (menuItem.getItemId()) {
                             case R.id.nav_rest_calls :
@@ -114,21 +115,14 @@ public class HomeActivity extends AppCompatActivity implements RequestFragment.O
                                 fragment = new SettingsPreferenceFragment();
                                 break;
                             case R.id.nav_about :
-                                // Todo: Implement About fragment.
-//                                fragment = new AboutFragment();
-                                break;
-                            case R.id.nav_rate_app :
-                                // Todo: Implement RateApp fragment.
-//                                fragment = new RateAppFragment();
+                                fragment = new AboutFragment();
                                 break;
                             default :
                                 throw new IllegalArgumentException(TAG);
                         }
 
-                        if (fragment != null) {
-                            FragmentManager fragmentManager = getSupportFragmentManager();
-                            fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
-                        }
+                        FragmentManager fragmentManager = getSupportFragmentManager();
+                        fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
 
                         return true;
                     }
