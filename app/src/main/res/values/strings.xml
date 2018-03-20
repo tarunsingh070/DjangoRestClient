@@ -54,4 +54,10 @@
     <string name="confirmation_dialog_message">All input data (if any) will be discarded. \nAre you sure you want to exit ?</string>
     <string name="no_connection_msg">Internet connectivity not available.</string>
 
+    <!--Preference strings-->
+    <string name="key_timeout_connect_preference">timeout_connect_preference</string>
+    <string name="key_timeout_read_preference">timeout_read_preference</string>
+    <string name="key_timeout_write_preference">timeout_write_preference</string>
+    <string name="summary_timeout_preferences">After %d seconds</string>
+
 </resources>

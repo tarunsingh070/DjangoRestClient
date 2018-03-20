@@ -17,6 +17,7 @@ import android.view.View;
 import tarun.djangorestclient.com.djangorestclient.R;
 import tarun.djangorestclient.com.djangorestclient.fragment.RequestFragment;
 import tarun.djangorestclient.com.djangorestclient.fragment.RestCallsFragment;
+import tarun.djangorestclient.com.djangorestclient.fragment.SettingsPreferenceFragment;
 import tarun.djangorestclient.com.djangorestclient.model.RestResponse;
 
 /**
@@ -110,8 +111,7 @@ public class HomeActivity extends AppCompatActivity implements RequestFragment.O
                                 fragment = RestCallsFragment.newInstance();
                                 break;
                             case R.id.nav_settings :
-                                // Todo: Implement Settings fragment.
-//                                fragment = new SettingsFragment();
+                                fragment = new SettingsPreferenceFragment();
                                 break;
                             case R.id.nav_about :
                                 // Todo: Implement About fragment.

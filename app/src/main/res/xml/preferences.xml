@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <EditTextPreference
+        android:key="@string/key_timeout_connect_preference"
+        android:title="Timeout Connection" />
+    <EditTextPreference
+        android:key="@string/key_timeout_read_preference"
+        android:title="Timeout Read" />
+    <EditTextPreference
+        android:key="@string/key_timeout_write_preference"
+        android:title="Timeout Write" />
+</PreferenceScreen>
