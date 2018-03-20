@@ -95,17 +95,32 @@
 
     </LinearLayout>
 
-    <EditText
-        android:id="@+id/et_request_body"
+    <LinearLayout
+        android:id="@+id/layout_request_body"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:background="@drawable/rounded_border"
-        android:gravity="top"
-        android:hint="@string/hint_request_body"
-        android:padding="10dp"
-        android:textSize="15sp"
-        android:visibility="gone" />
+        android:orientation="vertical">
+
+        <TextView
+            style="@style/ScreenLabelsStyle.RequestScreenLabelsStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:labelFor="@+id/et_request_body"
+            android:text="@string/body" />
+
+        <EditText
+            android:id="@+id/et_request_body"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/rounded_border"
+            android:gravity="top"
+            android:hint="@string/hint_request_body"
+            android:padding="10dp"
+            android:textSize="15sp" />
+
+    </LinearLayout>
 
     <View
         android:layout_width="match_parent"

@@ -37,7 +37,7 @@ public class HttpUtil {
         } catch (UnsupportedEncodingException e) {
             Log.e(TAG, "Error encoding data.", e);
         }
-        String encodedCreds = Base64.encodeToString(data, Base64.DEFAULT);
+        String encodedCreds = Base64.encodeToString(data, Base64.NO_WRAP | Base64.URL_SAFE);
 
         return context.getString(R.string.space_separated_strings,"Basic", encodedCreds);
     }

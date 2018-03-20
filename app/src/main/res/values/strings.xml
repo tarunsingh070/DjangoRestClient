@@ -17,7 +17,8 @@
     <string name="get">GET</string>
     <string name="headers">Headers</string>
     <string name="hint_input_url">www.djangorestclient.com</string>
-    <string name="hint_request_body">Enter request body text</string>
+    <string name="hint_request_body">Raw request body text goes here</string>
+    <string name="body">Body</string>
     <string name="request_type">Request Type</string>
     <string name="send">Send Request</string>
     <string name="sending">Sending…</string>

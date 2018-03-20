@@ -26,7 +26,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.IOException;
 
@@ -61,6 +60,7 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
 
     private EditText etInputUrl;
     private EditText etRequestBody;
+    private LinearLayout layoutRequestBody;
     private FloatingActionButton addHeaderFab;
     private Spinner requestTypesSpinner;
     private Spinner protocolTypesSpinner;
@@ -101,6 +101,7 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
 
         etInputUrl = rootView.findViewById(R.id.et_input_url);
         etRequestBody = rootView.findViewById(R.id.et_request_body);
+        layoutRequestBody = rootView.findViewById(R.id.layout_request_body);
         headersRecyclerView = rootView.findViewById(R.id.rv_headers);
         addHeaderFab = rootView.findViewById(R.id.fab_addHeader);
         requestTypesSpinner = rootView.findViewById(R.id.spinner_request_types);
@@ -256,7 +257,7 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
                 }
 
                 ResponseBody responseBody = response.body();
-                if (response.isSuccessful() && responseBody != null) {
+                if (responseBody != null) {
 
                     String url = response.request().url().toString();
                     long requestTime = response.receivedResponseAtMillis() - response.sentRequestAtMillis();
@@ -338,9 +339,9 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
                 String selectedRequestTypeString = (String) parent.getItemAtPosition(position);
                 if (TextUtils.equals(selectedRequestTypeString, RequestType.GET.toString())
                         || TextUtils.equals(selectedRequestTypeString, RequestType.HEAD.toString())) {
-                    etRequestBody.setVisibility(View.GONE);
+                    layoutRequestBody.setVisibility(View.GONE);
                 } else {
-                    etRequestBody.setVisibility(View.VISIBLE);
+                    layoutRequestBody.setVisibility(View.VISIBLE);
                 }
             }
 
