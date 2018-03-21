@@ -13,7 +13,6 @@
     <string name="settings">Settings</string>
 
     <!--Request Screen Strings-->
-    <string name="get">GET</string>
     <string name="headers">Headers</string>
     <string name="hint_input_url">www.djangorestclient.com</string>
     <string name="hint_request_body">Raw request body text goes here</string>
@@ -21,6 +20,7 @@
     <string name="request_type">Type</string>
     <string name="send">Send Request</string>
     <string name="sending">Sending…</string>
+    <string name="url">Url</string>
 
     <!--Add Header dialog strings-->
     <string name="add_header">Add Header</string>
@@ -45,21 +45,24 @@
     <string name="response_time_ms_label">Response Time(ms)\n</string>
     <string name="response_time_ms_label_with_value">Response Time(ms)\n%d</string>
 
-    <!-- Miscellaneous strings -->
-    <string name="basic">Basic</string>
-    <string name="input_fields_empty_msg">Input fields cannot be empty.</string>
-    <string name="invalid_url_msg">Invalid Input Url.</string>
+    <!--About Screen strings-->
+    <string name="copyright">Copyright © 2018 DT</string>
+    <string name="django_rest_client">Django Rest Client</string>
     <string name="rate_me">Rate Me!</string>
-    <string name="request">Request</string>
-    <string name="space_separated_strings">%1$s %2$s</string>
-    <string name="confirmation_dialog_title">Confirm Exit !</string>
-    <string name="confirmation_dialog_message">All input data (if any) will be discarded. \nAre you sure you want to exit ?</string>
-    <string name="no_connection_msg">Internet connectivity not available.</string>
+    <string name="version">Version 1.0</string>
 
     <!--Preference strings-->
     <string name="key_timeout_connect_preference">timeout_connect_preference</string>
     <string name="key_timeout_read_preference">timeout_read_preference</string>
     <string name="key_timeout_write_preference">timeout_write_preference</string>
-    <string name="summary_timeout_preferences">After %d seconds</string>
+    <string name="summary_timeout_preferences">After %s seconds</string>
+
+    <!-- Miscellaneous strings -->
+    <string name="input_fields_empty_msg">Input fields cannot be empty.</string>
+    <string name="invalid_url_msg">Invalid Input Url.</string>
+    <string name="space_separated_strings">%1$s %2$s</string>
+    <string name="confirmation_dialog_title">Confirm Exit !</string>
+    <string name="confirmation_dialog_message">All input data (if any) will be discarded. \nAre you sure you want to exit ?</string>
+    <string name="no_connection_msg">Internet connectivity not available.</string>
 
 </resources>

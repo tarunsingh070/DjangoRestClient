@@ -9,11 +9,6 @@
         <item>PATCH</item>
     </string-array>
 
-    <string-array name="protocolTypes">
-        <item>https://</item>
-        <item>http://</item>
-    </string-array>
-
     <string-array name="headerTypes">
         <item>Accept</item>
         <item>Content-Type</item>

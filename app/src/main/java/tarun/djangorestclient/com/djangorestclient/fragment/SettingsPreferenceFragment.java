@@ -60,7 +60,7 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat impleme
         Preference timeoutPref = findPreference(preferenceKey);
         String timeoutPrefValue = sharedPreferences.getString(preferenceKey, "");
         if (!TextUtils.isEmpty(timeoutPrefValue)) {
-            timeoutPref.setSummary(getString(R.string.summary_timeout_preferences, Integer.valueOf(timeoutPrefValue)));
+            timeoutPref.setSummary(getString(R.string.summary_timeout_preferences, timeoutPrefValue));
         }
     }
 }

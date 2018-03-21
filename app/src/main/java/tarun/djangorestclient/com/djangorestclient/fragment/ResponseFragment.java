@@ -34,9 +34,6 @@ public class ResponseFragment extends Fragment {
     private TextView tvResponseCode;
     private TextView tvResponseTime;
     private TextView tvResponseBody;
-    private TextView tvRequestUrl;
-    private TextView tvResponseHeaders;
-    private FloatingActionButton fabCopyResponseBody;
 
     private RestResponse restResponse;
 
@@ -70,7 +67,7 @@ public class ResponseFragment extends Fragment {
         tvResponseCode = rootView.findViewById(R.id.tv_response_code);
         tvResponseTime = rootView.findViewById(R.id.tv_response_time);
         tvResponseBody = rootView.findViewById(R.id.tv_body);
-        fabCopyResponseBody = rootView.findViewById(R.id.fab_copy_response_body);
+        FloatingActionButton fabCopyResponseBody = rootView.findViewById(R.id.fab_copy_response_body);
         fabCopyResponseBody.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -118,8 +115,8 @@ public class ResponseFragment extends Fragment {
     private void showAdditionalResponseInfo(String requestUrl, CharSequence responseHeaders) {
         View view = getLayoutInflater().inflate(R.layout.bottom_sheet_response_info, null);
 
-        tvRequestUrl = view.findViewById(R.id.tv_request_url);
-        tvResponseHeaders = view.findViewById(R.id.tv_headers);
+        TextView tvRequestUrl = view.findViewById(R.id.tv_request_url);
+        TextView tvResponseHeaders = view.findViewById(R.id.tv_headers);
 
         tvRequestUrl.setText(requestUrl);
         tvResponseHeaders.setText(responseHeaders);

@@ -46,7 +46,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:labelFor="@+id/spinner_request_types"
-                android:text="Url" />
+                android:text="@string/url" />
 
             <EditText
                 android:id="@+id/et_input_url"

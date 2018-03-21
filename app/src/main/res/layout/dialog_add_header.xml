@@ -90,13 +90,13 @@
         android:layout_margin="20dp">
 
         <Button
-            android:id="@+id/button_ok"
-            android:text="@android:string/ok"
+            android:id="@+id/button_cancel"
+            android:text="@android:string/cancel"
             style="@style/DialogButtonStyle"/>
 
         <Button
-            android:id="@+id/button_cancel"
-            android:text="@android:string/cancel"
+            android:id="@+id/button_ok"
+            android:text="@android:string/ok"
             style="@style/DialogButtonStyle"/>
 
     </LinearLayout>

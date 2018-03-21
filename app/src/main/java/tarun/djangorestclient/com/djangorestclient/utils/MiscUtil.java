@@ -61,9 +61,8 @@ public class MiscUtil {
         try {
             Integer.parseInt(str);
             // is an integer!
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException | NullPointerException e) {
             // not an integer!
-        } catch (NullPointerException e) {
             return false;
         }
 
