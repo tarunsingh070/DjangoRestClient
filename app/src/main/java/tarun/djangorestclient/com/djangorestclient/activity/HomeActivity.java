@@ -28,6 +28,7 @@ public class HomeActivity extends AppCompatActivity implements RequestFragment.O
 
     private static final String TAG = HomeActivity.class.getSimpleName();
 
+    private int selectedNavMenuItemId;
     private DrawerLayout mDrawerLayout;
     private NavigationView navigationView;
 
@@ -57,37 +58,7 @@ public class HomeActivity extends AppCompatActivity implements RequestFragment.O
      * Setup all initialized views.
      */
     private void setupViews() {
-        setupDrawerLayout();
         setupNavigationView();
-    }
-
-    /**
-     * Define all actions related to drawer layout here.
-     */
-    private void setupDrawerLayout() {
-        mDrawerLayout.addDrawerListener(
-                new DrawerLayout.DrawerListener() {
-                    @Override
-                    public void onDrawerSlide(View drawerView, float slideOffset) {
-                        // Respond when the drawer's position changes
-                    }
-
-                    @Override
-                    public void onDrawerOpened(View drawerView) {
-                        // Respond when the drawer is opened
-                    }
-
-                    @Override
-                    public void onDrawerClosed(View drawerView) {
-                        // Respond when the drawer is closed
-                    }
-
-                    @Override
-                    public void onDrawerStateChanged(int newState) {
-                        // Respond when the drawer motion state changes
-                    }
-                }
-        );
     }
 
     /**
@@ -98,11 +69,21 @@ public class HomeActivity extends AppCompatActivity implements RequestFragment.O
                 new NavigationView.OnNavigationItemSelectedListener() {
                     @Override
                     public boolean onNavigationItemSelected(MenuItem menuItem) {
+
+                        // close drawer when item is tapped
+                        mDrawerLayout.closeDrawers();
+
+                        // Simply return if selected menu item was already selected.
+                        if (menuItem.getItemId() == selectedNavMenuItemId) {
+                            return true;
+                        }
+
+                        // store the selected menuItemId.
+                        selectedNavMenuItemId = menuItem.getItemId();
+
                         // set item as selected to persist highlight
                         menuItem.setChecked(true);
                         HomeActivity.this.setTitle(menuItem.getTitle());
-                        // close drawer when item is tapped
-                        mDrawerLayout.closeDrawers();
 
                         // Swap the fragments to update the UI based on the item selected.
 

@@ -19,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.URLUtil;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -63,7 +64,6 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
     private LinearLayout layoutRequestBody;
     private FloatingActionButton addHeaderFab;
     private Spinner requestTypesSpinner;
-    private Spinner protocolTypesSpinner;
     private RecyclerView headersRecyclerView;
     private HeadersRecyclerViewAdapter headersRecyclerViewAdapter;
     private Button sendButton;
@@ -107,7 +107,6 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
         headersRecyclerView = rootView.findViewById(R.id.rv_headers);
         addHeaderFab = rootView.findViewById(R.id.fab_addHeader);
         requestTypesSpinner = rootView.findViewById(R.id.spinner_request_types);
-        protocolTypesSpinner = rootView.findViewById(R.id.spinner_protocol_types);
         sendButton = rootView.findViewById(R.id.button_send);
 
         headersRecyclerViewAdapter = new HeadersRecyclerViewAdapter(this, request.getHeaders());
@@ -178,9 +177,11 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
             @Override
             public void onClick(View v) {
 
-                // Verify that the input url is not empty and internet connectivity is available before proceeding.
-                if (TextUtils.isEmpty(etInputUrl.getText())) {
-                    MiscUtil.displayShortToast(getContext(), R.string.input_fields_empty_msg);
+                // Verify that the input url is a non-empty valid http or https url and
+                // internet connectivity is available before proceeding.
+                String url = etInputUrl.getText().toString();
+                if (!(URLUtil.isHttpUrl(url) && url.length() > 7) && !(URLUtil.isHttpsUrl(url) && url.length() > 8)) {
+                    MiscUtil.displayShortToast(getContext(), R.string.invalid_url_msg);
                     return;
                 } else if (!HttpUtil.isNetworkAvailable(getContext())) {
                     MiscUtil.displayShortToast(getContext(), R.string.no_connection_msg);
@@ -219,9 +220,7 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
     }
 
     private Request prepareRequestObject() {
-        String protocolType = (String) protocolTypesSpinner.getSelectedItem();
-        String url = protocolType + etInputUrl.getText().toString();
-        request.setUrl(url);
+        request.setUrl(etInputUrl.getText().toString());
 
         String requestTypeString = (String) requestTypesSpinner.getSelectedItem();
         RequestType requestType = getRequestType(requestTypeString);

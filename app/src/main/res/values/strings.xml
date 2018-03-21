@@ -18,7 +18,7 @@
     <string name="hint_input_url">www.djangorestclient.com</string>
     <string name="hint_request_body">Raw request body text goes here</string>
     <string name="body">Body</string>
-    <string name="request_type">Request Type</string>
+    <string name="request_type">Type</string>
     <string name="send">Send Request</string>
     <string name="sending">Sending…</string>
 
@@ -35,6 +35,8 @@
     <string name="value">Value</string>
 
     <!--Response Screen Strings-->
+    <string name="fab_copy_empty">Nothing to copy.</string>
+    <string name="fab_copy_success">Response body copied to clipboard.</string>
     <string name="request_url">Request URL</string>
     <string name="response_body_label">Response Body</string>
     <string name="response_code_label">Response Code\n</string>
@@ -46,6 +48,7 @@
     <!-- Miscellaneous strings -->
     <string name="basic">Basic</string>
     <string name="input_fields_empty_msg">Input fields cannot be empty.</string>
+    <string name="invalid_url_msg">Invalid Input Url.</string>
     <string name="rate_me">Rate Me!</string>
     <string name="request">Request</string>
     <string name="space_separated_strings">%1$s %2$s</string>

@@ -1,9 +1,13 @@
 package tarun.djangorestclient.com.djangorestclient.fragment;
 
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialog;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -14,6 +18,9 @@ import android.widget.TextView;
 
 import tarun.djangorestclient.com.djangorestclient.R;
 import tarun.djangorestclient.com.djangorestclient.model.RestResponse;
+import tarun.djangorestclient.com.djangorestclient.utils.MiscUtil;
+
+import static android.content.Context.CLIPBOARD_SERVICE;
 
 /**
  * This fragment shows user the response information received as a result of the REST request made by user.
@@ -29,6 +36,7 @@ public class ResponseFragment extends Fragment {
     private TextView tvResponseBody;
     private TextView tvRequestUrl;
     private TextView tvResponseHeaders;
+    private FloatingActionButton fabCopyResponseBody;
 
     private RestResponse restResponse;
 
@@ -62,6 +70,13 @@ public class ResponseFragment extends Fragment {
         tvResponseCode = rootView.findViewById(R.id.tv_response_code);
         tvResponseTime = rootView.findViewById(R.id.tv_response_time);
         tvResponseBody = rootView.findViewById(R.id.tv_body);
+        fabCopyResponseBody = rootView.findViewById(R.id.fab_copy_response_body);
+        fabCopyResponseBody.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                copyResponseBodyTextToClipboard();
+            }
+        });
 
         return rootView;
     }
@@ -112,6 +127,20 @@ public class ResponseFragment extends Fragment {
         BottomSheetDialog dialog = new BottomSheetDialog(getContext());
         dialog.setContentView(view);
         dialog.show();
+    }
+
+    /**
+     * Copy the contents of response body to clipboard.
+     */
+    private void copyResponseBodyTextToClipboard() {
+        if (restResponse != null && !TextUtils.isEmpty(restResponse.getResponseBody())) {
+            ClipboardManager clipboard = (ClipboardManager) getContext().getSystemService(CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText(getString(R.string.response_body_label), restResponse.getResponseBody());
+            clipboard.setPrimaryClip(clip);
+            MiscUtil.displayShortToast(getContext(), getString(R.string.fab_copy_success));
+        } else {
+            MiscUtil.displayShortToast(getContext(), getString(R.string.fab_copy_empty));
+        }
     }
 
 }
