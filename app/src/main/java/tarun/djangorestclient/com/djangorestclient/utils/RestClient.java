@@ -1,7 +1,9 @@
 package tarun.djangorestclient.com.djangorestclient.utils;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.support.v7.preference.PreferenceManager;
 import android.text.TextUtils;
-import android.util.Log;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -12,6 +14,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.internal.Util;
+import tarun.djangorestclient.com.djangorestclient.R;
 import tarun.djangorestclient.com.djangorestclient.model.Header;
 
 /**
@@ -20,122 +23,92 @@ import tarun.djangorestclient.com.djangorestclient.model.Header;
 
 public class RestClient {
 
-    // Fixme: Set the timeout values from shared preferences when class loads.
-//    private static final RestClient instance = new RestClient();
-//
-//    public static RestClient getInstance(Context context) {
-//        return instance;
-//    }
+    private final Context context;
+    private final SharedPreferences sharedPreferences;
+    private OkHttpClient client = new OkHttpClient.Builder().build();
 
-//    static {
-//        Context context = DjangoRestClientApplication.getAppContext();
-//        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-//        String timeoutConnectPrefValueString = sharedPreferences.getString(context.getString(R.string.key_timeout_connect_preference), "");
-//        String timeoutReadPrefValueString = sharedPreferences.getString(context.getString(R.string.key_timeout_read_preference), "");
-//        String timeoutWritePrefValueString = sharedPreferences.getString(context.getString(R.string.key_timeout_write_preference), "");
-//        updateOkHttpClientConfigurations(timeoutConnectPrefValueString, timeoutReadPrefValueString, timeoutWritePrefValueString);
-//    }
-
-//    private RestClient() {
-//        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-//        String language = settings.getString("language", "");
-//    }
-
-    private static OkHttpClient client = new OkHttpClient.Builder().build();
+    public RestClient(Context context) {
+        this.context = context;
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+    }
 
     /**
-     * Update the OkHttpClientConfigurations based on the values received.
+     * Update the OkHttpClientConfigurations based on the shared preference values.
      */
-    public static void updateOkHttpClientConfigurations(String timeoutConnectPrefValueString, String timeoutReadPrefValueString
-            , String timeoutWritePrefValueString) {
+    private void updateClient() {
+        // Fetch the timeout values from shared preferences.
+        String timeoutConnectPrefValueString = sharedPreferences.getString(context.getString(R.string.key_timeout_connect_preference), "");
+        String timeoutReadPrefValueString = sharedPreferences.getString(context.getString(R.string.key_timeout_read_preference), "");
+        String timeoutWritePrefValueString = sharedPreferences.getString(context.getString(R.string.key_timeout_write_preference), "");
 
-        boolean isTimeOutConnectPrefSet = !TextUtils.isEmpty(timeoutConnectPrefValueString);
-        boolean isTimeOutReadPrefSet = !TextUtils.isEmpty(timeoutReadPrefValueString);
-        boolean isTimeOutWritePrefSet = !TextUtils.isEmpty(timeoutWritePrefValueString);
+        // Check if shared preference values for each preference has been explicitly set by user or not.
+        // Also verify if the value set is actually a valid number or not.
+        boolean isTimeOutConnectPrefSet = (!TextUtils.isEmpty(timeoutConnectPrefValueString) && MiscUtil.isNumber(timeoutConnectPrefValueString));
+        boolean isTimeOutReadPrefSet = (!TextUtils.isEmpty(timeoutReadPrefValueString) && MiscUtil.isNumber(timeoutReadPrefValueString));
+        boolean isTimeOutWritePrefSet = (!TextUtils.isEmpty(timeoutWritePrefValueString) && MiscUtil.isNumber(timeoutWritePrefValueString));
 
-        if (isTimeOutConnectPrefSet && isTimeOutReadPrefSet && isTimeOutWritePrefSet) {
-            // Update Connect timeout, Read timeout and Write timeout configurations.
-            client = client.newBuilder()
-                    .connectTimeout(Integer.valueOf(timeoutConnectPrefValueString), TimeUnit.SECONDS)
-                    .readTimeout(Integer.valueOf(timeoutReadPrefValueString), TimeUnit.SECONDS)
-                    .writeTimeout(Integer.valueOf(timeoutWritePrefValueString), TimeUnit.SECONDS)
-                    .build();
-        } else if (isTimeOutConnectPrefSet && isTimeOutReadPrefSet) {
-            // Update Connect timeout and Read timeout configurations.
-            client = client.newBuilder()
-                    .connectTimeout(Integer.valueOf(timeoutConnectPrefValueString), TimeUnit.SECONDS)
-                    .readTimeout(Integer.valueOf(timeoutReadPrefValueString), TimeUnit.SECONDS)
-                    .build();
-        } else if (isTimeOutConnectPrefSet && isTimeOutWritePrefSet) {
-            // Update Connect timeout and Write timeout configurations.
-            client = client.newBuilder()
-                    .connectTimeout(Integer.valueOf(timeoutConnectPrefValueString), TimeUnit.SECONDS)
-                    .writeTimeout(Integer.valueOf(timeoutWritePrefValueString), TimeUnit.SECONDS)
-                    .build();
-        } else if (isTimeOutReadPrefSet && isTimeOutWritePrefSet) {
-            // Update Read timeout and Write timeout configurations.
-            client = client.newBuilder()
-                    .readTimeout(Integer.valueOf(timeoutReadPrefValueString), TimeUnit.SECONDS)
-                    .writeTimeout(Integer.valueOf(timeoutWritePrefValueString), TimeUnit.SECONDS)
-                    .build();
-        } else if (isTimeOutConnectPrefSet) {
-            // Update Connect timeout configuration.
-            client = client.newBuilder()
-                    .connectTimeout(Integer.valueOf(timeoutConnectPrefValueString), TimeUnit.SECONDS)
-                    .build();
-        } else if (isTimeOutReadPrefSet) {
-            // Update Read timeout configuration.
-            client = client.newBuilder()
-                    .readTimeout(Integer.valueOf(timeoutReadPrefValueString), TimeUnit.SECONDS)
-                    .build();
-        } else {
-            // Update Write timeout configuration.
-            client = client.newBuilder()
-                    .writeTimeout(Integer.valueOf(timeoutWritePrefValueString), TimeUnit.SECONDS)
-                    .build();
+        OkHttpClient.Builder builder = client.newBuilder();
+
+        // Re-configure the builder based on preference values set (if any) in the settings.
+        if (isTimeOutConnectPrefSet) {
+            builder.connectTimeout(Integer.valueOf(timeoutConnectPrefValueString), TimeUnit.SECONDS);
         }
 
+        if (isTimeOutReadPrefSet) {
+            builder.readTimeout(Integer.valueOf(timeoutReadPrefValueString), TimeUnit.SECONDS);
+        }
+
+        if (isTimeOutWritePrefSet) {
+            builder.writeTimeout(Integer.valueOf(timeoutWritePrefValueString), TimeUnit.SECONDS);
+        }
+
+        client = builder.build();
     }
 
-    public static void get(String url, List<Header> headers, Callback callback) {
+    public void get(String url, List<Header> headers, Callback callback) {
         Request request = new Request.Builder().url(url).headers(HttpUtil.getParsedHeaders(headers)).get()
                 .build();
-        Log.d("RestClient", "Timeout set: " + client.connectTimeoutMillis());
+        updateClient();
         Call call = client.newCall(request);
         call.enqueue(callback);
     }
 
-    public static void post(String url, List<Header> headers, String body, Callback callback) {
+    public void post(String url, List<Header> headers, String body, Callback callback) {
         Request request = new Request.Builder().url(url).headers(HttpUtil.getParsedHeaders(headers)).post
                 (body == null ? Util.EMPTY_REQUEST : RequestBody.create(null, body)).build();
+        updateClient();
         Call call = client.newCall(request);
         call.enqueue(callback);
     }
 
-    public static void head(String url, List<Header> headers, Callback callback) {
+    public void head(String url, List<Header> headers, Callback callback) {
         Request request = new Request.Builder().url(url).headers(HttpUtil.getParsedHeaders(headers)).head()
                 .build();
+        updateClient();
         Call call = client.newCall(request);
         call.enqueue(callback);
     }
 
-    public static void put(String url, List<Header> headers, String body, Callback callback) {
+    public void put(String url, List<Header> headers, String body, Callback callback) {
         Request request = new Request.Builder().url(url).headers(HttpUtil.getParsedHeaders(headers)).put
                 (body == null ? Util.EMPTY_REQUEST : RequestBody.create(null, body)).build();
+        updateClient();
         Call call = client.newCall(request);
         call.enqueue(callback);
     }
 
-    public static void delete(String url, List<Header> headers, String body, Callback callback) {
+    public void delete(String url, List<Header> headers, String body, Callback callback) {
         Request request = new Request.Builder().url(url).headers(HttpUtil.getParsedHeaders(headers)).delete
                 (body == null ? null : RequestBody.create(null, body)).build();
+        updateClient();
         Call call = client.newCall(request);
         call.enqueue(callback);
     }
 
-    public static void patch(String url, List<Header> headers, String body, Callback callback) {
+    public void patch(String url, List<Header> headers, String body, Callback callback) {
         Request request = new Request.Builder().url(url).headers(HttpUtil.getParsedHeaders(headers)).patch
                 (body == null ? Util.EMPTY_REQUEST : RequestBody.create(null, body)).build();
+        updateClient();
         Call call = client.newCall(request);
         call.enqueue(callback);
     }

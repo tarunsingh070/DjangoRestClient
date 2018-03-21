@@ -71,6 +71,7 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
     private Request request;
 
     private OnResponseReceivedListener mListener;
+    private RestClient restClient;
 
     public RequestFragment() {
         // Required empty public constructor
@@ -91,6 +92,7 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
         super.onCreate(savedInstanceState);
 
         request = new Request();
+        restClient = new RestClient(getContext());
     }
 
     @Override
@@ -189,27 +191,27 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
 
                 switch (request.getRequestType()) {
                     case GET:
-                        RestClient.get(request.getUrl(), request.getHeaders(), getRequestCallback());
+                        restClient.get(request.getUrl(), request.getHeaders(), getRequestCallback());
                         break;
 
                     case POST:
-                        RestClient.post(request.getUrl(), request.getHeaders(), request.getBody(), getRequestCallback());
+                        restClient.post(request.getUrl(), request.getHeaders(), request.getBody(), getRequestCallback());
                         break;
 
                     case PUT:
-                        RestClient.put(request.getUrl(), request.getHeaders(), request.getBody(), getRequestCallback());
+                        restClient.put(request.getUrl(), request.getHeaders(), request.getBody(), getRequestCallback());
                         break;
 
                     case DELETE:
-                        RestClient.delete(request.getUrl(), request.getHeaders(), request.getBody(), getRequestCallback());
+                        restClient.delete(request.getUrl(), request.getHeaders(), request.getBody(), getRequestCallback());
                         break;
 
                     case HEAD:
-                        RestClient.head(request.getUrl(), request.getHeaders(), getRequestCallback());
+                        restClient.head(request.getUrl(), request.getHeaders(), getRequestCallback());
                         break;
 
                     case PATCH:
-                        RestClient.patch(request.getUrl(), request.getHeaders(), request.getBody(), getRequestCallback());
+                        restClient.patch(request.getUrl(), request.getHeaders(), request.getBody(), getRequestCallback());
                         break;
                 }
             }

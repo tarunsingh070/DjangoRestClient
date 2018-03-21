@@ -39,6 +39,7 @@ public class HomeActivity extends AppCompatActivity implements RequestFragment.O
         ActionBar actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setHomeAsUpIndicator(R.drawable.ic_menu);
+        actionbar.setElevation(0);
 
         initViews();
         setupViews();

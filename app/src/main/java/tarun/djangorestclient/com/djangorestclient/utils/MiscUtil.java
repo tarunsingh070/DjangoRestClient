@@ -52,6 +52,24 @@ public class MiscUtil {
         });
     }
 
+    /**
+     * Check if a string value is actually a valid integer or not.
+     * @param str String value to check.
+     * @return True if it is an integer, false otherwise.
+     */
+    public static boolean isNumber(String str) {
+        try {
+            Integer.parseInt(str);
+            // is an integer!
+        } catch (NumberFormatException e) {
+            // not an integer!
+        } catch (NullPointerException e) {
+            return false;
+        }
+
+        return true;
+    }
+
     public static void displayShortToast(Context context, int message) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     }
