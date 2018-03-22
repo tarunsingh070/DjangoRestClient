@@ -1,13 +1,21 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        DjangoRestClientRelease {
+            keyAlias 'DjangoRestClientKey'
+            keyPassword '07010102710'
+            storeFile file('/Users/tarunsingh/Android Dev/My Apps/Keys/DjangoRestClientKey')
+            storePassword '07010102710'
+        }
+    }
     compileSdkVersion 27
     defaultConfig {
         applicationId "tarun.djangorestclient.com.djangorestclient"
         minSdkVersion 19
         targetSdkVersion 27
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
