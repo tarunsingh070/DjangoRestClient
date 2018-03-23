@@ -5,6 +5,7 @@
     <string name="app_name">DjangoRestClient</string>
 
     <!--Menu titles-->
+    <string name="action_send_request">Send Request</string>
     <string name="action_show_extra_info">Extra info</string>
 
     <!--Navigation drawer menu items titles-->
@@ -13,14 +14,16 @@
     <string name="settings">Settings</string>
 
     <!--Request Screen Strings-->
+    <string name="header_deleted">Header deleted!</string>
+    <string name="header_restored">Header restored!</string>
     <string name="headers">Headers</string>
-    <string name="hint_input_url">www.djangorestclient.com</string>
+    <string name="hint_input_url">http://djangorestclient.com</string>
     <string name="hint_request_body">Raw request body text goes here</string>
     <string name="body">Body</string>
     <string name="request_type">Type</string>
-    <string name="send">Send Request</string>
     <string name="sending">Sending…</string>
     <string name="url">Url</string>
+    <string name="url_default_text">https://</string>
 
     <!--Add Header dialog strings-->
     <string name="add_header">Add Header</string>
@@ -59,10 +62,11 @@
 
     <!-- Miscellaneous strings -->
     <string name="input_fields_empty_msg">Input fields cannot be empty.</string>
-    <string name="invalid_url_msg">Invalid Input Url.</string>
+    <string name="invalid_url_msg">Please enter a valid url starting with http:// or https://</string>
     <string name="space_separated_strings">%1$s %2$s</string>
     <string name="confirmation_dialog_title">Confirm Exit !</string>
     <string name="confirmation_dialog_message">All input data (if any) will be discarded. \nAre you sure you want to exit ?</string>
     <string name="no_connection_msg">Internet connectivity not available.</string>
+    <string name="undo">UNDO</string>
 
 </resources>

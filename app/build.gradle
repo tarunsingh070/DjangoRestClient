@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     signingConfigs {
-        DjangoRestClientRelease {
+        releaseConfig {
             keyAlias 'DjangoRestClientKey'
             keyPassword '07010102710'
             storeFile file('/Users/tarunsingh/Android Dev/My Apps/Keys/DjangoRestClientKey')
@@ -14,14 +14,15 @@ android {
         applicationId "tarun.djangorestclient.com.djangorestclient"
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 1
-        versionName "1.0.1"
+        versionCode 2
+        versionName "1.1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.releaseConfig
         }
     }
     productFlavors {

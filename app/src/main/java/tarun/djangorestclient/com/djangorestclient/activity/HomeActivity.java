@@ -109,7 +109,7 @@ public class HomeActivity extends AppCompatActivity implements RequestFragment.O
                         }
 
                         FragmentManager fragmentManager = getSupportFragmentManager();
-                        fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+                        fragmentManager.beginTransaction().replace(R.id.content_frame, fragment, fragment.getClass().getSimpleName()).commit();
 
                         return true;
                     }

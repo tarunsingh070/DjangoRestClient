@@ -10,6 +10,7 @@ package tarun.djangorestclient.com.djangorestclient.fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DividerItemDecoration;
@@ -22,6 +23,9 @@ import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -72,7 +76,6 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
     private Spinner requestTypesSpinner;
     private RecyclerView headersRecyclerView;
     private HeadersRecyclerViewAdapter headersRecyclerViewAdapter;
-    private Button sendButton;
 
     private Request request;
 
@@ -96,6 +99,7 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
 
         request = new Request();
         restClient = new RestClient(getContext());
@@ -113,13 +117,29 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
         headersRecyclerView = rootView.findViewById(R.id.rv_headers);
         addHeaderFab = rootView.findViewById(R.id.fab_addHeader);
         requestTypesSpinner = rootView.findViewById(R.id.spinner_request_types);
-        sendButton = rootView.findViewById(R.id.button_send);
 
         headersRecyclerViewAdapter = new HeadersRecyclerViewAdapter(this, request.getHeaders());
 
         bindViews();
 
         return rootView;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.request_fragment_menu, menu);super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.action_send_request:
+                    sendRequest();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
@@ -155,8 +175,6 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
             }
         });
         requestTypesSpinner.setOnItemSelectedListener(getRequestTypesSpinnerListener());
-
-        sendButton.setOnClickListener(getSendButtonClickListener());
     }
 
     /**
@@ -175,54 +193,47 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
     }
 
     /**
-     * Create and return the click listener for Send button which makes the appropriate type of
-     * rest call based on the request type chosen by user.
+     * Make the appropriate type of rest request call based on the request type chosen by user.
      */
-    private View.OnClickListener getSendButtonClickListener() {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+    private void sendRequest() {
+        // Verify that the input url is a non-empty valid http or https url and
+        // internet connectivity is available before proceeding.
+        String url = etInputUrl.getText().toString();
+        if (!(URLUtil.isHttpUrl(url) && url.length() > 7) && !(URLUtil.isHttpsUrl(url) && url.length() > 8)) {
+            MiscUtil.displayLongToast(getContext(), R.string.invalid_url_msg);
+            return;
+        } else if (!HttpUtil.isNetworkAvailable(getContext())) {
+            MiscUtil.displayShortToast(getContext(), R.string.no_connection_msg);
+            return;
+        }
 
-                // Verify that the input url is a non-empty valid http or https url and
-                // internet connectivity is available before proceeding.
-                String url = etInputUrl.getText().toString();
-                if (!(URLUtil.isHttpUrl(url) && url.length() > 7) && !(URLUtil.isHttpsUrl(url) && url.length() > 8)) {
-                    MiscUtil.displayShortToast(getContext(), R.string.invalid_url_msg);
-                    return;
-                } else if (!HttpUtil.isNetworkAvailable(getContext())) {
-                    MiscUtil.displayShortToast(getContext(), R.string.no_connection_msg);
-                    return;
-                }
+        Request request = prepareRequestObject();
 
-                Request request = prepareRequestObject();
+        switch (request.getRequestType()) {
+            case GET:
+                restClient.get(request.getUrl(), request.getHeaders(), getRequestCallback());
+                break;
 
-                switch (request.getRequestType()) {
-                    case GET:
-                        restClient.get(request.getUrl(), request.getHeaders(), getRequestCallback());
-                        break;
+            case POST:
+                restClient.post(request.getUrl(), request.getHeaders(), request.getBody(), getRequestCallback());
+                break;
 
-                    case POST:
-                        restClient.post(request.getUrl(), request.getHeaders(), request.getBody(), getRequestCallback());
-                        break;
+            case PUT:
+                restClient.put(request.getUrl(), request.getHeaders(), request.getBody(), getRequestCallback());
+                break;
 
-                    case PUT:
-                        restClient.put(request.getUrl(), request.getHeaders(), request.getBody(), getRequestCallback());
-                        break;
+            case DELETE:
+                restClient.delete(request.getUrl(), request.getHeaders(), request.getBody(), getRequestCallback());
+                break;
 
-                    case DELETE:
-                        restClient.delete(request.getUrl(), request.getHeaders(), request.getBody(), getRequestCallback());
-                        break;
+            case HEAD:
+                restClient.head(request.getUrl(), request.getHeaders(), getRequestCallback());
+                break;
 
-                    case HEAD:
-                        restClient.head(request.getUrl(), request.getHeaders(), getRequestCallback());
-                        break;
-
-                    case PATCH:
-                        restClient.patch(request.getUrl(), request.getHeaders(), request.getBody(), getRequestCallback());
-                        break;
-                }
-            }
-        };
+            case PATCH:
+                restClient.patch(request.getUrl(), request.getHeaders(), request.getBody(), getRequestCallback());
+                break;
+        }
     }
 
     private Request prepareRequestObject() {
@@ -609,17 +620,41 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
     }
 
     @Override
-    public void onDeleteHeaderClicked(int position) {
-        // Delete the header at position received and update the recycler view list.
+    public void onDeleteHeaderClicked(final int position) {
+        // Delete the header at position received and update the header view list.
+        final Header lastDeletedHeaderObject = request.getHeaders().get(position);
+
         request.getHeaders().remove(position);
         headersRecyclerView.removeViewAt(position);
         headersRecyclerViewAdapter.notifyItemRemoved(position);
         headersRecyclerViewAdapter.notifyItemRangeChanged(position, request.getHeaders().size());
+
+        // Show a confirmation of header deletion and an option for user to undo header deletion.
+        Snackbar snackbar = Snackbar
+                .make(getView(), R.string.header_deleted, Snackbar.LENGTH_LONG)
+                .setAction(R.string.undo, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        restoreLastDeletedHeader(lastDeletedHeaderObject, position);
+                    }
+                });
+
+        snackbar.show();
     }
 
     @Override
     public void onEditHeaderClicked(int position) {
         displayEditHeaderDialog(position);
+    }
+
+    /**
+     * Restore the last deleted header to it's original position in the list of headers.
+     */
+    private void restoreLastDeletedHeader(Header lastDeletedHeaderObject, int lastDeletedHeaderPosition) {
+        request.getHeaders().add(lastDeletedHeaderPosition, lastDeletedHeaderObject);
+        headersRecyclerViewAdapter.notifyDataSetChanged();
+        Snackbar snackbar = Snackbar.make(getView(), R.string.header_restored, Snackbar.LENGTH_SHORT);
+        snackbar.show();
     }
 
     /**
