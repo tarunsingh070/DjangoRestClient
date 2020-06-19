@@ -8,12 +8,12 @@ package tarun.djangorestclient.com.djangorestclient.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import androidx.preference.PreferenceManager;
 import android.text.TextUtils;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import androidx.preference.PreferenceManager;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -57,15 +57,15 @@ public class RestClient {
 
         // Re-configure the builder based on preference values set (if any) in the settings.
         if (isTimeOutConnectPrefSet) {
-            builder.connectTimeout(Integer.valueOf(timeoutConnectPrefValueString), TimeUnit.SECONDS);
+            builder.connectTimeout(Integer.parseInt(timeoutConnectPrefValueString), TimeUnit.SECONDS);
         }
 
         if (isTimeOutReadPrefSet) {
-            builder.readTimeout(Integer.valueOf(timeoutReadPrefValueString), TimeUnit.SECONDS);
+            builder.readTimeout(Integer.parseInt(timeoutReadPrefValueString), TimeUnit.SECONDS);
         }
 
         if (isTimeOutWritePrefSet) {
-            builder.writeTimeout(Integer.valueOf(timeoutWritePrefValueString), TimeUnit.SECONDS);
+            builder.writeTimeout(Integer.parseInt(timeoutWritePrefValueString), TimeUnit.SECONDS);
         }
 
         client = builder.build();
@@ -81,7 +81,7 @@ public class RestClient {
 
     public void post(String url, List<Header> headers, String body, Callback callback) {
         Request request = new Request.Builder().url(url).headers(HttpUtil.getParsedHeaders(headers)).post
-                (body == null ? Util.EMPTY_REQUEST : RequestBody.create(null, body)).build();
+                (body == null ? Util.EMPTY_REQUEST : RequestBody.create(body, null)).build();
         updateClient();
         Call call = client.newCall(request);
         call.enqueue(callback);
@@ -97,7 +97,7 @@ public class RestClient {
 
     public void put(String url, List<Header> headers, String body, Callback callback) {
         Request request = new Request.Builder().url(url).headers(HttpUtil.getParsedHeaders(headers)).put
-                (body == null ? Util.EMPTY_REQUEST : RequestBody.create(null, body)).build();
+                (body == null ? Util.EMPTY_REQUEST : RequestBody.create(body, null)).build();
         updateClient();
         Call call = client.newCall(request);
         call.enqueue(callback);
@@ -105,7 +105,7 @@ public class RestClient {
 
     public void delete(String url, List<Header> headers, String body, Callback callback) {
         Request request = new Request.Builder().url(url).headers(HttpUtil.getParsedHeaders(headers)).delete
-                (body == null ? null : RequestBody.create(null, body)).build();
+                (body == null ? null : RequestBody.create(body, null)).build();
         updateClient();
         Call call = client.newCall(request);
         call.enqueue(callback);
@@ -113,7 +113,7 @@ public class RestClient {
 
     public void patch(String url, List<Header> headers, String body, Callback callback) {
         Request request = new Request.Builder().url(url).headers(HttpUtil.getParsedHeaders(headers)).patch
-                (body == null ? Util.EMPTY_REQUEST : RequestBody.create(null, body)).build();
+                (body == null ? Util.EMPTY_REQUEST : RequestBody.create(body, null)).build();
         updateClient();
         Call call = client.newCall(request);
         call.enqueue(callback);

@@ -21,11 +21,11 @@
                 style="@style/ScreenLabelsStyle.RequestScreenLabelsStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:labelFor="@+id/spinner_request_types"
+                android:labelFor="@+id/request_types_spinner"
                 android:text="@string/request_type" />
 
             <Spinner
-                android:id="@+id/spinner_request_types"
+                android:id="@+id/request_types_spinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
@@ -45,7 +45,7 @@
                 style="@style/ScreenLabelsStyle.RequestScreenLabelsStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:labelFor="@+id/spinner_request_types"
+                android:labelFor="@+id/request_types_spinner"
                 android:text="@string/url" />
 
             <EditText
@@ -82,7 +82,7 @@
                     android:text="@string/headers" />
 
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/fab_addHeader"
+                    android:id="@+id/add_header_fab"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="10dp"
@@ -92,7 +92,7 @@
             </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_headers"
+                android:id="@+id/headers_recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 

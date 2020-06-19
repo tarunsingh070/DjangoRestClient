@@ -1,61 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:gravity="center_vertical"
-    android:layout_margin="10dp"
-    android:orientation="horizontal">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/tv_header_name"
-        android:layout_width="0dp"
+<!--    Without the above Extra Linear layout parent, the layout messes up. -->
+<!--    Some kind of bug : https://stackoverflow.com/a/33997626     -->
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:ellipsize="marquee"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:marqueeRepeatLimit="marquee_forever"
-        android:singleLine="true"
-        android:textStyle="bold"
-        android:textColor="@android:color/secondary_text_light"
-        android:textSize="16sp"
-        style="@style/HeaderRowTextViewStyle"/>
+        android:layout_margin="10dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toStartOf="@+id/edit_header_button"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentTop="true"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_header_name"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:ellipsize="marquee"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:singleLine="true"
+                android:textStyle="bold"
+                android:textColor="@android:color/secondary_text_light"
+                android:textSize="16sp"
+                style="@style/HeaderRowTextViewStyle"/>
 
 
-    <HorizontalScrollView
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:scrollbars="none">
+            <HorizontalScrollView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:scrollbars="none">
 
-        <TextView
-            android:id="@+id/tv_header_value"
+                <TextView
+                    android:id="@+id/tv_header_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:maxLines="1"
+                    android:textSize="15sp"
+                    style="@style/HeaderRowTextViewStyle"/>
+
+            </HorizontalScrollView>
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/edit_header_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:maxLines="1"
-            android:textSize="15sp"
-            style="@style/HeaderRowTextViewStyle"/>
+            android:src="@drawable/ic_edit_black"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:padding="5dp"
+            android:layout_toStartOf="@+id/delete_header_button"
+            android:tint="@color/colorPrimary"
+            android:background="@drawable/circular_outline"/>
 
-    </HorizontalScrollView>
+        <ImageButton
+            android:id="@+id/delete_header_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_delete_black"
+            android:padding="5dp"
+            android:layout_alignParentEnd="true"
+            android:tint="@color/colorPrimary"
+            android:background="@drawable/circular_outline"/>
 
-    <ImageButton
-        android:id="@+id/ib_edit_header"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_edit_black"
-        android:layout_marginStart="5dp"
-        android:layout_marginEnd="5dp"
-        android:padding="5dp"
-        android:tint="@color/colorPrimary"
-        android:background="@drawable/circular_outline"/>
-
-    <ImageButton
-        android:id="@+id/ib_delete_header"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_delete_black"
-        android:padding="5dp"
-        android:tint="@color/colorPrimary"
-        android:background="@drawable/circular_outline"/>
-
+    </RelativeLayout>
 </LinearLayout>

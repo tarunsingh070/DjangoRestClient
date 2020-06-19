@@ -11,14 +11,13 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
-import tarun.djangorestclient.com.djangorestclient.R;
+import androidx.fragment.app.Fragment;
+import tarun.djangorestclient.com.djangorestclient.databinding.FragmentAboutBinding;
 
 /**
  * This fragment displays info about this app and allows the user to rate this app on play store.
@@ -44,17 +43,9 @@ public class AboutFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_about, container, false);
-
-        Button rateMeButton = rootView.findViewById(R.id.button_rate_me);
-        rateMeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showAppInPlayStore();
-            }
-        });
-
-        return rootView;
+        FragmentAboutBinding binding = FragmentAboutBinding.inflate(inflater, container, false);
+        binding.buttonRateMe.setOnClickListener(view -> showAppInPlayStore());
+        return binding.getRoot();
     }
 
     /**
@@ -66,7 +57,7 @@ public class AboutFragment extends Fragment {
         // To count with Play market backstack, After pressing back button,
         // to taken back to our application, we need to add following flags to intent.
         goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY |
-                Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET |
+                Intent.FLAG_ACTIVITY_NEW_DOCUMENT |
                 Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
         try {
             startActivity(goToMarket);

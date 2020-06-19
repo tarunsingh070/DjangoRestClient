@@ -6,16 +6,16 @@
 
 package tarun.djangorestclient.com.djangorestclient.adapter;
 
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import tarun.djangorestclient.com.djangorestclient.R;
+import tarun.djangorestclient.com.djangorestclient.databinding.HeaderRowLayoutBinding;
 import tarun.djangorestclient.com.djangorestclient.fragment.RequestFragment;
 import tarun.djangorestclient.com.djangorestclient.model.CustomHeader;
 import tarun.djangorestclient.com.djangorestclient.model.Header;
@@ -34,24 +34,26 @@ public class HeadersRecyclerViewAdapter extends RecyclerView.Adapter<HeadersRecy
         this.headers = headers;
     }
 
+    @NonNull
     @Override
     public HeadersRecyclerViewAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.header_row_layout, parent, false);
-        return new HeadersRecyclerViewAdapter.ViewHolder(view);
+        HeaderRowLayoutBinding headerRowLayoutBinding =
+                HeaderRowLayoutBinding.inflate(LayoutInflater.from(parent.getContext()));
+        return new HeadersRecyclerViewAdapter.ViewHolder(headerRowLayoutBinding);
     }
 
     @Override
     public void onBindViewHolder(final HeadersRecyclerViewAdapter.ViewHolder holder, final int position) {
         holder.header = headers.get(position);
-        holder.tvHeaderName.setText(getHeaderName(holder.header));
-        holder.tvHeaderValue.setText(holder.header.getHeaderValue());
-        holder.ibDeleteHeader.setOnClickListener(holder);
-        holder.ibEditHeader.setOnClickListener(holder);
+        holder.binding.tvHeaderName.setText(getHeaderName(holder.header));
+        holder.binding.tvHeaderValue.setText(holder.header.getHeaderValue());
+        holder.binding.deleteHeaderButton.setOnClickListener(holder);
+        holder.binding.editHeaderButton.setOnClickListener(holder);
     }
 
     /**
      * Return the header name based on the type of header.
+     *
      * @param header : Header for whom the name is to be returned.
      */
     private String getHeaderName(Header header) {
@@ -67,31 +69,23 @@ public class HeadersRecyclerViewAdapter extends RecyclerView.Adapter<HeadersRecy
         return headers.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-        final TextView tvHeaderName;
-        final TextView tvHeaderValue;
-        final ImageButton ibDeleteHeader;
-        final ImageButton ibEditHeader;
-        final View mView;
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        final HeaderRowLayoutBinding binding;
         Header header;
 
-        ViewHolder(View view) {
-            super(view);
-            mView = view;
-            tvHeaderName = view.findViewById(R.id.tv_header_name);
-            tvHeaderName.setSelected(true);
-            tvHeaderValue = view.findViewById(R.id.tv_header_value);
-            ibDeleteHeader = view.findViewById(R.id.ib_delete_header);
-            ibEditHeader = view.findViewById(R.id.ib_edit_header);
+        ViewHolder(HeaderRowLayoutBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
+            binding.tvHeaderName.setSelected(true);
         }
 
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
-                case R.id.ib_delete_header:
+                case R.id.delete_header_button:
                     headerOptionsClickedListener.onDeleteHeaderClicked(headers.indexOf(header));
                     break;
-                case R.id.ib_edit_header:
+                case R.id.edit_header_button:
                     headerOptionsClickedListener.onEditHeaderClicked(headers.indexOf(header));
                     break;
             }
@@ -103,6 +97,7 @@ public class HeadersRecyclerViewAdapter extends RecyclerView.Adapter<HeadersRecy
      */
     public interface HeaderOptionsClickedListener {
         void onDeleteHeaderClicked(int position);
+
         void onEditHeaderClicked(int position);
     }
 

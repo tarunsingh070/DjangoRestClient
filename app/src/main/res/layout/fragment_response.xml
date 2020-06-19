@@ -55,7 +55,7 @@
             android:scrollbars="vertical">
 
             <TextView
-                android:id="@+id/tv_body"
+                android:id="@+id/tv_response_body"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="5dp" />

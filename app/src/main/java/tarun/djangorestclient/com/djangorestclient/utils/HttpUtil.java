@@ -31,6 +31,7 @@ public class HttpUtil {
 
     /**
      * This method encodes the Authentication credentials provided as input in simple String format.
+     *
      * @return Returns the Base64 encoded credentials.
      */
     public static String getBase64EncodedAuthCreds(Context context, String userName, String password) {
@@ -45,13 +46,14 @@ public class HttpUtil {
         }
         String encodedCreds = Base64.encodeToString(data, Base64.NO_WRAP | Base64.URL_SAFE);
 
-        return context.getString(R.string.space_separated_strings,"Basic", encodedCreds);
+        return context.getString(R.string.space_separated_strings, "Basic", encodedCreds);
     }
 
     /**
      * Parse the list of headers added by user to be sent as part of rest request.
+     *
      * @param headers: List of headers added by user.
-     * @return: List of okhttp3 headers.
+     * @return List of okhttp3 headers.
      */
     public static Headers getParsedHeaders(List<Header> headers) {
         Headers.Builder headerBuilder = new Headers.Builder();
@@ -72,11 +74,12 @@ public class HttpUtil {
 
     /**
      * Checks the internet connectivity status of user's device.
+     *
      * @return True if connected, False otherwise.
      */
     public static boolean isNetworkAvailable(Context context) {
         ConnectivityManager cm =
-                (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         boolean isConnected = (activeNetwork != null &&

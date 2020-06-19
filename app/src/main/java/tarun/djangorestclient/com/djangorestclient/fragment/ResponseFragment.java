@@ -10,9 +10,6 @@ package tarun.djangorestclient.com.djangorestclient.fragment;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.os.Bundle;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import androidx.fragment.app.Fragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -20,9 +17,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+
+import androidx.fragment.app.Fragment;
 import tarun.djangorestclient.com.djangorestclient.R;
+import tarun.djangorestclient.com.djangorestclient.databinding.BottomSheetResponseInfoBinding;
+import tarun.djangorestclient.com.djangorestclient.databinding.FragmentResponseBinding;
 import tarun.djangorestclient.com.djangorestclient.model.RestResponse;
 import tarun.djangorestclient.com.djangorestclient.utils.MiscUtil;
 
@@ -37,9 +38,7 @@ public class ResponseFragment extends Fragment {
 
     private static final String TAG = ResponseFragment.class.getSimpleName();
 
-    private TextView tvResponseCode;
-    private TextView tvResponseTime;
-    private TextView tvResponseBody;
+    private FragmentResponseBinding binding;
 
     private RestResponse restResponse;
 
@@ -67,21 +66,10 @@ public class ResponseFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_response, container, false);
+        binding = FragmentResponseBinding.inflate(inflater, container, false);
+        binding.fabCopyResponseBody.setOnClickListener(view -> copyResponseBodyTextToClipboard());
 
-        // Initialize views.
-        tvResponseCode = rootView.findViewById(R.id.tv_response_code);
-        tvResponseTime = rootView.findViewById(R.id.tv_response_time);
-        tvResponseBody = rootView.findViewById(R.id.tv_body);
-        FloatingActionButton fabCopyResponseBody = rootView.findViewById(R.id.fab_copy_response_body);
-        fabCopyResponseBody.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                copyResponseBodyTextToClipboard();
-            }
-        });
-
-        return rootView;
+        return binding.getRoot();
     }
 
     @Override
@@ -110,25 +98,23 @@ public class ResponseFragment extends Fragment {
     public void updateUI(RestResponse restResponse) {
         this.restResponse = restResponse;
         getActivity().invalidateOptionsMenu();
-        tvResponseCode.setText(getString(R.string.response_code_label_with_value, restResponse.getResponseCode()));
-        tvResponseTime.setText(getString(R.string.response_time_ms_label_with_value, restResponse.getResponseTime()));
-        tvResponseBody.setText(restResponse.getResponseBody());
+        binding.tvResponseCode.setText(getString(R.string.response_code_label_with_value, restResponse.getResponseCode()));
+        binding.tvResponseTime.setText(getString(R.string.response_time_ms_label_with_value, restResponse.getResponseTime()));
+        binding.tvResponseBody.setText(restResponse.getResponseBody());
     }
 
     /**
      * Show the additional response information inside a bottom sheet dialog.
      */
     private void showAdditionalResponseInfo(String requestUrl, CharSequence responseHeaders) {
-        View view = getLayoutInflater().inflate(R.layout.bottom_sheet_response_info, null);
+        BottomSheetResponseInfoBinding responseInfoBinding =
+                BottomSheetResponseInfoBinding.inflate(getLayoutInflater());
 
-        TextView tvRequestUrl = view.findViewById(R.id.tv_request_url);
-        TextView tvResponseHeaders = view.findViewById(R.id.tv_headers);
-
-        tvRequestUrl.setText(requestUrl);
-        tvResponseHeaders.setText(responseHeaders);
+        responseInfoBinding.tvRequestUrl.setText(requestUrl);
+        responseInfoBinding.tvResponseHeaders.setText(responseHeaders);
 
         BottomSheetDialog dialog = new BottomSheetDialog(getContext());
-        dialog.setContentView(view);
+        dialog.setContentView(responseInfoBinding.getRoot());
         dialog.show();
     }
 

@@ -48,18 +48,16 @@ public class MiscUtil {
      */
     public static void hideSpinner(Activity activity) {
         final View progressBar = activity.findViewById(R.id.progress_layout);
-        activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (progressBar != null) {
-                    progressBar.setVisibility(View.GONE);
-                }
+        activity.runOnUiThread(() -> {
+            if (progressBar != null) {
+                progressBar.setVisibility(View.GONE);
             }
         });
     }
 
     /**
      * Check if a string value is actually a valid integer or not.
+     *
      * @param str String value to check.
      * @return True if it is an integer, false otherwise.
      */

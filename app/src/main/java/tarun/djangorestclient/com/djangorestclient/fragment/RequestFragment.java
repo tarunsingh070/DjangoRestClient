@@ -9,37 +9,34 @@ package tarun.djangorestclient.com.djangorestclient.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.fragment.app.Fragment;
-import androidx.appcompat.app.AlertDialog;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.URLUtil;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.io.IOException;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Headers;
@@ -47,6 +44,8 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 import tarun.djangorestclient.com.djangorestclient.R;
 import tarun.djangorestclient.com.djangorestclient.adapter.HeadersRecyclerViewAdapter;
+import tarun.djangorestclient.com.djangorestclient.databinding.DialogAddHeaderBinding;
+import tarun.djangorestclient.com.djangorestclient.databinding.FragmentRequestBinding;
 import tarun.djangorestclient.com.djangorestclient.model.AuthBasicHeader;
 import tarun.djangorestclient.com.djangorestclient.model.CustomHeader;
 import tarun.djangorestclient.com.djangorestclient.model.Header;
@@ -69,13 +68,9 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
 
     private static final int NEW_HEADER_POSITION = -1;
 
-    private EditText etInputUrl;
-    private EditText etRequestBody;
-    private LinearLayout layoutRequestBody;
-    private FloatingActionButton addHeaderFab;
-    private Spinner requestTypesSpinner;
-    private RecyclerView headersRecyclerView;
     private HeadersRecyclerViewAdapter headersRecyclerViewAdapter;
+
+    private FragmentRequestBinding binding;
 
     private Request request;
 
@@ -109,26 +104,20 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_request, container, false);
+        binding = FragmentRequestBinding.inflate(inflater, container, false);
 
-        etInputUrl = rootView.findViewById(R.id.et_input_url);
-        etInputUrl.setSelection(getString(R.string.url_default_text).length());
-        etRequestBody = rootView.findViewById(R.id.et_request_body);
-        layoutRequestBody = rootView.findViewById(R.id.layout_request_body);
-        headersRecyclerView = rootView.findViewById(R.id.rv_headers);
-        addHeaderFab = rootView.findViewById(R.id.fab_addHeader);
-        requestTypesSpinner = rootView.findViewById(R.id.spinner_request_types);
-
+        binding.etInputUrl.setSelection(getString(R.string.url_default_text).length());
         headersRecyclerViewAdapter = new HeadersRecyclerViewAdapter(this, request.getHeaders());
 
         bindViews();
 
-        return rootView;
+        return binding.getRoot();
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.request_fragment_menu, menu);super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.request_fragment_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
@@ -136,7 +125,7 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.action_send_request:
-                    sendRequest();
+                sendRequest();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -161,35 +150,27 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
      */
     private void bindViews() {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-        headersRecyclerView.setLayoutManager(linearLayoutManager);
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(headersRecyclerView.getContext(),
+        binding.headersRecyclerView.setLayoutManager(linearLayoutManager);
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(),
                 linearLayoutManager.getOrientation());
-        headersRecyclerView.addItemDecoration(dividerItemDecoration);
-        headersRecyclerView.setAdapter(headersRecyclerViewAdapter);
+        binding.headersRecyclerView.addItemDecoration(dividerItemDecoration);
+        binding.headersRecyclerView.setAdapter(headersRecyclerViewAdapter);
 
-        etRequestBody.setOnTouchListener(getTouchListenerForScrollableViews());
+        binding.etRequestBody.setOnTouchListener(getTouchListenerForScrollableViews());
 
-        addHeaderFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                displayAddHeaderDialog();
-            }
-        });
-        requestTypesSpinner.setOnItemSelectedListener(getRequestTypesSpinnerListener());
+        binding.addHeaderFab.setOnClickListener(v -> displayAddHeaderDialog());
+        binding.requestTypesSpinner.setOnItemSelectedListener(getRequestTypesSpinnerListener());
     }
 
     /**
      * Touch listener for the scrollable views to be able scroll independently inside the parent scroll view.
      */
     private View.OnTouchListener getTouchListenerForScrollableViews() {
-        return new View.OnTouchListener() {
-            // Setting on Touch Listener for handling the touch inside ScrollView
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                // Disallow the touch request for parent scroll on touch of child view.
-                v.getParent().requestDisallowInterceptTouchEvent(true);
-                return false;
-            }
+        // Setting on Touch Listener for handling the touch inside ScrollView
+        return (v, event) -> {
+            // Disallow the touch request for parent scroll on touch of child view.
+            v.getParent().requestDisallowInterceptTouchEvent(true);
+            return false;
         };
     }
 
@@ -197,10 +178,10 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
      * Make the appropriate type of rest request call based on the request type chosen by user.
      */
     private void sendRequest() {
-        // Verify that the input url is a non-empty valid http or https url and
+        // Verify that the input url is a non-empty valid url and
         // internet connectivity is available before proceeding.
-        String url = etInputUrl.getText().toString();
-        if (!(URLUtil.isHttpUrl(url) && url.length() > 7) && !(URLUtil.isHttpsUrl(url) && url.length() > 8)) {
+        String url = binding.etInputUrl.getText().toString();
+        if (!Patterns.WEB_URL.matcher(url).matches()) {
             MiscUtil.displayLongToast(getContext(), R.string.invalid_url_msg);
             return;
         } else if (!HttpUtil.isNetworkAvailable(getContext())) {
@@ -238,14 +219,14 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
     }
 
     private Request prepareRequestObject() {
-        request.setUrl(etInputUrl.getText().toString());
+        request.setUrl(binding.etInputUrl.getText().toString());
 
-        String requestTypeString = (String) requestTypesSpinner.getSelectedItem();
+        String requestTypeString = (String) binding.requestTypesSpinner.getSelectedItem();
         RequestType requestType = getRequestType(requestTypeString);
         request.setRequestType(requestType);
 
         if (requestType != RequestType.GET && requestType != RequestType.HEAD) {
-            request.setBody(etRequestBody.getText().toString());
+            request.setBody(binding.etRequestBody.getText().toString());
         }
 
         return request;
@@ -285,12 +266,7 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
                     final RestResponse restResponse = new RestResponse(response.code(), requestTime, url
                             , responseHeaders, responseBody.string());
 
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mListener.onResponseReceived(restResponse);
-                        }
-                    });
+                    getActivity().runOnUiThread(() -> mListener.onResponseReceived(restResponse));
                 }
 
                 MiscUtil.hideSpinner(getActivity());
@@ -299,7 +275,7 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
             /**
              * Convert the list of response headers received into CharSequence format to be displayed to user.
              * @param headers: List of headers received in response.
-             * @return: List of headers received in CharSequence format.
+             * @return List of headers received in CharSequence format.
              */
             private CharSequence headersToCharSequence(Headers headers) {
                 if (headers == null) return null;
@@ -323,18 +299,13 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
      * @param exception The exception that caused the rest call to fail.
      */
     private void handleError(final IOException exception) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                MiscUtil.displayLongToast(getContext(), exception.getMessage());
-            }
-        });
+        getActivity().runOnUiThread(() -> MiscUtil.displayLongToast(getContext(), exception.getMessage()));
     }
 
     /**
      * Get the corresponding RequestTypeEnum instance based on the String parameter received.
      *
-     * @return: RequestType enum instance.
+     * @return RequestType enum instance.
      */
     private Request.RequestType getRequestType(String requestTypeString) {
         for (RequestType type : RequestType.values()) {
@@ -358,9 +329,9 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
                 String selectedRequestTypeString = (String) parent.getItemAtPosition(position);
                 if (TextUtils.equals(selectedRequestTypeString, RequestType.GET.toString())
                         || TextUtils.equals(selectedRequestTypeString, RequestType.HEAD.toString())) {
-                    layoutRequestBody.setVisibility(View.GONE);
+                    binding.layoutRequestBody.setVisibility(View.GONE);
                 } else {
-                    layoutRequestBody.setVisibility(View.VISIBLE);
+                    binding.layoutRequestBody.setVisibility(View.VISIBLE);
                 }
             }
 
@@ -395,43 +366,29 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
             header = request.getHeaders().get(position);
         }
 
-        // Inflate dialog_add_header.xml
-        LayoutInflater li = LayoutInflater.from(getContext());
-        View addHeaderDialogView = li.inflate(R.layout.dialog_add_header, null);
+        DialogAddHeaderBinding addHeaderBinding = DialogAddHeaderBinding.inflate(getLayoutInflater());
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
                 getContext());
-
-        // set our custom inflated view to alert dialog builder.
-        alertDialogBuilder.setView(addHeaderDialogView);
+        alertDialogBuilder.setView(addHeaderBinding.getRoot());
 
         // create alert dialog
         final AlertDialog alertDialog = alertDialogBuilder.create();
 
-        // Initialize views.
-        Spinner headerTypesSpinner = addHeaderDialogView.findViewById(R.id.spinner_header_types);
-        EditText etUserInput1 = addHeaderDialogView.findViewById(R.id.et_header_value_1);
-        EditText etUserInput2 = addHeaderDialogView.findViewById(R.id.et_header_value_2);
-        TextView tvHeaderLabel1 = addHeaderDialogView.findViewById(R.id.tv_header_label_1);
-        TextView tvHeaderLabel2 = addHeaderDialogView.findViewById(R.id.tv_header_label_2);
-        LinearLayout layoutHeaderFields2 = addHeaderDialogView.findViewById(R.id.layout_header_fields_2);
-        Button okButton = addHeaderDialogView.findViewById(R.id.button_ok);
-        Button cancelButton = addHeaderDialogView.findViewById(R.id.button_cancel);
-
         // Bind views.
         ArrayAdapter<CharSequence> headerTypesSpinnerAdapter = ArrayAdapter.createFromResource(getContext(), R.array.headerTypes, android.R.layout.simple_spinner_item);
         headerTypesSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        headerTypesSpinner.setAdapter(headerTypesSpinnerAdapter);
-        headerTypesSpinner.setOnItemSelectedListener(getHeaderTypesSpinnerListener(layoutHeaderFields2, tvHeaderLabel1, tvHeaderLabel2));
+        addHeaderBinding.spinnerHeaderTypes.setAdapter(headerTypesSpinnerAdapter);
+        addHeaderBinding.spinnerHeaderTypes
+                .setOnItemSelectedListener(getHeaderTypesSpinnerListener(addHeaderBinding.layoutHeaderFields2,
+                        addHeaderBinding.tvHeaderLabel1, addHeaderBinding.tvHeaderLabel2));
 
-        okButton.setOnClickListener(getOkButtonClickListener(headerTypesSpinner, etUserInput1, etUserInput2, alertDialog, position));
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MiscUtil.hideKeyboard(getContext(), getActivity());
-                if (alertDialog != null && alertDialog.isShowing()) {
-                    alertDialog.dismiss();
-                }
+        addHeaderBinding.okButton.setOnClickListener(getOkButtonClickListener(addHeaderBinding.spinnerHeaderTypes,
+                addHeaderBinding.etHeaderValue1, addHeaderBinding.etHeaderValue2, alertDialog, position));
+        addHeaderBinding.cancelButton.setOnClickListener(v -> {
+            MiscUtil.hideKeyboard(getContext(), getActivity());
+            if (alertDialog != null && alertDialog.isShowing()) {
+                alertDialog.dismiss();
             }
         });
 
@@ -439,17 +396,17 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
         if (isExistingHeader && header != null) {
             if (header.getHeaderType() == HeaderType.AUTHORIZATION_BASIC) {
                 AuthBasicHeader authBasicHeader = (AuthBasicHeader) header;
-                headerTypesSpinner.setSelection(headerTypesSpinnerAdapter.getPosition(HeaderType.AUTHORIZATION_BASIC.toString()));
-                etUserInput1.setText(authBasicHeader.getUserName());
-                etUserInput2.setText(authBasicHeader.getPassword());
+                addHeaderBinding.spinnerHeaderTypes.setSelection(headerTypesSpinnerAdapter.getPosition(HeaderType.AUTHORIZATION_BASIC.toString()));
+                addHeaderBinding.etHeaderValue1.setText(authBasicHeader.getUserName());
+                addHeaderBinding.etHeaderValue2.setText(authBasicHeader.getPassword());
             } else if (header.getHeaderType() == HeaderType.CUSTOM) {
                 CustomHeader customHeader = (CustomHeader) header;
-                headerTypesSpinner.setSelection(headerTypesSpinnerAdapter.getPosition(HeaderType.CUSTOM.toString()));
-                etUserInput1.setText(customHeader.getCustomHeaderType());
-                etUserInput2.setText(customHeader.getHeaderValue());
+                addHeaderBinding.spinnerHeaderTypes.setSelection(headerTypesSpinnerAdapter.getPosition(HeaderType.CUSTOM.toString()));
+                addHeaderBinding.etHeaderValue1.setText(customHeader.getCustomHeaderType());
+                addHeaderBinding.etHeaderValue2.setText(customHeader.getHeaderValue());
             } else {
-                headerTypesSpinner.setSelection(headerTypesSpinnerAdapter.getPosition(header.getHeaderType().toString()));
-                etUserInput1.setText(header.getHeaderValue());
+                addHeaderBinding.spinnerHeaderTypes.setSelection(headerTypesSpinnerAdapter.getPosition(header.getHeaderType().toString()));
+                addHeaderBinding.etHeaderValue1.setText(header.getHeaderValue());
             }
         }
 
@@ -507,7 +464,7 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
 
             /**
              * Get the corresponding HeaderTypeEnum instance based on the String parameter received.
-             * @return: HeaderType enum instance.
+             * @return HeaderType enum instance.
              */
             private HeaderType getHeaderType(String headerTypeString) {
                 for (HeaderType type : HeaderType.values()) {
@@ -600,7 +557,7 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
     /**
      * Create a new header object based on user provided info.
      *
-     * @return: The newly created Header object.
+     * @return The newly created Header object.
      */
     private Header getNewHeader(HeaderType headerType, String userInput1) {
         return new Header(headerType, userInput1);
@@ -609,7 +566,7 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
     /**
      * Create a new header object based on user provided info.
      *
-     * @return: The newly created Header object.
+     * @return The newly created Header object.
      */
     private Header getNewHeader(HeaderType headerType, String userInput1, String userInput2) {
         if (headerType == HeaderType.AUTHORIZATION_BASIC) {
@@ -626,19 +583,14 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
         final Header lastDeletedHeaderObject = request.getHeaders().get(position);
 
         request.getHeaders().remove(position);
-        headersRecyclerView.removeViewAt(position);
+        binding.headersRecyclerView.removeViewAt(position);
         headersRecyclerViewAdapter.notifyItemRemoved(position);
         headersRecyclerViewAdapter.notifyItemRangeChanged(position, request.getHeaders().size());
 
         // Show a confirmation of header deletion and an option for user to undo header deletion.
         Snackbar snackbar = Snackbar
                 .make(getView(), R.string.header_deleted, Snackbar.LENGTH_LONG)
-                .setAction(R.string.undo, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        restoreLastDeletedHeader(lastDeletedHeaderObject, position);
-                    }
-                });
+                .setAction(R.string.undo, view -> restoreLastDeletedHeader(lastDeletedHeaderObject, position));
 
         snackbar.show();
     }
