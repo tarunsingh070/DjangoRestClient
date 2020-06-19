@@ -125,6 +125,7 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.action_send_request:
+                MiscUtil.hideKeyboard(getContext(), requireActivity());
                 sendRequest();
                 return true;
             default:
