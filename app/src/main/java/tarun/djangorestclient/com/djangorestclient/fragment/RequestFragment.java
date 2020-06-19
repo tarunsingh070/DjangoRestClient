@@ -112,6 +112,7 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
         View rootView = inflater.inflate(R.layout.fragment_request, container, false);
 
         etInputUrl = rootView.findViewById(R.id.et_input_url);
+        etInputUrl.setSelection(getString(R.string.url_default_text).length());
         etRequestBody = rootView.findViewById(R.id.et_request_body);
         layoutRequestBody = rootView.findViewById(R.id.layout_request_body);
         headersRecyclerView = rootView.findViewById(R.id.rv_headers);
