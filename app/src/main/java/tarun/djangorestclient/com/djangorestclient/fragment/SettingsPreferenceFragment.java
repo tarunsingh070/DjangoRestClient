@@ -9,8 +9,10 @@ package tarun.djangorestclient.com.djangorestclient.fragment;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+
 import android.text.TextUtils;
 import android.view.Menu;
 
@@ -72,6 +74,7 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat impleme
 
     /**
      * Set summary for a timeout preference type to be the user set timeout value.
+     *
      * @param preferenceKey Preference Key corresponding to the timeout preference.
      */
     private void setTimeoutPrefSummary(String preferenceKey) {
