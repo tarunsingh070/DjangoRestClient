@@ -4,13 +4,17 @@
     <EditTextPreference
         android:key="@string/key_timeout_connect_preference"
         android:title="Timeout Connection"
+        app:allowDividerBelow="true"
         app:iconSpaceReserved="false"/>
     <EditTextPreference
         android:key="@string/key_timeout_read_preference"
         android:title="Timeout Read"
+        app:allowDividerAbove="true"
+        app:allowDividerBelow="true"
         app:iconSpaceReserved="false"/>
     <EditTextPreference
         android:key="@string/key_timeout_write_preference"
         android:title="Timeout Write"
+        app:allowDividerAbove="true"
         app:iconSpaceReserved="false"/>
 </PreferenceScreen>
