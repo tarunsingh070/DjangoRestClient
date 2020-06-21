@@ -32,6 +32,7 @@ import android.widget.TextView;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.IOException;
+import java.util.Date;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
@@ -46,13 +47,12 @@ import tarun.djangorestclient.com.djangorestclient.R;
 import tarun.djangorestclient.com.djangorestclient.adapter.HeadersRecyclerViewAdapter;
 import tarun.djangorestclient.com.djangorestclient.databinding.DialogAddHeaderBinding;
 import tarun.djangorestclient.com.djangorestclient.databinding.FragmentRequestBinding;
-import tarun.djangorestclient.com.djangorestclient.model.AuthBasicHeader;
-import tarun.djangorestclient.com.djangorestclient.model.CustomHeader;
-import tarun.djangorestclient.com.djangorestclient.model.Header;
-import tarun.djangorestclient.com.djangorestclient.model.Header.HeaderType;
-import tarun.djangorestclient.com.djangorestclient.model.Request;
-import tarun.djangorestclient.com.djangorestclient.model.Request.RequestType;
+import tarun.djangorestclient.com.djangorestclient.model.RequestRepository;
 import tarun.djangorestclient.com.djangorestclient.model.RestResponse;
+import tarun.djangorestclient.com.djangorestclient.model.entity.Header;
+import tarun.djangorestclient.com.djangorestclient.model.entity.Header.HeaderType;
+import tarun.djangorestclient.com.djangorestclient.model.entity.Request;
+import tarun.djangorestclient.com.djangorestclient.model.entity.Request.RequestType;
 import tarun.djangorestclient.com.djangorestclient.utils.HttpUtil;
 import tarun.djangorestclient.com.djangorestclient.utils.MiscUtil;
 import tarun.djangorestclient.com.djangorestclient.utils.RestClient;
@@ -76,6 +76,7 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
 
     private OnResponseReceivedListener mListener;
     private RestClient restClient;
+    private RequestRepository requestRepository;
 
     public RequestFragment() {
         // Required empty public constructor
@@ -111,6 +112,9 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
 
         bindViews();
 
+        // Todo: Create a ViewModel for RequestFragment and move this there.
+        requestRepository = new RequestRepository(requireActivity().getApplication());
+
         return binding.getRoot();
     }
 
@@ -127,6 +131,9 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
             case R.id.action_send_request:
                 MiscUtil.hideKeyboard(getContext(), requireActivity());
                 sendRequest();
+                return true;
+            case R.id.action_save_request:
+                saveRequest();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -217,6 +224,10 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
                 restClient.patch(request.getUrl(), request.getHeaders(), request.getBody(), getRequestCallback());
                 break;
         }
+
+        request.setInHistory(true);
+        request.setSaved(false);
+        requestRepository.insert(request);
     }
 
     private Request prepareRequestObject() {
@@ -230,6 +241,7 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
             request.setBody(binding.etRequestBody.getText().toString());
         }
 
+        request.setCreationTime(new Date());
         return request;
     }
 
@@ -343,6 +355,21 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
         };
     }
 
+    private void saveRequest() {
+        String url = binding.etInputUrl.getText().toString();
+        if (!Patterns.WEB_URL.matcher(url).matches()) {
+            MiscUtil.displayLongToast(getContext(), R.string.invalid_url_msg);
+            return;
+        }
+
+        Request request = prepareRequestObject();
+        request.setInHistory(false);
+        request.setSaved(true);
+
+        requestRepository.insert(request);
+        MiscUtil.displayShortToast(getContext(), R.string.request_saved);
+    }
+
     /**
      * Display the add header dialog to allow the user to add a new header.
      */
@@ -395,18 +422,20 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
 
         // If the header dialog was opened to edit an existing header, pre-fill the header fields with existing info.
         if (isExistingHeader && header != null) {
-            if (header.getHeaderType() == HeaderType.AUTHORIZATION_BASIC) {
-                AuthBasicHeader authBasicHeader = (AuthBasicHeader) header;
+            if (header.getHeaderTypeEnum() == HeaderType.AUTHORIZATION_BASIC) {
                 addHeaderBinding.spinnerHeaderTypes.setSelection(headerTypesSpinnerAdapter.getPosition(HeaderType.AUTHORIZATION_BASIC.toString()));
-                addHeaderBinding.etHeaderValue1.setText(authBasicHeader.getUserName());
-                addHeaderBinding.etHeaderValue2.setText(authBasicHeader.getPassword());
-            } else if (header.getHeaderType() == HeaderType.CUSTOM) {
-                CustomHeader customHeader = (CustomHeader) header;
+
+                String decodedCreds = HttpUtil.getBase64DecodedAuthCreds(header.getHeaderValue());
+                String[] creds = decodedCreds.split(":");
+
+                addHeaderBinding.etHeaderValue1.setText(creds[0]);
+                addHeaderBinding.etHeaderValue2.setText(creds[1]);
+            } else if (header.getHeaderTypeEnum() == HeaderType.CUSTOM) {
                 addHeaderBinding.spinnerHeaderTypes.setSelection(headerTypesSpinnerAdapter.getPosition(HeaderType.CUSTOM.toString()));
-                addHeaderBinding.etHeaderValue1.setText(customHeader.getCustomHeaderType());
-                addHeaderBinding.etHeaderValue2.setText(customHeader.getHeaderValue());
+                addHeaderBinding.etHeaderValue1.setText(header.getHeaderType());
+                addHeaderBinding.etHeaderValue2.setText(header.getHeaderValue());
             } else {
-                addHeaderBinding.spinnerHeaderTypes.setSelection(headerTypesSpinnerAdapter.getPosition(header.getHeaderType().toString()));
+                addHeaderBinding.spinnerHeaderTypes.setSelection(headerTypesSpinnerAdapter.getPosition(header.getHeaderType()));
                 addHeaderBinding.etHeaderValue1.setText(header.getHeaderValue());
             }
         }
@@ -474,9 +503,7 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
                     }
                 }
 
-                // We shouldn't reach here.
-                Log.e(TAG, " : Unidentified Header type : " + headerTypeString);
-                return null;
+                return HeaderType.CUSTOM;
             }
         };
     }
@@ -561,7 +588,7 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
      * @return The newly created Header object.
      */
     private Header getNewHeader(HeaderType headerType, String userInput1) {
-        return new Header(headerType, userInput1);
+        return new Header(headerType.toString(), userInput1);
     }
 
     /**
@@ -572,9 +599,9 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
     private Header getNewHeader(HeaderType headerType, String userInput1, String userInput2) {
         if (headerType == HeaderType.AUTHORIZATION_BASIC) {
             String headerValue = HttpUtil.getBase64EncodedAuthCreds(getContext(), userInput1, userInput2);
-            return new AuthBasicHeader(headerValue, userInput1, userInput2);
+            return new Header(HeaderType.AUTHORIZATION_BASIC.toString(), headerValue);
         } else {
-            return new CustomHeader(userInput1, userInput2);
+            return new Header(userInput1, userInput2);
         }
     }
 

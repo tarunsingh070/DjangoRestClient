@@ -10,16 +10,14 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Base64;
-import android.util.Log;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import okhttp3.Headers;
 import tarun.djangorestclient.com.djangorestclient.R;
-import tarun.djangorestclient.com.djangorestclient.model.CustomHeader;
-import tarun.djangorestclient.com.djangorestclient.model.Header;
-import tarun.djangorestclient.com.djangorestclient.model.Header.HeaderType;
+import tarun.djangorestclient.com.djangorestclient.model.entity.Header;
+import tarun.djangorestclient.com.djangorestclient.model.entity.Header.HeaderType;
 
 /**
  * Utility class with common http related utility methods.
@@ -38,15 +36,27 @@ public class HttpUtil {
         String credsToEncode = context.getString(R.string.username_pwd_append, userName, password);
 
         // Sending side
-        byte[] data = new byte[0];
-        try {
-            data = credsToEncode.getBytes("UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            Log.e(TAG, "Error encoding data.", e);
-        }
+        byte[] data;
+        data = credsToEncode.getBytes(StandardCharsets.UTF_8);
         String encodedCreds = Base64.encodeToString(data, Base64.NO_WRAP | Base64.URL_SAFE);
 
         return context.getString(R.string.space_separated_strings, "Basic", encodedCreds);
+    }
+
+    /**
+     * This method decodes the Authentication credentials provided as input in simple String format.
+     *
+     * @return Returns the Base64 decoded credentials in the format "username:password" .
+     */
+    public static String getBase64DecodedAuthCreds(String encodedCredentials) {
+        // Consider string after "Basic " of the header value.
+        String credsToDecode = encodedCredentials.substring("Basic ".length());
+
+        // Receiving side
+        byte[] data = Base64.decode(credsToDecode, Base64.NO_WRAP | Base64.URL_SAFE);
+        String decodedCreds = new String(data, StandardCharsets.UTF_8);
+
+        return decodedCreds;
     }
 
     /**
@@ -59,12 +69,10 @@ public class HttpUtil {
         Headers.Builder headerBuilder = new Headers.Builder();
         for (Header header : headers) {
             String headerName;
-            if (header.getHeaderType() == HeaderType.AUTHORIZATION_BASIC) {
+            if (header.getHeaderTypeEnum() == HeaderType.AUTHORIZATION_BASIC) {
                 headerName = "Authorization";
-            } else if (header.getHeaderType() == HeaderType.CUSTOM) {
-                headerName = ((CustomHeader) header).getCustomHeaderType();
             } else {
-                headerName = header.getHeaderType().toString();
+                headerName = header.getHeaderType();
             }
 
             headerBuilder.add(headerName, header.getHeaderValue());

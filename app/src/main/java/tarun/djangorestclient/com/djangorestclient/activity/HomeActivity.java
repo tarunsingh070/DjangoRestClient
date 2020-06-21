@@ -22,7 +22,9 @@ import tarun.djangorestclient.com.djangorestclient.fragment.AboutFragment;
 import tarun.djangorestclient.com.djangorestclient.fragment.RequestFragment;
 import tarun.djangorestclient.com.djangorestclient.fragment.RestCallsFragment;
 import tarun.djangorestclient.com.djangorestclient.fragment.SettingsPreferenceFragment;
+import tarun.djangorestclient.com.djangorestclient.fragment.requestsList.RequestsListFragment;
 import tarun.djangorestclient.com.djangorestclient.model.RestResponse;
+import tarun.djangorestclient.com.djangorestclient.utils.MiscUtil;
 
 /**
  * This is the home activity which would allow user to navigate to other screens through its navigation drawer.
@@ -76,6 +78,8 @@ public class HomeActivity extends AppCompatActivity implements RequestFragment.O
                     menuItem.setChecked(true);
                     HomeActivity.this.setTitle(menuItem.getTitle());
 
+                    MiscUtil.hideKeyboard(this, this);
+
                     // Swap the fragments to update the UI based on the item selected.
 
                     Fragment fragment;
@@ -89,6 +93,12 @@ public class HomeActivity extends AppCompatActivity implements RequestFragment.O
                             break;
                         case R.id.nav_about:
                             fragment = new AboutFragment();
+                            break;
+                        case R.id.nav_history:
+                            fragment = RequestsListFragment.newInstance(RequestsListFragment.LIST_REQUESTS_HISTORY);
+                            break;
+                        case R.id.nav_saved:
+                            fragment = RequestsListFragment.newInstance(RequestsListFragment.LIST_SAVED_REQUESTS);
                             break;
                         default:
                             throw new IllegalArgumentException(TAG);

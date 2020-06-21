@@ -17,8 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import tarun.djangorestclient.com.djangorestclient.R;
 import tarun.djangorestclient.com.djangorestclient.databinding.HeaderRowLayoutBinding;
 import tarun.djangorestclient.com.djangorestclient.fragment.RequestFragment;
-import tarun.djangorestclient.com.djangorestclient.model.CustomHeader;
-import tarun.djangorestclient.com.djangorestclient.model.Header;
+import tarun.djangorestclient.com.djangorestclient.model.entity.Header;
 
 /**
  * The adapter to show the list of all headers.
@@ -57,11 +56,7 @@ public class HeadersRecyclerViewAdapter extends RecyclerView.Adapter<HeadersRecy
      * @param header : Header for whom the name is to be returned.
      */
     private String getHeaderName(Header header) {
-        if (header.getHeaderType() == Header.HeaderType.CUSTOM) {
-            return ((CustomHeader) header).getCustomHeaderType();
-        } else {
-            return header.getHeaderType().toString();
-        }
+        return header.getHeaderType();
     }
 
     @Override

@@ -6,11 +6,14 @@
 
     <!--Menu titles-->
     <string name="action_send_request">Send Request</string>
+    <string name="action_save_request">Save Request</string>
     <string name="action_show_extra_info">Extra info</string>
 
     <!--Navigation drawer menu items titles-->
     <string name="about">About</string>
+    <string name="history">History</string>
     <string name="rest_requests">Rest Requests</string>
+    <string name="saved_requests">Saved Requests</string>
     <string name="settings">Settings</string>
 
     <!--Request Screen Strings-->
@@ -20,6 +23,7 @@
     <string name="hint_input_url">http://djangorestclient.com</string>
     <string name="hint_request_body">Raw request body text goes here</string>
     <string name="body">Body</string>
+    <string name="request_saved">Request saved.</string>
     <string name="request_type">Type</string>
     <string name="sending">Sending…</string>
     <string name="url">Url</string>
@@ -59,6 +63,11 @@
     <string name="key_timeout_read_preference">timeout_read_preference</string>
     <string name="key_timeout_write_preference">timeout_write_preference</string>
     <string name="summary_timeout_preferences">After %s seconds</string>
+
+    <!--Requests List Screen-->
+    <string name="no_requests_history">No requests in history yet!</string>
+    <string name="no_requests_saved">No saved requests yet!</string>
+    <string name="header_count">Header count = %d</string>
 
     <!-- Miscellaneous strings -->
     <string name="input_fields_empty_msg">Input fields cannot be empty.</string>

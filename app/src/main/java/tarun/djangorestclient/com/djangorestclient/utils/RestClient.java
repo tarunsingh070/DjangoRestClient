@@ -21,7 +21,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.internal.Util;
 import tarun.djangorestclient.com.djangorestclient.R;
-import tarun.djangorestclient.com.djangorestclient.model.Header;
+import tarun.djangorestclient.com.djangorestclient.model.entity.Header;
 
 /**
  * This network utility class contains methods to make all supported types of rest requests.
