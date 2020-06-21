@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import tarun.djangorestclient.com.djangorestclient.R;
 import tarun.djangorestclient.com.djangorestclient.databinding.FragmentRequestsListBinding;
@@ -74,6 +75,8 @@ public class RequestsListFragment extends Fragment {
         final RequestListAdapter adapter = new RequestListAdapter(requireContext());
         binding.requestsListRecyclerView.setAdapter(adapter);
         binding.requestsListRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        binding.requestsListRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(),
+                DividerItemDecoration.VERTICAL));
 
         requestsListViewModel = new ViewModelProvider(this,
                 new DjangoViewModelFactory(requireActivity().getApplication(), requestsListToShow))
