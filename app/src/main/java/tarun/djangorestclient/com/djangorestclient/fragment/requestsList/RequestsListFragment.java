@@ -202,10 +202,8 @@ public class RequestsListFragment extends Fragment implements
                 .setTitle(R.string.delete_requests_dialog_title)
                 .setMessage(requestsListToShow == LIST_REQUESTS_HISTORY ?
                         R.string.delete_requests_history : R.string.delete_saved_requests)
-                .setPositiveButton(android.R.string.yes, (dialog, which) -> requestsListViewModel.deleteAllRequests())
-                // A null listener allows the button to dismiss the dialog and take no further action.
-                .setNegativeButton(android.R.string.no, null)
-                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setPositiveButton(R.string.accept, (dialog, which) -> requestsListViewModel.deleteAllRequests())
+                .setNegativeButton(android.R.string.cancel, null)
                 .show();
     }
 

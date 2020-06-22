@@ -6,7 +6,6 @@
 
 package tarun.djangorestclient.com.djangorestclient.activity;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
 
@@ -179,17 +178,11 @@ public class HomeActivity extends AppCompatActivity implements
      * Display a confirmation dialog to the user when user presses back button to exit the app.
      */
     private void displayConfirmationDialog() {
-        AlertDialog.Builder builder;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert);
-        } else {
-            builder = new AlertDialog.Builder(this);
-        }
-        builder.setTitle(R.string.confirmation_dialog_title)
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.confirmation_dialog_title)
                 .setMessage(R.string.confirmation_dialog_message)
                 .setPositiveButton(android.R.string.yes, (dialog, which) -> HomeActivity.super.onBackPressed())
-                .setNegativeButton(android.R.string.no, (dialog, which) -> dialog.dismiss())
-                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setNegativeButton(android.R.string.no, null)
                 .show();
     }
 
