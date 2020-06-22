@@ -46,4 +46,16 @@ public class RequestRepository {
             requestDao.insertRequestWithHeaders(request);
         });
     }
+
+    public void deleteAllRequestsFromHistory() {
+        RequestRoomDatabase.databaseWriteExecutor.execute(() -> {
+            requestDao.deleteAllRequestsAndHeadersFromHistory();
+        });
+    }
+
+    public void deleteAllSavedRequests() {
+        RequestRoomDatabase.databaseWriteExecutor.execute(() -> {
+            requestDao.deleteAllSavedRequestsAndHeaders();
+        });
+    }
 }

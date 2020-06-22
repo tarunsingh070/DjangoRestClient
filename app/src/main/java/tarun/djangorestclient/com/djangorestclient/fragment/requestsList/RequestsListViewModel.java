@@ -13,10 +13,12 @@ public class RequestsListViewModel extends AndroidViewModel {
 
     private RequestRepository requestRepository;
     private LiveData<List<RequestWithHeaders>> requests;
+    private int requestsListToShow;
 
     public RequestsListViewModel(Application application, int requestsListToShow) {
         super(application);
         requestRepository = new RequestRepository(application);
+        this.requestsListToShow = requestsListToShow;
         if (requestsListToShow == RequestsListFragment.LIST_REQUESTS_HISTORY) {
             requests = requestRepository.getRequestsHistoryList();
         } else {
@@ -26,6 +28,15 @@ public class RequestsListViewModel extends AndroidViewModel {
 
     LiveData<List<RequestWithHeaders>> getAllrequests() {
         return requests;
+    }
+
+    void deleteAllRequests() {
+        if (requestsListToShow == RequestsListFragment.LIST_REQUESTS_HISTORY) {
+            requestRepository.deleteAllRequestsFromHistory();
+        } else {
+            requestRepository.deleteAllSavedRequests();
+        }
+
     }
 
     //Todo: Add more methods for deletion as well.

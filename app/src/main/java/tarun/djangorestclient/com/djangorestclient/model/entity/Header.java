@@ -11,13 +11,22 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.ForeignKey;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
+
+import static androidx.room.ForeignKey.CASCADE;
 
 /**
  * Model class to store header data.
  */
 
-@Entity(tableName = "header")
+@Entity(tableName = "header", foreignKeys = {
+        @ForeignKey(onDelete = CASCADE, entity = Request.class,
+                parentColumns = "requestId", childColumns = "parentRequestId")},
+        indices = {
+                @Index("parentRequestId"),
+        })
 public class Header {
 
     // Enum to define all supported Header types.

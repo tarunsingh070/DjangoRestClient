@@ -2,6 +2,9 @@ package tarun.djangorestclient.com.djangorestclient.fragment.requestsList;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -9,6 +12,7 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -56,6 +60,7 @@ public class RequestsListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         if (getArguments() != null) {
             requestsListToShow = getArguments().getInt(KEY_REQUESTS_LIST_TYPE);
         }
@@ -73,10 +78,7 @@ public class RequestsListFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         final RequestListAdapter adapter = new RequestListAdapter(requireContext());
-        binding.requestsListRecyclerView.setAdapter(adapter);
-        binding.requestsListRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        binding.requestsListRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(),
-                DividerItemDecoration.VERTICAL));
+        setupRecyclerView(adapter);
 
         requestsListViewModel = new ViewModelProvider(this,
                 new DjangoViewModelFactory(requireActivity().getApplication(), requestsListToShow))
@@ -92,5 +94,61 @@ public class RequestsListFragment extends Fragment {
                 binding.tvEmptyLabel.setVisibility(requests.isEmpty() ? View.VISIBLE : View.GONE);
             }
         });
+    }
+
+    private void setupRecyclerView(RequestListAdapter adapter) {
+        binding.requestsListRecyclerView.setAdapter(adapter);
+        binding.requestsListRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        binding.requestsListRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(),
+                DividerItemDecoration.VERTICAL));
+
+        // Todo: Modify following to make swipe to delete functionality work.
+//        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+//
+//            @Override
+//            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+//                return false;
+//            }
+//
+//            @Override
+//            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+//                Toast.makeText(requireContext(), "on Swiped ", Toast.LENGTH_SHORT).show();
+//                //Remove swiped item from list and notify the RecyclerView
+//                int position = viewHolder.getAdapterPosition();
+//                adapter.removeRequest(position);
+//            }
+//        };
+//
+//        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
+//        itemTouchHelper.attachToRecyclerView(binding.requestsListRecyclerView);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.requests_list_fragment_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_delete_all_requests:
+                showDeleteConfirmationDialog();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    void showDeleteConfirmationDialog() {
+        new AlertDialog.Builder(requireContext())
+                .setTitle(R.string.delete_requests_dialog_title)
+                .setMessage(requestsListToShow == LIST_REQUESTS_HISTORY ?
+                        R.string.delete_requests_history : R.string.delete_saved_requests)
+                .setPositiveButton(android.R.string.yes, (dialog, which) -> requestsListViewModel.deleteAllRequests())
+                // A null listener allows the button to dismiss the dialog and take no further action.
+                .setNegativeButton(android.R.string.no, null)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
     }
 }

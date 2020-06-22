@@ -8,6 +8,7 @@
     <string name="action_send_request">Send Request</string>
     <string name="action_save_request">Save Request</string>
     <string name="action_show_extra_info">Extra info</string>
+    <string name="action_delete_all_requests">Delete all requests</string>
 
     <!--Navigation drawer menu items titles-->
     <string name="about">About</string>
@@ -68,6 +69,9 @@
     <string name="no_requests_history">No requests in history yet!</string>
     <string name="no_requests_saved">No saved requests yet!</string>
     <string name="header_count">Header count = %d</string>
+    <string name="delete_requests_dialog_title">Delete requests!</string>
+    <string name="delete_requests_history">Are you sure you want to clear all requests from history?</string>
+    <string name="delete_saved_requests">Are you sure you want to clear all saved requests?</string>
 
     <!-- Miscellaneous strings -->
     <string name="input_fields_empty_msg">Input fields cannot be empty.</string>

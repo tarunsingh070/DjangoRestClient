@@ -58,6 +58,11 @@ public class RequestListAdapter extends RecyclerView.Adapter<RequestListAdapter.
         notifyDataSetChanged();
     }
 
+    void removeRequest(int position) {
+        requests.remove(position);
+        notifyDataSetChanged();
+    }
+
     @Override
     public int getItemCount() {
         return requests != null ? requests.size() : 0;

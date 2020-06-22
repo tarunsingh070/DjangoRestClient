@@ -34,22 +34,26 @@ public abstract class RequestDao {
     }
 
     @Transaction
-    void deleteAllRequestsAndHeaders() {
-        deleteAllRequests();
-        deleteAllHeaders();
+    void deleteAllRequestsAndHeadersFromHistory() {
+        deleteAllRequestsFromHistory();
     }
 
-    @Query("DELETE FROM request")
-    abstract void deleteAllRequests();
+    @Transaction
+    void deleteAllSavedRequestsAndHeaders() {
+        deleteAllSavedRequests();
+    }
 
-    @Query("DELETE FROM header")
-    abstract void deleteAllHeaders();
+    @Query("DELETE FROM request WHERE is_in_history")
+    abstract void deleteAllRequestsFromHistory();
+
+    @Query("DELETE FROM request WHERE is_saved")
+    abstract void deleteAllSavedRequests();
 
     // You can use just @Delete annotation as well if you pass in the exact object you want deleted
     // i.e. you'' have to create a Request object with the same ID (primary key) and pass it here.
     //    @Delete
     @Query("DELETE FROM request WHERE requestId = :requestId")
-    abstract void deleteRequest(int requestId);
+    abstract void deleteRequestById(int requestId);
 
     //    @Delete
     @Query("DELETE FROM header WHERE headerId = :headerId")
