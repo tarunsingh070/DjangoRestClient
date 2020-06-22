@@ -8,6 +8,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -17,7 +19,9 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import tarun.djangorestclient.com.djangorestclient.R;
 import tarun.djangorestclient.com.djangorestclient.databinding.FragmentRequestsListBinding;
 import tarun.djangorestclient.com.djangorestclient.fragment.DjangoViewModelFactory;
@@ -28,7 +32,7 @@ import tarun.djangorestclient.com.djangorestclient.model.entity.RequestWithHeade
  * Use the {@link RequestsListFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class RequestsListFragment extends Fragment {
+public class RequestsListFragment extends Fragment implements RecyclerItemTouchHelper.RecyclerItemTouchHelperListener {
 
     public static final int LIST_REQUESTS_HISTORY = 1001;
     public static final int LIST_SAVED_REQUESTS = 1002;
@@ -38,6 +42,7 @@ public class RequestsListFragment extends Fragment {
     private int requestsListToShow;
     private RequestsListViewModel requestsListViewModel;
     private FragmentRequestsListBinding binding;
+    private Snackbar requestDeletedSnackbar;
 
     public RequestsListFragment() {
         // Required empty public constructor
@@ -74,10 +79,12 @@ public class RequestsListFragment extends Fragment {
         return binding.getRoot();
     }
 
+    RequestListAdapter adapter;
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        final RequestListAdapter adapter = new RequestListAdapter(requireContext());
+        adapter = new RequestListAdapter(requireContext());
         setupRecyclerView(adapter);
 
         requestsListViewModel = new ViewModelProvider(this,
@@ -102,25 +109,47 @@ public class RequestsListFragment extends Fragment {
         binding.requestsListRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(),
                 DividerItemDecoration.VERTICAL));
 
-        // Todo: Modify following to make swipe to delete functionality work.
-//        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
-//
-//            @Override
-//            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-//                return false;
-//            }
-//
-//            @Override
-//            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
-//                Toast.makeText(requireContext(), "on Swiped ", Toast.LENGTH_SHORT).show();
-//                //Remove swiped item from list and notify the RecyclerView
-//                int position = viewHolder.getAdapterPosition();
-//                adapter.removeRequest(position);
-//            }
-//        };
-//
-//        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
-//        itemTouchHelper.attachToRecyclerView(binding.requestsListRecyclerView);
+        ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new RecyclerItemTouchHelper(0, ItemTouchHelper.LEFT, this);
+        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(binding.requestsListRecyclerView);
+    }
+
+    @Override
+    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
+        deleteRequestFromList(position);
+        adapter.removeRequest(position);
+    }
+
+    void deleteRequestFromList(int position) {
+        RequestWithHeaders requestToDelete = adapter.getRequests().get(position);
+
+        //FixMe: Currently, quickly deleting rows results in inconsistent no of rows.
+        // Look for a solution, or remove the undo option.
+        if (requestDeletedSnackbar != null && requestDeletedSnackbar.isShown()) {
+            requestDeletedSnackbar.dismiss();
+        }
+
+        Snackbar.Callback snackbarCallback = new Snackbar.Callback() {
+            @Override
+            public void onDismissed(Snackbar transientBottomBar, int event) {
+                super.onDismissed(transientBottomBar, event);
+                requestsListViewModel
+                        .deleteRequestById(requestToDelete.getRequest().getRequestId());
+            }
+        };
+
+        requestDeletedSnackbar = Snackbar
+                .make(requireView(), R.string.request_deleted, Snackbar.LENGTH_LONG)
+                .addCallback(snackbarCallback)
+                .setAction(R.string.undo, view -> {
+                    requestDeletedSnackbar.removeCallback(snackbarCallback);
+                    restoreRequestIntoList(requestToDelete, position);
+                });
+
+        requestDeletedSnackbar.show();
+    }
+
+    void restoreRequestIntoList(RequestWithHeaders deletedRequest, int position) {
+        adapter.insertRequest(deletedRequest, position);
     }
 
     @Override

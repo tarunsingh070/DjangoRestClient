@@ -39,5 +39,7 @@ public class RequestsListViewModel extends AndroidViewModel {
 
     }
 
-    //Todo: Add more methods for deletion as well.
+    void deleteRequestById(long requestId) {
+        requestRepository.deleteRequestById(requestId);
+    }
 }

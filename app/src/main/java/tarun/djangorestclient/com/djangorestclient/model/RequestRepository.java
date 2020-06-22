@@ -58,4 +58,10 @@ public class RequestRepository {
             requestDao.deleteAllSavedRequestsAndHeaders();
         });
     }
+
+    public void deleteRequestById(long requestId) {
+        RequestRoomDatabase.databaseWriteExecutor.execute(() -> {
+            requestDao.deleteRequestById(requestId);
+        });
+    }
 }

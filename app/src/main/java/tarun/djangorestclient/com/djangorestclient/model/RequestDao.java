@@ -53,11 +53,11 @@ public abstract class RequestDao {
     // i.e. you'' have to create a Request object with the same ID (primary key) and pass it here.
     //    @Delete
     @Query("DELETE FROM request WHERE requestId = :requestId")
-    abstract void deleteRequestById(int requestId);
+    abstract void deleteRequestById(long requestId);
 
     //    @Delete
     @Query("DELETE FROM header WHERE headerId = :headerId")
-    abstract void deleteHeader(int headerId);
+    abstract void deleteHeader(long headerId);
 
     @Transaction
     @Query("SELECT * from request WHERE is_in_history ORDER BY time_stamp DESC")

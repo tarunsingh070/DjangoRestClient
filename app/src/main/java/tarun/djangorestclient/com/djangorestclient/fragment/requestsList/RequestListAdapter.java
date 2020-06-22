@@ -3,6 +3,8 @@ package tarun.djangorestclient.com.djangorestclient.fragment.requestsList;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.List;
@@ -18,12 +20,16 @@ public class RequestListAdapter extends RecyclerView.Adapter<RequestListAdapter.
         private final TextView requestType;
         private final TextView requestUrl;
         private final TextView requestHeadersCount;
+        public final RelativeLayout viewBackground;
+        public final LinearLayout viewForeground;
 
         private RequestViewHolder(ItemRequestBinding binding) {
             super(binding.getRoot());
             requestType = binding.tvRequestType;
             requestUrl = binding.tvRequestUrl;
             requestHeadersCount = binding.tvHeadersCount;
+            viewBackground = binding.viewBackground;
+            viewForeground = binding.viewForeground;
         }
     }
 
@@ -58,9 +64,18 @@ public class RequestListAdapter extends RecyclerView.Adapter<RequestListAdapter.
         notifyDataSetChanged();
     }
 
+    public List<RequestWithHeaders> getRequests() {
+        return requests;
+    }
+
     void removeRequest(int position) {
         requests.remove(position);
-        notifyDataSetChanged();
+        notifyItemRemoved(position);
+    }
+
+    void insertRequest(RequestWithHeaders request, int position) {
+        requests.add(position, request);
+        notifyItemInserted(position);
     }
 
     @Override
