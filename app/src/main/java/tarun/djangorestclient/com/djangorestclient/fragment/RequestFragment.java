@@ -495,8 +495,8 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
                 final boolean isExistingHeader = (position != NEW_HEADER_POSITION);
                 HeaderType headerType = getHeaderType((String) headerTypesSpinner.getSelectedItem());
 
-                String userInput1 = etUserInput1.getText().toString();
-                String userInput2 = etUserInput2.getText().toString();
+                String userInput1 = etUserInput1.getText().toString().trim();
+                String userInput2 = etUserInput2.getText().toString().trim();
 
                 boolean isAuthBasicHeader = (headerType == HeaderType.AUTHORIZATION_BASIC);
                 boolean isCustomHeader = (headerType == HeaderType.CUSTOM);
@@ -508,11 +508,18 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
                         return;
                     }
 
+                    if (isCustomHeader && MiscUtil.containsWhiteSpaces(userInput1)) {
+                        MiscUtil.displayLongToast(getContext(), R.string.custom_header_name_no_whitespaces);
+                        return;
+                    }
+
                     // Update the header if editing an existing header, add a new one otherwise.
                     if (isExistingHeader) {
-                        updateHeader(headerType, etUserInput1.getText().toString(), etUserInput2.getText().toString(), position);
+                        updateHeader(headerType, etUserInput1.getText().toString().trim(),
+                                etUserInput2.getText().toString().trim(), position);
                     } else {
-                        addHeader(headerType, etUserInput1.getText().toString(), etUserInput2.getText().toString());
+                        addHeader(headerType, etUserInput1.getText().toString().trim(),
+                                etUserInput2.getText().toString().trim());
                     }
 
                 } else {
@@ -523,9 +530,9 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
 
                     // Update the header if editing an existing header, add a new one otherwise.
                     if (isExistingHeader) {
-                        updateHeader(headerType, etUserInput1.getText().toString(), position);
+                        updateHeader(headerType, etUserInput1.getText().toString().trim(), position);
                     } else {
-                        addHeader(headerType, etUserInput1.getText().toString());
+                        addHeader(headerType, etUserInput1.getText().toString().trim());
                     }
                 }
 

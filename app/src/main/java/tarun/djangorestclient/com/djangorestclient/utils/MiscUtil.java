@@ -12,6 +12,9 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import tarun.djangorestclient.com.djangorestclient.R;
 
 /**
@@ -78,7 +81,7 @@ public class MiscUtil {
     }
 
     public static void displayLongToast(Context context, int message) {
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, message, Toast.LENGTH_LONG).show();
     }
 
     public static void displayShortToast(Context context, String message) {
@@ -86,6 +89,12 @@ public class MiscUtil {
     }
 
     public static void displayLongToast(Context context, String message) {
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+    }
+
+    public static boolean containsWhiteSpaces(String text) {
+        Pattern pattern = Pattern.compile("\\s");
+        Matcher matcher = pattern.matcher(text);
+        return matcher.find();
     }
 }

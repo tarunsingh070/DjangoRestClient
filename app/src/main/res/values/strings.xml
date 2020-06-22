@@ -29,6 +29,7 @@
     <string name="sending">Sending…</string>
     <string name="url">Url</string>
     <string name="url_default_text">https://</string>
+    <string name="custom_header_name_no_whitespaces">Header name cannot contain whitespaces.</string>
 
     <!--Add Header dialog strings-->
     <string name="add_header">Add Header</string>
