@@ -1,5 +1,6 @@
 package tarun.djangorestclient.com.djangorestclient.model.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.room.Embedded;
@@ -19,15 +20,15 @@ public class RequestWithHeaders {
         return request;
     }
 
-    public List<Header> getHeaders() {
-        return headers;
-    }
-
     public void setRequest(Request request) {
         this.request = request;
     }
 
-    public void setHeaders(List<Header> headers) {
+    public List<Header> getHeaders() {
+        return headers;
+    }
+
+    public void setHeaders(ArrayList<Header> headers) {
         this.headers = headers;
     }
 }

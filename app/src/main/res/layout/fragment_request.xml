@@ -22,18 +22,18 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:labelFor="@+id/request_types_spinner"
-                android:text="@string/request_type" />
+                android:text="@string/request_type"/>
 
             <Spinner
                 android:id="@+id/request_types_spinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:entries="@array/requestTypes" />
+                android:entries="@array/requestTypes"/>
 
         </LinearLayout>
 
-        <View style="@style/Divider" />
+        <View style="@style/Divider"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -46,7 +46,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:labelFor="@+id/request_types_spinner"
-                android:text="@string/url" />
+                android:text="@string/url"/>
 
             <EditText
                 android:id="@+id/et_input_url"
@@ -59,7 +59,7 @@
 
         </LinearLayout>
 
-        <View style="@style/Divider" />
+        <View style="@style/Divider"/>
 
         <LinearLayout
             android:id="@+id/layout_headers_list"
@@ -79,7 +79,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/headers" />
+                    android:text="@string/headers"/>
 
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:id="@+id/add_header_fab"
@@ -87,32 +87,33 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="10dp"
                     android:src="@drawable/ic_add_black"
-                    app:fabSize="mini" />
+                    app:fabSize="mini"/>
 
             </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/headers_recycler_view"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"/>
 
         </LinearLayout>
 
-        <View style="@style/Divider" />
+        <View style="@style/Divider"/>
 
         <LinearLayout
             android:id="@+id/layout_request_body"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:visibility="gone">
 
             <TextView
                 style="@style/ScreenLabelsStyle.RequestScreenLabelsStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:labelFor="@+id/et_request_body"
-                android:text="@string/body" />
+                android:text="@string/body"/>
 
             <EditText
                 android:id="@+id/et_request_body"
@@ -123,7 +124,7 @@
                 android:gravity="top"
                 android:hint="@string/hint_request_body"
                 android:padding="10dp"
-                android:textSize="15sp" />
+                android:textSize="15sp"/>
 
         </LinearLayout>
 

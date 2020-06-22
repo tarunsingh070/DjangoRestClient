@@ -1,5 +1,6 @@
 package tarun.djangorestclient.com.djangorestclient.fragment.requestsList;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -32,20 +33,33 @@ import tarun.djangorestclient.com.djangorestclient.model.entity.RequestWithHeade
  * Use the {@link RequestsListFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class RequestsListFragment extends Fragment implements RecyclerItemTouchHelper.RecyclerItemTouchHelperListener {
+public class RequestsListFragment extends Fragment implements
+        RecyclerItemTouchHelper.RecyclerItemTouchHelperListener,
+        RequestListAdapter.RequestListAdapterListener {
+    public static final String TAG = "RequestsListFragment";
 
     public static final int LIST_REQUESTS_HISTORY = 1001;
     public static final int LIST_SAVED_REQUESTS = 1002;
 
-    private static final String KEY_REQUESTS_LIST_TYPE = "requests_list_type";
+    public static final String KEY_REQUESTS_LIST_TYPE = "key_requests_list_type";
 
     private int requestsListToShow;
     private RequestsListViewModel requestsListViewModel;
     private FragmentRequestsListBinding binding;
     private Snackbar requestDeletedSnackbar;
+    private RequestsListFragmentListener listener;
 
     public RequestsListFragment() {
         // Required empty public constructor
+    }
+
+    public interface RequestsListFragmentListener {
+        /**
+         * Handles the event when a user selects a request.
+         *
+         * @param requestId The Id of the request selected
+         */
+        void onRequestClicked(long requestId);
     }
 
     /**
@@ -54,12 +68,26 @@ public class RequestsListFragment extends Fragment implements RecyclerItemTouchH
      *
      * @return A new instance of fragment RequestsListFragment.
      */
-    public static RequestsListFragment newInstance(int requestsListToShow) {
+    public static RequestsListFragment newInstance(Bundle args) {
         RequestsListFragment fragment = new RequestsListFragment();
-        Bundle args = new Bundle();
-        args.putInt(KEY_REQUESTS_LIST_TYPE, requestsListToShow);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof RequestsListFragmentListener) {
+            listener = (RequestsListFragmentListener) context;
+        } else {
+            throw new RuntimeException("Activity must implement RequestsListFragmentListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        listener = null;
     }
 
     @Override
@@ -84,7 +112,7 @@ public class RequestsListFragment extends Fragment implements RecyclerItemTouchH
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        adapter = new RequestListAdapter(requireContext());
+        adapter = new RequestListAdapter(requireContext(), this);
         setupRecyclerView(adapter);
 
         requestsListViewModel = new ViewModelProvider(this,
@@ -179,5 +207,10 @@ public class RequestsListFragment extends Fragment implements RecyclerItemTouchH
                 .setNegativeButton(android.R.string.no, null)
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .show();
+    }
+
+    @Override
+    public void onRequestClicked(long requestId) {
+        listener.onRequestClicked(requestId);
     }
 }

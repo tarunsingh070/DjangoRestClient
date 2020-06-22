@@ -23,7 +23,9 @@ public class RequestRepository {
         requestDao = database.requestDao();
     }
 
-    //Todo: Add more methods for deletion as well.
+    public LiveData<RequestWithHeaders> getRequestById(long requestId) {
+        return requestDao.getRequestById(requestId);
+    }
 
     public LiveData<List<RequestWithHeaders>> getRequestsHistoryList() {
         if (requestsHistoryList == null) {

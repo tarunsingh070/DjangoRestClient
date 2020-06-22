@@ -16,6 +16,15 @@ import tarun.djangorestclient.com.djangorestclient.model.entity.RequestWithHeade
 
 public class RequestListAdapter extends RecyclerView.Adapter<RequestListAdapter.RequestViewHolder> {
 
+    public interface RequestListAdapterListener {
+        /**
+         * Handles the event when a user selects a request.
+         *
+         * @param requestId The Id of the request selected
+         */
+        void onRequestClicked(long requestId);
+    }
+
     class RequestViewHolder extends RecyclerView.ViewHolder {
         private final TextView requestType;
         private final TextView requestUrl;
@@ -35,9 +44,11 @@ public class RequestListAdapter extends RecyclerView.Adapter<RequestListAdapter.
 
     private final Context context;
     private List<RequestWithHeaders> requests;
+    private RequestListAdapterListener listener;
 
-    RequestListAdapter(Context context) {
+    RequestListAdapter(Context context, RequestListAdapterListener listener) {
         this.context = context;
+        this.listener = listener;
     }
 
     @Override
@@ -50,12 +61,15 @@ public class RequestListAdapter extends RecyclerView.Adapter<RequestListAdapter.
     @Override
     public void onBindViewHolder(RequestViewHolder holder, int position) {
         if (requests != null) {
-            RequestWithHeaders current = requests.get(position);
+            RequestWithHeaders requestWithHeaders = requests.get(position);
 
-            holder.requestType.setText(current.getRequest().getRequestType().name());
-            holder.requestUrl.setText(current.getRequest().getUrl());
+            holder.requestType.setText(requestWithHeaders.getRequest().getRequestType().name());
+            holder.requestUrl.setText(requestWithHeaders.getRequest().getUrl());
             holder.requestHeadersCount.setText(String.format(context.getString(R.string.header_count),
-                    current.getHeaders().size()));
+                    requestWithHeaders.getHeaders().size()));
+
+            holder.viewForeground.setOnClickListener(view ->
+                    listener.onRequestClicked(requestWithHeaders.getRequest().getRequestId()));
         }
     }
 

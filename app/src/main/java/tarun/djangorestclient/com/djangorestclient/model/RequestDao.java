@@ -66,4 +66,8 @@ public abstract class RequestDao {
     @Transaction
     @Query("SELECT * from request WHERE is_saved ORDER BY time_stamp DESC")
     abstract LiveData<List<RequestWithHeaders>> getSavedRequestsSortedByDate();
+
+    @Transaction
+    @Query("SELECT * from request WHERE requestId = :requestId")
+    abstract LiveData<RequestWithHeaders> getRequestById(long requestId);
 }

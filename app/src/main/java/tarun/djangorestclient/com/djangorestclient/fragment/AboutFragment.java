@@ -23,9 +23,20 @@ import tarun.djangorestclient.com.djangorestclient.databinding.FragmentAboutBind
  * This fragment displays info about this app and allows the user to rate this app on play store.
  */
 public class AboutFragment extends Fragment {
+    public static final String TAG = "AboutFragment";
 
     public AboutFragment() {
         // Required empty public constructor
+    }
+
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment.
+     *
+     * @return A new instance of fragment AboutFragment.
+     */
+    public static AboutFragment newInstance() {
+        return new AboutFragment();
     }
 
     @Override

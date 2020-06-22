@@ -9,21 +9,30 @@ package tarun.djangorestclient.com.djangorestclient.fragment;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-
-import androidx.preference.Preference;
-import androidx.preference.PreferenceFragmentCompat;
-
 import android.text.TextUtils;
 import android.view.Menu;
 
+import androidx.preference.Preference;
+import androidx.preference.PreferenceFragmentCompat;
 import tarun.djangorestclient.com.djangorestclient.R;
 
 /**
  * Settings Preference fragment allows user to change rest client configurations as desired.
  */
 public class SettingsPreferenceFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
+    public static final String TAG = "SettingsPreferenceFragm";
 
     private SharedPreferences sharedPreferences;
+
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment.
+     *
+     * @return A new instance of fragment SettingsPreferenceFragment.
+     */
+    public static SettingsPreferenceFragment newInstance() {
+        return new SettingsPreferenceFragment();
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

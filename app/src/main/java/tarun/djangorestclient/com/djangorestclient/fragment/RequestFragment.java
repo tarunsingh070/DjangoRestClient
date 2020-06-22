@@ -32,8 +32,13 @@ import android.widget.TextView;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -68,6 +73,8 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
 
     private static final int NEW_HEADER_POSITION = -1;
 
+    public static final String KEY_REQUEST_ID = "key_request_id";
+
     private HeadersRecyclerViewAdapter headersRecyclerViewAdapter;
 
     private FragmentRequestBinding binding;
@@ -88,15 +95,16 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
      *
      * @return A new instance of fragment RequestFragment.
      */
-    public static RequestFragment newInstance() {
-        return new RequestFragment();
+    public static RequestFragment newInstance(Bundle args) {
+        RequestFragment fragment = new RequestFragment();
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-
         request = new Request();
         restClient = new RestClient(getContext());
     }
@@ -110,12 +118,31 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
         binding.etInputUrl.setSelection(getString(R.string.url_default_text).length());
         headersRecyclerViewAdapter = new HeadersRecyclerViewAdapter(this, request.getHeaders());
 
-        bindViews();
-
         // Todo: Create a ViewModel for RequestFragment and move this there.
         requestRepository = new RequestRepository(requireActivity().getApplication());
-
+        bindViews();
         return binding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        if (getArguments() != null) {
+            long requestId = getArguments().getLong(KEY_REQUEST_ID);
+            if (requestId > 0) {
+                requestRepository.getRequestById(requestId).observe(requireActivity(), requestWithHeaders -> {
+                    // Update the existing headers list object itself and set it in the Request object
+                    // since that's the one "HeadersRecyclerViewAdapter" is using to populate the list.
+                    ArrayList<Header> existingHeadersList = request.getHeaders();
+                    existingHeadersList.addAll(requestWithHeaders.getHeaders());
+
+                    request = requestWithHeaders.getRequest();
+                    request.setHeaders(existingHeadersList);
+                    updateViewsWithRequestData(request);
+                });
+            }
+        }
     }
 
     @Override
@@ -168,6 +195,23 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
 
         binding.addHeaderFab.setOnClickListener(v -> displayAddHeaderDialog());
         binding.requestTypesSpinner.setOnItemSelectedListener(getRequestTypesSpinnerListener());
+    }
+
+    private void updateViewsWithRequestData(Request request) {
+        // Set Request type.
+        List<String> requestTypeList = Arrays.asList(getResources().getStringArray(R.array.requestTypes));
+        binding.requestTypesSpinner.setSelection(requestTypeList.indexOf(request.getRequestType().name()));
+
+        // Set Request URL.
+        binding.etInputUrl.setText(request.getUrl());
+
+        // Set Request body text.
+        if (request.getBody() != null) {
+            binding.etRequestBody.setText(request.getBody());
+        }
+
+        // Refresh the headers list.
+        headersRecyclerViewAdapter.notifyDataSetChanged();
     }
 
     /**

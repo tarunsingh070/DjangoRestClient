@@ -29,12 +29,14 @@ import tarun.djangorestclient.com.djangorestclient.utils.MiscUtil;
 /**
  * This is the home activity which would allow user to navigate to other screens through its navigation drawer.
  */
-public class HomeActivity extends AppCompatActivity implements RequestFragment.OnResponseReceivedListener {
+public class HomeActivity extends AppCompatActivity implements
+        RequestFragment.OnResponseReceivedListener, RequestsListFragment.RequestsListFragmentListener {
 
     private static final String TAG = HomeActivity.class.getSimpleName();
 
     private int selectedNavMenuItemId;
     private ActivityHomeBinding binding;
+    private long requestId = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,57 +63,88 @@ public class HomeActivity extends AppCompatActivity implements RequestFragment.O
      * Setup all navigation view related actions here.
      */
     private void setupNavigationView() {
-        binding.navigationView.setNavigationItemSelectedListener(
-                menuItem -> {
-                    // close drawer when item is tapped
-                    binding.drawerLayout.closeDrawers();
+        binding.navigationView.setNavigationItemSelectedListener(menuItem -> {
+            // close drawer when item is tapped
+            binding.drawerLayout.closeDrawers();
 
-                    // Simply return if selected menu item was already selected.
-                    if (menuItem.getItemId() == selectedNavMenuItemId) {
-                        return true;
-                    }
+            // Simply return if selected menu item was already selected.
+            if (menuItem.getItemId() == selectedNavMenuItemId) {
+                return true;
+            }
 
-                    // store the selected menuItemId.
-                    selectedNavMenuItemId = menuItem.getItemId();
+            // store the selected menuItemId.
+            selectedNavMenuItemId = menuItem.getItemId();
 
-                    // set item as selected to persist highlight
-                    menuItem.setChecked(true);
-                    HomeActivity.this.setTitle(menuItem.getTitle());
+            // set item as selected to persist highlight
+            menuItem.setChecked(true);
+            HomeActivity.this.setTitle(menuItem.getTitle());
 
-                    MiscUtil.hideKeyboard(this, this);
+            MiscUtil.hideKeyboard(HomeActivity.this, HomeActivity.this);
 
-                    // Swap the fragments to update the UI based on the item selected.
+            // Swap the fragments to update the UI based on the item selected.
 
-                    Fragment fragment;
+            Bundle args;
+            switch (menuItem.getItemId()) {
+                case R.id.nav_rest_calls:
+                    args = new Bundle();
+                    args.putLong(RequestFragment.KEY_REQUEST_ID, requestId);
+                    replaceFragment(RestCallsFragment.TAG, args);
+                    break;
+                case R.id.nav_settings:
+                    replaceFragment(SettingsPreferenceFragment.TAG);
+                    break;
+                case R.id.nav_about:
+                    replaceFragment(AboutFragment.TAG);
+                    break;
+                case R.id.nav_history:
+                    args = new Bundle();
+                    args.putInt(RequestsListFragment.KEY_REQUESTS_LIST_TYPE, RequestsListFragment.LIST_REQUESTS_HISTORY);
+                    replaceFragment(RequestsListFragment.TAG, args);
+                    break;
+                case R.id.nav_saved:
+                    args = new Bundle();
+                    args.putInt(RequestsListFragment.KEY_REQUESTS_LIST_TYPE, RequestsListFragment.LIST_SAVED_REQUESTS);
+                    replaceFragment(RequestsListFragment.TAG, args);
+                    break;
+                default:
+                    throw new IllegalArgumentException(TAG);
+            }
 
-                    switch (menuItem.getItemId()) {
-                        case R.id.nav_rest_calls:
-                            fragment = RestCallsFragment.newInstance();
-                            break;
-                        case R.id.nav_settings:
-                            fragment = new SettingsPreferenceFragment();
-                            break;
-                        case R.id.nav_about:
-                            fragment = new AboutFragment();
-                            break;
-                        case R.id.nav_history:
-                            fragment = RequestsListFragment.newInstance(RequestsListFragment.LIST_REQUESTS_HISTORY);
-                            break;
-                        case R.id.nav_saved:
-                            fragment = RequestsListFragment.newInstance(RequestsListFragment.LIST_SAVED_REQUESTS);
-                            break;
-                        default:
-                            throw new IllegalArgumentException(TAG);
-                    }
-
-                    FragmentManager fragmentManager = getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.content_frame, fragment, fragment.getClass().getSimpleName()).commit();
-
-                    return true;
-                });
+            return true;
+        });
 
         // Select the Rest Calls menu item in the navigation menu by default.
         binding.navigationView.getMenu().performIdentifierAction(R.id.nav_rest_calls, 0);
+    }
+
+    private void replaceFragment(final String fragmentTag) {
+        replaceFragment(fragmentTag, null);
+    }
+
+    private void replaceFragment(final String fragmentTag, Bundle args) {
+        // Swap the fragments to update the UI based on the item selected.
+
+        Fragment fragment;
+
+        switch (fragmentTag) {
+            case RestCallsFragment.TAG:
+                fragment = RestCallsFragment.newInstance(args);
+                break;
+            case SettingsPreferenceFragment.TAG:
+                fragment = SettingsPreferenceFragment.newInstance();
+                break;
+            case AboutFragment.TAG:
+                fragment = AboutFragment.newInstance();
+                break;
+            case RequestsListFragment.TAG:
+                fragment = RequestsListFragment.newInstance(args);
+                break;
+            default:
+                throw new IllegalArgumentException(TAG);
+        }
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.content_frame, fragment, fragment.getClass().getSimpleName()).commit();
     }
 
     @Override
@@ -158,5 +191,11 @@ public class HomeActivity extends AppCompatActivity implements RequestFragment.O
                 .setNegativeButton(android.R.string.no, (dialog, which) -> dialog.dismiss())
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .show();
+    }
+
+    @Override
+    public void onRequestClicked(long requestId) {
+        this.requestId = requestId;
+        binding.navigationView.getMenu().performIdentifierAction(R.id.nav_rest_calls, 0);
     }
 }

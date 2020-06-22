@@ -21,8 +21,7 @@ import tarun.djangorestclient.com.djangorestclient.model.RestResponse;
  * This fragment shows the Request and Response screens in a tabular fashion for the user to make requests and view responses.
  */
 public class RestCallsFragment extends Fragment {
-
-    private static final String TAG = RestCallsFragment.class.getSimpleName();
+    public static final String TAG = "RestCallsFragment";
 
     private RequestFragment requestFragment;
     private ResponseFragment responseFragment;
@@ -38,13 +37,10 @@ public class RestCallsFragment extends Fragment {
      *
      * @return A new instance of fragment RestCallsFragment.
      */
-    public static RestCallsFragment newInstance() {
-        return new RestCallsFragment();
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public static RestCallsFragment newInstance(Bundle args) {
+        RestCallsFragment fragment = new RestCallsFragment();
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
@@ -53,7 +49,7 @@ public class RestCallsFragment extends Fragment {
         // Inflate the layout for this fragment
         binding = FragmentRestCallsBinding.inflate(inflater, container, false);
 
-        requestFragment = RequestFragment.newInstance();
+        requestFragment = RequestFragment.newInstance(getArguments());
         responseFragment = ResponseFragment.newInstance();
 
         // Pass in the childFragmentManager instead of the fragmentManager because here we have a
