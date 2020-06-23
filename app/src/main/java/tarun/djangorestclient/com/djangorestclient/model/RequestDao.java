@@ -7,6 +7,7 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Transaction;
+import androidx.room.Update;
 import tarun.djangorestclient.com.djangorestclient.model.entity.Header;
 import tarun.djangorestclient.com.djangorestclient.model.entity.Request;
 import tarun.djangorestclient.com.djangorestclient.model.entity.RequestWithHeaders;
@@ -17,8 +18,14 @@ public abstract class RequestDao {
     @Insert
     abstract long insertRequest(Request request);
 
+    @Update
+    abstract void updateRequest(Request request);
+
     @Insert
     abstract void insertHeaders(List<Header> headers);
+
+    @Update
+    abstract void updateHeaders(List<Header> headers);
 
     @Transaction
     void insertRequestWithHeaders(Request request) {
@@ -31,6 +38,13 @@ public abstract class RequestDao {
             }
             insertHeaders(headers);
         }
+    }
+
+    @Transaction
+    void updateRequestWithHeaders(Request request, List<Header> headersToInsert, List<Header> headersToUpdate) {
+        updateRequest(request);
+        updateHeaders(headersToUpdate);
+        insertHeaders(headersToInsert);
     }
 
     @Transaction
@@ -60,11 +74,11 @@ public abstract class RequestDao {
     abstract void deleteHeader(long headerId);
 
     @Transaction
-    @Query("SELECT * from request WHERE is_in_history ORDER BY time_stamp DESC")
+    @Query("SELECT * from request WHERE is_in_history ORDER BY updated_at_timestamp DESC")
     abstract LiveData<List<RequestWithHeaders>> getRequestsInHistorySortedByDate();
 
     @Transaction
-    @Query("SELECT * from request WHERE is_saved ORDER BY time_stamp DESC")
+    @Query("SELECT * from request WHERE is_saved ORDER BY updated_at_timestamp DESC")
     abstract LiveData<List<RequestWithHeaders>> getSavedRequestsSortedByDate();
 
     @Transaction

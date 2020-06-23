@@ -71,18 +71,16 @@ public class Header {
         this.headerValue = headerValue;
     }
 
-//    public Header(@NonNull String headerType, @NonNull String headerValue, long parentRequestId) {
-//        this.headerType = headerType;
-//        this.headerValue = headerValue;
-//        this.parentRequestId = parentRequestId;
-//    }
-
     public long getHeaderId() {
         return headerId;
     }
 
     public void setHeaderId(long headerId) {
         this.headerId = headerId;
+    }
+
+    public void clearHeaderId() {
+        headerId = 0;
     }
 
     public String getHeaderType() {

@@ -8,6 +8,7 @@ package tarun.djangorestclient.com.djangorestclient.fragment;
 
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -41,6 +42,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import okhttp3.Call;
@@ -58,6 +60,7 @@ import tarun.djangorestclient.com.djangorestclient.model.entity.Header;
 import tarun.djangorestclient.com.djangorestclient.model.entity.Header.HeaderType;
 import tarun.djangorestclient.com.djangorestclient.model.entity.Request;
 import tarun.djangorestclient.com.djangorestclient.model.entity.Request.RequestType;
+import tarun.djangorestclient.com.djangorestclient.model.entity.RequestWithHeaders;
 import tarun.djangorestclient.com.djangorestclient.utils.HttpUtil;
 import tarun.djangorestclient.com.djangorestclient.utils.MiscUtil;
 import tarun.djangorestclient.com.djangorestclient.utils.RestClient;
@@ -80,6 +83,8 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
     private FragmentRequestBinding binding;
 
     private Request request;
+
+    private LiveData<RequestWithHeaders> requestWithHeadersLiveData;
 
     private OnResponseReceivedListener mListener;
     private RestClient restClient;
@@ -115,13 +120,20 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
         // Inflate the layout for this fragment
         binding = FragmentRequestBinding.inflate(inflater, container, false);
 
-        binding.etInputUrl.setSelection(getString(R.string.url_default_text).length());
-        headersRecyclerViewAdapter = new HeadersRecyclerViewAdapter(this, request.getHeaders());
-
         // Todo: Create a ViewModel for RequestFragment and move this there.
         requestRepository = new RequestRepository(requireActivity().getApplication());
-        bindViews();
+
+        initializeViews();
         return binding.getRoot();
+    }
+
+    private void initializeViews() {
+        binding.etInputUrl.setText(R.string.url_default_text);
+        binding.etInputUrl.setSelection(getString(R.string.url_default_text).length());
+        binding.requestTypesSpinner.setSelection(0);
+        binding.etRequestBody.getText().clear();
+        headersRecyclerViewAdapter = new HeadersRecyclerViewAdapter(this, request.getHeaders());
+        bindViews();
     }
 
     @Override
@@ -131,18 +143,39 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
         if (getArguments() != null) {
             long requestId = getArguments().getLong(KEY_REQUEST_ID);
             if (requestId > 0) {
-                requestRepository.getRequestById(requestId).observe(requireActivity(), requestWithHeaders -> {
-                    // Update the existing headers list object itself and set it in the Request object
-                    // since that's the one "HeadersRecyclerViewAdapter" is using to populate the list.
-                    ArrayList<Header> existingHeadersList = request.getHeaders();
-                    existingHeadersList.addAll(requestWithHeaders.getHeaders());
-
-                    request = requestWithHeaders.getRequest();
-                    request.setHeaders(existingHeadersList);
-                    updateViewsWithRequestData(request);
-                });
+                fetchRequestById(requestId);
             }
         }
+    }
+
+    private void resetRequestViews() {
+        request = new Request();
+        if (getArguments() != null) {
+            stopObservingRequestById();
+            getArguments().clear();
+        }
+        initializeViews();
+    }
+
+    private void stopObservingRequestById() {
+        if (requestWithHeadersLiveData != null) {
+            requestWithHeadersLiveData.removeObservers(getViewLifecycleOwner());
+        }
+    }
+
+    private void fetchRequestById(long requestId) {
+        requestWithHeadersLiveData = requestRepository.getRequestById(requestId);
+        requestWithHeadersLiveData.observe(getViewLifecycleOwner(), requestWithHeaders -> {
+            // Update the existing headers list object itself and set it in the Request object
+            // since that's the one "HeadersRecyclerViewAdapter" is using to populate the list.
+            ArrayList<Header> existingHeadersList = request.getHeaders();
+            existingHeadersList.clear();
+            existingHeadersList.addAll(requestWithHeaders.getHeaders());
+
+            request = requestWithHeaders.getRequest();
+            request.setHeaders(existingHeadersList);
+            updateViewsWithRequestData(request);
+        });
     }
 
     @Override
@@ -161,6 +194,9 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
                 return true;
             case R.id.action_save_request:
                 saveRequest();
+                return true;
+            case R.id.action_clear_request:
+                resetRequestViews();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -285,7 +321,7 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
             request.setBody(binding.etRequestBody.getText().toString());
         }
 
-        request.setCreationTime(new Date());
+        request.setUpdatedAt(new Date());
         return request;
     }
 
@@ -406,12 +442,47 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
             return;
         }
 
+        // If user came here via saved requests, then ask if they wanna update it or save a new request.
+        if (request.getRequestId() > 0 && request.isSaved()) {
+            showUpdateRequestDialog();
+        } else {
+            insertOrUpdateRequestInDb(true, R.string.request_saved);
+        }
+    }
+
+    void showUpdateRequestDialog() {
+        new AlertDialog.Builder(requireContext())
+                .setTitle(R.string.update_request_dialog_title)
+                .setMessage(R.string.update_request_dialog_message)
+                .setPositiveButton(R.string.update_request_dialog_update, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        insertOrUpdateRequestInDb(false, R.string.request_updated);
+                        dialogInterface.dismiss();
+                    }
+                })
+                .setNeutralButton(R.string.update_request_dialog_create_new, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        insertOrUpdateRequestInDb(true, R.string.request_saved);
+                        dialogInterface.dismiss();
+                    }
+                })
+                .show();
+    }
+
+    private void insertOrUpdateRequestInDb(boolean shouldInsert, int messageToDisplay) {
         Request request = prepareRequestObject();
         request.setInHistory(false);
         request.setSaved(true);
 
-        requestRepository.insert(request);
-        MiscUtil.displayShortToast(getContext(), R.string.request_saved);
+        if (shouldInsert) {
+            request.clearIds();
+            requestRepository.insert(request);
+        } else {
+            requestRepository.update(request);
+        }
+        MiscUtil.displayShortToast(getContext(), messageToDisplay);
     }
 
     /**
@@ -597,9 +668,13 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
      * @param position: The position of existing header.
      */
     private void updateHeader(HeaderType headerType, String userInput1, int position) {
-        // Remove the existing header from the list and add the new one at the same position.
+        Header existingHeader = request.getHeaders().get(position);
+        Header updatedHeader = getNewHeader(headerType, userInput1);
+        updatedHeader.setHeaderId(existingHeader.getHeaderId());
+
+        // Remove the existing header from the list and add the updated one at the same position.
         request.getHeaders().remove(position);
-        request.getHeaders().add(position, getNewHeader(headerType, userInput1));
+        request.getHeaders().add(position, updatedHeader);
         headersRecyclerViewAdapter.notifyDataSetChanged();
     }
 
@@ -609,9 +684,13 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
      * @param position: The position of existing header.
      */
     private void updateHeader(HeaderType headerType, String userInput1, String userInput2, int position) {
-        // Remove the existing header from the list and add the new one at the same position.
+        Header existingHeader = request.getHeaders().get(position);
+        Header updatedHeader = getNewHeader(headerType, userInput1, userInput2);
+        updatedHeader.setHeaderId(existingHeader.getHeaderId());
+
+        // Remove the existing header from the list and add the updated one at the same position.
         request.getHeaders().remove(position);
-        request.getHeaders().add(position, getNewHeader(headerType, userInput1, userInput2));
+        request.getHeaders().add(position, updatedHeader);
         headersRecyclerViewAdapter.notifyDataSetChanged();
     }
 

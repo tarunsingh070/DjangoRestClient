@@ -2,9 +2,11 @@ package tarun.djangorestclient.com.djangorestclient.model;
 
 import android.app.Application;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.lifecycle.LiveData;
+import tarun.djangorestclient.com.djangorestclient.model.entity.Header;
 import tarun.djangorestclient.com.djangorestclient.model.entity.Request;
 import tarun.djangorestclient.com.djangorestclient.model.entity.RequestWithHeaders;
 
@@ -46,6 +48,23 @@ public class RequestRepository {
     public void insert(Request request) {
         RequestRoomDatabase.databaseWriteExecutor.execute(() -> {
             requestDao.insertRequestWithHeaders(request);
+        });
+    }
+
+    public void update(Request request) {
+        RequestRoomDatabase.databaseWriteExecutor.execute(() -> {
+            List<Header> headersToInsert = new ArrayList<>();
+            List<Header> headersToUpdate = new ArrayList<>();
+            for (Header header : request.getHeaders()) {
+                header.setParentRequestId(request.getRequestId());
+                if (header.getHeaderId() > 0) {
+                    headersToUpdate.add(header);
+                } else {
+                    headersToInsert.add(header);
+                }
+            }
+
+            requestDao.updateRequestWithHeaders(request, headersToInsert, headersToUpdate);
         });
     }
 

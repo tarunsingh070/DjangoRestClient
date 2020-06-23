@@ -7,6 +7,7 @@
     <!--Menu titles-->
     <string name="action_send_request">Send Request</string>
     <string name="action_save_request">Save Request</string>
+    <string name="action_clear_request">Clear Request</string>
     <string name="action_show_extra_info">Extra info</string>
     <string name="action_delete_all_requests">Delete all requests</string>
 
@@ -18,18 +19,23 @@
     <string name="settings">Settings</string>
 
     <!--Request Screen Strings-->
+    <string name="body">Body</string>
+    <string name="custom_header_name_no_whitespaces">Header name cannot contain whitespaces.</string>
     <string name="header_deleted">Header deleted!</string>
     <string name="header_restored">Header restored!</string>
     <string name="headers">Headers</string>
     <string name="hint_input_url">http://djangorestclient.com</string>
     <string name="hint_request_body">Raw request body text goes here</string>
-    <string name="body">Body</string>
     <string name="request_saved">Request saved.</string>
+    <string name="request_updated">Request updated.</string>
     <string name="request_type">Type</string>
     <string name="sending">Sending…</string>
+    <string name="update_request_dialog_title">Update saved request?</string>
+    <string name="update_request_dialog_message">Would you like to update the existing saved request or create and save a new one?</string>
+    <string name="update_request_dialog_create_new">Create New</string>
+    <string name="update_request_dialog_update">Update</string>
     <string name="url">Url</string>
     <string name="url_default_text">https://</string>
-    <string name="custom_header_name_no_whitespaces">Header name cannot contain whitespaces.</string>
 
     <!--Add Header dialog strings-->
     <string name="add_header">Add Header</string>

@@ -47,21 +47,11 @@ public class Request {
     @ColumnInfo(name = "is_saved")
     private boolean isSaved;
 
-    @ColumnInfo(name = "time_stamp")
-    private Date creationTime;
+    @ColumnInfo(name = "updated_at_timestamp")
+    private Date updatedAt;
 
     public Request() {
     }
-
-//    public Request(@NonNull String url, @NonNull RequestType requestType, String body,
-//                   boolean isInHistory, boolean isSaved, Date timestamp) {
-//        this.url = url;
-//        this.requestType = requestType;
-//        this.body = body;
-//        this.isInHistory = isInHistory;
-//        this.isSaved = isSaved;
-//        this.creationTime = timestamp;
-//    }
 
     public String getUrl() {
         return url;
@@ -102,6 +92,13 @@ public class Request {
     public void setRequestId(long requestId) {
         this.requestId = requestId;
     }
+    
+    public void clearIds() {
+        requestId = 0;
+        for (Header header : headers) {
+            header.clearHeaderId();
+        }
+    }
 
     public boolean isInHistory() {
         return isInHistory;
@@ -111,8 +108,8 @@ public class Request {
         return isSaved;
     }
 
-    public Date getCreationTime() {
-        return creationTime;
+    public Date getUpdatedAt() {
+        return updatedAt;
     }
 
     public void setInHistory(boolean inHistory) {
@@ -123,7 +120,7 @@ public class Request {
         isSaved = saved;
     }
 
-    public void setCreationTime(Date creationTime) {
-        this.creationTime = creationTime;
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }
