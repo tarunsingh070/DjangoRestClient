@@ -4,6 +4,7 @@ import java.util.List;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Transaction;
@@ -27,6 +28,9 @@ public abstract class RequestDao {
     @Update
     abstract void updateHeaders(List<Header> headers);
 
+    @Delete
+    abstract void deleteHeaders(List<Header> headers);
+
     @Transaction
     void insertRequestWithHeaders(Request request) {
         long requestId = insertRequest(request);
@@ -41,10 +45,12 @@ public abstract class RequestDao {
     }
 
     @Transaction
-    void updateRequestWithHeaders(Request request, List<Header> headersToInsert, List<Header> headersToUpdate) {
+    void updateRequestWithHeaders(Request request, List<Header> headersToInsert,
+                                  List<Header> headersToUpdate, List<Header> headersToDelete) {
         updateRequest(request);
         updateHeaders(headersToUpdate);
         insertHeaders(headersToInsert);
+        deleteHeaders(headersToDelete);
     }
 
     @Transaction

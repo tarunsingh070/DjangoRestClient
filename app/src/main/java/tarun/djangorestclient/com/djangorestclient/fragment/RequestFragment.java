@@ -480,7 +480,8 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
             request.clearIds();
             requestRepository.insert(request);
         } else {
-            requestRepository.update(request);
+            RequestWithHeaders existingRequestWithHeaders = requestWithHeadersLiveData.getValue();
+            requestRepository.update(request, existingRequestWithHeaders.getHeaders());
         }
         MiscUtil.displayShortToast(getContext(), messageToDisplay);
     }

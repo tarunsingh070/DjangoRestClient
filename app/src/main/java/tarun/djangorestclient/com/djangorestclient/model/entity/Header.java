@@ -8,6 +8,8 @@ package tarun.djangorestclient.com.djangorestclient.model.entity;
 
 import android.text.TextUtils;
 
+import java.util.Objects;
+
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
@@ -120,5 +122,19 @@ public class Header {
         }
 
         return HeaderType.CUSTOM;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Header)) {
+            return false;
+        }
+
+        return o == this || headerId == ((Header) o).headerId;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(headerId);
     }
 }

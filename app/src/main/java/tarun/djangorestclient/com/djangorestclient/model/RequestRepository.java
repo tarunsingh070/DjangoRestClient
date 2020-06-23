@@ -51,12 +51,14 @@ public class RequestRepository {
         });
     }
 
-    public void update(Request request) {
+    public void update(Request updatedRequest, List<Header> existingHeaders) {
         RequestRoomDatabase.databaseWriteExecutor.execute(() -> {
             List<Header> headersToInsert = new ArrayList<>();
             List<Header> headersToUpdate = new ArrayList<>();
-            for (Header header : request.getHeaders()) {
-                header.setParentRequestId(request.getRequestId());
+            List<Header> headersToDelete;
+
+            for (Header header : updatedRequest.getHeaders()) {
+                header.setParentRequestId(updatedRequest.getRequestId());
                 if (header.getHeaderId() > 0) {
                     headersToUpdate.add(header);
                 } else {
@@ -64,7 +66,10 @@ public class RequestRepository {
                 }
             }
 
-            requestDao.updateRequestWithHeaders(request, headersToInsert, headersToUpdate);
+            existingHeaders.removeAll(headersToUpdate);
+            headersToDelete = existingHeaders;
+
+            requestDao.updateRequestWithHeaders(updatedRequest, headersToInsert, headersToUpdate, headersToDelete);
         });
     }
 
