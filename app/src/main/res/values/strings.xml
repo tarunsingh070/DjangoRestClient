@@ -71,6 +71,8 @@
     <string name="key_timeout_read_preference">timeout_read_preference</string>
     <string name="key_timeout_write_preference">timeout_write_preference</string>
     <string name="summary_timeout_preferences">After %s seconds</string>
+    <string name="value_not_set">No value set</string>
+    <string name="invalid_timeout_value_error">Timeout values can only contain digits!</string>
 
     <!--Requests List Screen-->
     <string name="no_requests_history">No requests in history yet!</string>

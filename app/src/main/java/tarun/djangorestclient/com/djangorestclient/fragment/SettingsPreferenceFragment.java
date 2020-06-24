@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Menu;
+import android.widget.Toast;
 
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
@@ -23,6 +24,7 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat impleme
     public static final String TAG = "SettingsPreferenceFragm";
 
     private SharedPreferences sharedPreferences;
+    private Preference.OnPreferenceChangeListener preferenceChangeListener;
 
     /**
      * Use this factory method to create a new instance of
@@ -89,8 +91,26 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat impleme
     private void setTimeoutPrefSummary(String preferenceKey) {
         Preference timeoutPref = findPreference(preferenceKey);
         String timeoutPrefValue = sharedPreferences.getString(preferenceKey, "");
-        if (!TextUtils.isEmpty(timeoutPrefValue)) {
-            timeoutPref.setSummary(getString(R.string.summary_timeout_preferences, timeoutPrefValue));
+
+        timeoutPref.setSummary(TextUtils.isEmpty(timeoutPrefValue) ?
+                getString(R.string.value_not_set) :
+                getString(R.string.summary_timeout_preferences, timeoutPrefValue));
+
+        timeoutPref.setOnPreferenceChangeListener(getPreferenceChangeListener());
+    }
+
+    private Preference.OnPreferenceChangeListener getPreferenceChangeListener() {
+        if (preferenceChangeListener == null) {
+            preferenceChangeListener = (preference, newValue) -> {
+                if (newValue instanceof String && TextUtils.isDigitsOnly((String) newValue)) {
+                    return true;
+                }
+
+                Toast.makeText(requireContext(), R.string.invalid_timeout_value_error, Toast.LENGTH_LONG).show();
+                return false;
+            };
         }
+
+        return preferenceChangeListener;
     }
 }
