@@ -2,17 +2,17 @@ package tarun.djangorestclient.com.djangorestclient.fragment.requestsList;
 
 import android.app.Application;
 
-import java.util.List;
-
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.paging.LivePagedListBuilder;
+import androidx.paging.PagedList;
 import tarun.djangorestclient.com.djangorestclient.model.RequestRepository;
 import tarun.djangorestclient.com.djangorestclient.model.entity.RequestWithHeaders;
 
 public class RequestsListViewModel extends AndroidViewModel {
 
     private RequestRepository requestRepository;
-    private LiveData<List<RequestWithHeaders>> requests;
+    private LiveData<PagedList<RequestWithHeaders>> requests;
     private int requestsListToShow;
 
     public RequestsListViewModel(Application application, int requestsListToShow) {
@@ -20,13 +20,13 @@ public class RequestsListViewModel extends AndroidViewModel {
         requestRepository = new RequestRepository(application);
         this.requestsListToShow = requestsListToShow;
         if (requestsListToShow == RequestsListFragment.LIST_REQUESTS_HISTORY) {
-            requests = requestRepository.getRequestsHistoryList();
+            requests = new LivePagedListBuilder<>(requestRepository.getRequestsHistoryList(), 10).build();
         } else {
-            requests = requestRepository.getSavedRequestsList();
+            requests = new LivePagedListBuilder<>(requestRepository.getSavedRequestsList(), 10).build();
         }
     }
 
-    LiveData<List<RequestWithHeaders>> getAllrequests() {
+    LiveData<PagedList<RequestWithHeaders>> getAllrequests() {
         return requests;
     }
 

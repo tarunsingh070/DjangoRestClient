@@ -307,6 +307,7 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
 
         request.setInHistory(true);
         request.setSaved(false);
+        request.clearIds();
         requestRepository.insert(request);
     }
 

@@ -3,6 +3,7 @@ package tarun.djangorestclient.com.djangorestclient.model;
 import java.util.List;
 
 import androidx.lifecycle.LiveData;
+import androidx.paging.DataSource;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -81,11 +82,11 @@ public abstract class RequestDao {
 
     @Transaction
     @Query("SELECT * from request WHERE is_in_history ORDER BY updated_at_timestamp DESC")
-    abstract LiveData<List<RequestWithHeaders>> getRequestsInHistorySortedByDate();
+    abstract DataSource.Factory<Integer, RequestWithHeaders> getRequestsInHistorySortedByDate();
 
     @Transaction
     @Query("SELECT * from request WHERE is_saved ORDER BY updated_at_timestamp DESC")
-    abstract LiveData<List<RequestWithHeaders>> getSavedRequestsSortedByDate();
+    abstract DataSource.Factory<Integer, RequestWithHeaders> getSavedRequestsSortedByDate();
 
     @Transaction
     @Query("SELECT * from request WHERE requestId = :requestId")

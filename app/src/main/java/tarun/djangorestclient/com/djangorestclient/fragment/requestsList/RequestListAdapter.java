@@ -9,12 +9,16 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import androidx.paging.PagedListAdapter;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 import tarun.djangorestclient.com.djangorestclient.R;
 import tarun.djangorestclient.com.djangorestclient.databinding.ItemRequestBinding;
+import tarun.djangorestclient.com.djangorestclient.model.entity.Header;
+import tarun.djangorestclient.com.djangorestclient.model.entity.Request;
 import tarun.djangorestclient.com.djangorestclient.model.entity.RequestWithHeaders;
 
-public class RequestListAdapter extends RecyclerView.Adapter<RequestListAdapter.RequestViewHolder> {
+public class RequestListAdapter extends PagedListAdapter<RequestWithHeaders, RequestListAdapter.RequestViewHolder> {
 
     public interface RequestListAdapterListener {
         /**
@@ -43,13 +47,36 @@ public class RequestListAdapter extends RecyclerView.Adapter<RequestListAdapter.
     }
 
     private final Context context;
-    private List<RequestWithHeaders> requests;
     private RequestListAdapterListener listener;
 
     RequestListAdapter(Context context, RequestListAdapterListener listener) {
+        super(DIFF_CALLBACK);
         this.context = context;
         this.listener = listener;
     }
+
+    private static DiffUtil.ItemCallback<RequestWithHeaders> DIFF_CALLBACK =
+            new DiffUtil.ItemCallback<RequestWithHeaders>() {
+                // Request details may have changed if reloaded from the database,
+                // but ID is fixed.
+                @Override
+                public boolean areItemsTheSame(RequestWithHeaders oldRequestWithHeaders, RequestWithHeaders newRequestWithHeaders) {
+                    return oldRequestWithHeaders.getRequest().getRequestId() == newRequestWithHeaders.getRequest().getRequestId();
+                }
+
+                @Override
+                public boolean areContentsTheSame(RequestWithHeaders oldRequestWithHeaders,
+                                                  RequestWithHeaders newRequestWithHeaders) {
+                    Request oldRequest = oldRequestWithHeaders.getRequest();
+                    List<Header> oldRequestHeaders = oldRequestWithHeaders.getHeaders();
+
+                    Request newRequest = newRequestWithHeaders.getRequest();
+                    List<Header> newRequestHeaders = newRequestWithHeaders.getHeaders();
+
+                    return oldRequest.equals(newRequest) &&
+                            oldRequestHeaders.size() == newRequestHeaders.size();
+                }
+            };
 
     @Override
     public RequestViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -60,40 +87,26 @@ public class RequestListAdapter extends RecyclerView.Adapter<RequestListAdapter.
 
     @Override
     public void onBindViewHolder(RequestViewHolder holder, int position) {
-        if (requests != null) {
-            RequestWithHeaders requestWithHeaders = requests.get(position);
+        RequestWithHeaders requestWithHeaders = getItem(position);
 
-            holder.requestType.setText(requestWithHeaders.getRequest().getRequestType().name());
-            holder.requestUrl.setText(requestWithHeaders.getRequest().getUrl());
-            holder.requestHeadersCount.setText(String.format(context.getString(R.string.header_count),
-                    requestWithHeaders.getHeaders().size()));
+        holder.requestType.setText(requestWithHeaders.getRequest().getRequestType().name());
+        holder.requestUrl.setText(requestWithHeaders.getRequest().getUrl());
+        holder.requestHeadersCount.setText(String.format(context.getString(R.string.header_count),
+                requestWithHeaders.getHeaders().size()));
 
-            holder.viewForeground.setOnClickListener(view ->
-                    listener.onRequestClicked(requestWithHeaders.getRequest().getRequestId()));
-        }
+        holder.viewForeground.setOnClickListener(view ->
+                listener.onRequestClicked(requestWithHeaders.getRequest().getRequestId()));
     }
 
-    void setRequests(List<RequestWithHeaders> requests) {
-        this.requests = requests;
-        notifyDataSetChanged();
-    }
-
-    public List<RequestWithHeaders> getRequests() {
-        return requests;
+    public RequestWithHeaders getRequestAtPosition(int position) {
+        return getItem(position);
     }
 
     void removeRequest(int position) {
-        requests.remove(position);
         notifyItemRemoved(position);
     }
 
-    void insertRequest(RequestWithHeaders request, int position) {
-        requests.add(position, request);
+    void insertRequest(int position) {
         notifyItemInserted(position);
-    }
-
-    @Override
-    public int getItemCount() {
-        return requests != null ? requests.size() : 0;
     }
 }

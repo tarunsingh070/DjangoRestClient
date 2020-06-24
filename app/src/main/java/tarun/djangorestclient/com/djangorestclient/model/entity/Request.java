@@ -123,4 +123,26 @@ public class Request {
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Request request = (Request) o;
+
+        if (getRequestId() != request.getRequestId()) return false;
+        if (!getUrl().equals(request.getUrl())) return false;
+        if (getRequestType() != request.getRequestType()) return false;
+        return getBody() != null ? getBody().equals(request.getBody()) : request.getBody() == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (getRequestId() ^ (getRequestId() >>> 32));
+        result = 31 * result + getUrl().hashCode();
+        result = 31 * result + getRequestType().hashCode();
+        result = 31 * result + (getBody() != null ? getBody().hashCode() : 0);
+        return result;
+    }
 }

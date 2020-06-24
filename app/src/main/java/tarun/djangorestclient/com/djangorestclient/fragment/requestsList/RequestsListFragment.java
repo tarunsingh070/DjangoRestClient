@@ -11,14 +11,13 @@ import android.view.ViewGroup;
 
 import com.google.android.material.snackbar.Snackbar;
 
-import java.util.List;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.paging.PagedList;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -46,6 +45,7 @@ public class RequestsListFragment extends Fragment implements
     private int requestsListToShow;
     private RequestsListViewModel requestsListViewModel;
     private FragmentRequestsListBinding binding;
+    private RequestListAdapter adapter;
     private Snackbar requestDeletedSnackbar;
     private RequestsListFragmentListener listener;
 
@@ -107,8 +107,6 @@ public class RequestsListFragment extends Fragment implements
         return binding.getRoot();
     }
 
-    RequestListAdapter adapter;
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -122,10 +120,11 @@ public class RequestsListFragment extends Fragment implements
         binding.tvEmptyLabel.setText(requestsListToShow == LIST_REQUESTS_HISTORY ?
                 R.string.no_requests_history : R.string.no_requests_saved);
 
-        requestsListViewModel.getAllrequests().observe(requireActivity(), new Observer<List<RequestWithHeaders>>() {
+        requestsListViewModel.getAllrequests().observe(getViewLifecycleOwner(), new Observer<PagedList<RequestWithHeaders>>() {
             @Override
-            public void onChanged(List<RequestWithHeaders> requests) {
-                adapter.setRequests(requests);
+            public void onChanged(PagedList<RequestWithHeaders> requests) {
+                adapter.submitList(requests);
+                adapter.notifyDataSetChanged();
                 binding.tvEmptyLabel.setVisibility(requests.isEmpty() ? View.VISIBLE : View.GONE);
             }
         });
@@ -148,36 +147,49 @@ public class RequestsListFragment extends Fragment implements
     }
 
     void deleteRequestFromList(int position) {
-        RequestWithHeaders requestToDelete = adapter.getRequests().get(position);
+        RequestWithHeaders requestToDelete = adapter.getRequestAtPosition(position);
 
-        //FixMe: Currently, quickly deleting rows results in inconsistent no of rows.
-        // Look for a solution, or remove the undo option.
-        if (requestDeletedSnackbar != null && requestDeletedSnackbar.isShown()) {
-            requestDeletedSnackbar.dismiss();
-        }
+        //FixMe: Currently, We have the following problem :
+        // 1. Delete row "request-2" at position 2, snackbar with undo option will pop up. This will just remove row "request-2" from
+        // the adapter's list UI but the underlying PagedList still has "request-2" at index 2 because the request hasn't been deleted from db yet
+        // and hence the PagedList hasn't been updated.
+        // 2. Now, before the undo snackbar goes down, delete the row right under it i.e. "request-3" which has now shifted to position 2 from position 3.
+        // So, the swipe action will actually still give object "request-2" from the PagedList located at index 2 instead of "request-3" which is still
+        // located at index 3 even though in UI "request-3" looks in position 2.
+        // 3. Because of this another call to delete "request-2" is made instead of "request-3".
+        // -
+        // Look for a solution, or remove the undo option until then.
+//        if (requestDeletedSnackbar != null && requestDeletedSnackbar.isShown()) {
+//            requestDeletedSnackbar.dismiss();
+//        }
+//
+//        Snackbar.Callback snackbarCallback = new Snackbar.Callback() {
+//            @Override
+//            public void onDismissed(Snackbar transientBottomBar, int event) {
+//                super.onDismissed(transientBottomBar, event);
+//                Toast.makeText(getContext(), "Deleting : " + requestToDelete.getRequest().getUrl(), Toast.LENGTH_SHORT).show();
+//                Log.e("bla", "onDismissed: " + "Deleting : " + requestToDelete.getRequest().getUrl());
+//                requestsListViewModel
+//                        .deleteRequestById(requestToDelete.getRequest().getRequestId());
+//            }
+//        };
+//
+//        requestDeletedSnackbar = Snackbar
+//                .make(requireView(), R.string.request_deleted, Snackbar.LENGTH_SHORT)
+//                .addCallback(snackbarCallback)
+//                .setAction(R.string.undo, view -> {
+//                    requestDeletedSnackbar.removeCallback(snackbarCallback);
+//                    restoreRequestIntoList(requestToDelete, position);
+//                });
+//
+//        requestDeletedSnackbar.show();
 
-        Snackbar.Callback snackbarCallback = new Snackbar.Callback() {
-            @Override
-            public void onDismissed(Snackbar transientBottomBar, int event) {
-                super.onDismissed(transientBottomBar, event);
-                requestsListViewModel
-                        .deleteRequestById(requestToDelete.getRequest().getRequestId());
-            }
-        };
-
-        requestDeletedSnackbar = Snackbar
-                .make(requireView(), R.string.request_deleted, Snackbar.LENGTH_LONG)
-                .addCallback(snackbarCallback)
-                .setAction(R.string.undo, view -> {
-                    requestDeletedSnackbar.removeCallback(snackbarCallback);
-                    restoreRequestIntoList(requestToDelete, position);
-                });
-
-        requestDeletedSnackbar.show();
+        requestsListViewModel
+                .deleteRequestById(requestToDelete.getRequest().getRequestId());
     }
 
     void restoreRequestIntoList(RequestWithHeaders deletedRequest, int position) {
-        adapter.insertRequest(deletedRequest, position);
+        adapter.insertRequest(position);
     }
 
     @Override

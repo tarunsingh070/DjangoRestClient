@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import androidx.lifecycle.LiveData;
+import androidx.paging.DataSource;
 import tarun.djangorestclient.com.djangorestclient.model.entity.Header;
 import tarun.djangorestclient.com.djangorestclient.model.entity.Request;
 import tarun.djangorestclient.com.djangorestclient.model.entity.RequestWithHeaders;
@@ -13,8 +14,8 @@ import tarun.djangorestclient.com.djangorestclient.model.entity.RequestWithHeade
 public class RequestRepository {
 
     private RequestDao requestDao;
-    private LiveData<List<RequestWithHeaders>> requestsHistoryList;
-    private LiveData<List<RequestWithHeaders>> savedRequestsList;
+    private DataSource.Factory<Integer, RequestWithHeaders> requestsHistoryList;
+    private DataSource.Factory<Integer, RequestWithHeaders> savedRequestsList;
 
     // FixMe: Note that in order to unit test the RequestRepository, you have to remove the Application
     //  dependency. This adds complexity and much more code, and this sample is not about testing.
@@ -29,14 +30,14 @@ public class RequestRepository {
         return requestDao.getRequestById(requestId);
     }
 
-    public LiveData<List<RequestWithHeaders>> getRequestsHistoryList() {
+    public DataSource.Factory<Integer, RequestWithHeaders> getRequestsHistoryList() {
         if (requestsHistoryList == null) {
             requestsHistoryList = requestDao.getRequestsInHistorySortedByDate();
         }
         return requestsHistoryList;
     }
 
-    public LiveData<List<RequestWithHeaders>> getSavedRequestsList() {
+    public DataSource.Factory<Integer, RequestWithHeaders> getSavedRequestsList() {
         if (savedRequestsList == null) {
             savedRequestsList = requestDao.getSavedRequestsSortedByDate();
         }

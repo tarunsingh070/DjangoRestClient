@@ -46,6 +46,7 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'com.squareup.okhttp3:okhttp:4.7.2'
     implementation 'androidx.preference:preference:1.1.1'
+    implementation "androidx.paging:paging-runtime:$paging_version"
 
     // Room components
     implementation "androidx.room:room-runtime:$rootProject.roomVersion"
@@ -60,6 +61,7 @@ dependencies {
     implementation "com.google.android.material:material:$rootProject.materialVersion"
 
     testImplementation 'junit:junit:4.13'
+    testImplementation "androidx.paging:paging-common:$paging_version"
 
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
