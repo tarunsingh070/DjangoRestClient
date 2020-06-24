@@ -14,8 +14,7 @@ import tarun.djangorestclient.com.djangorestclient.model.entity.RequestWithHeade
 public class RequestRepository {
 
     private RequestDao requestDao;
-    private DataSource.Factory<Integer, RequestWithHeaders> requestsHistoryList;
-    private DataSource.Factory<Integer, RequestWithHeaders> savedRequestsList;
+    private DataSource.Factory<Integer, RequestWithHeaders> requestsList;
 
     // FixMe: Note that in order to unit test the RequestRepository, you have to remove the Application
     //  dependency. This adds complexity and much more code, and this sample is not about testing.
@@ -31,17 +30,25 @@ public class RequestRepository {
     }
 
     public DataSource.Factory<Integer, RequestWithHeaders> getRequestsHistoryList() {
-        if (requestsHistoryList == null) {
-            requestsHistoryList = requestDao.getRequestsInHistorySortedByDate();
+        if (requestsList == null) {
+            requestsList = requestDao.getRequestsInHistorySortedByDate();
         }
-        return requestsHistoryList;
+        return requestsList;
     }
 
     public DataSource.Factory<Integer, RequestWithHeaders> getSavedRequestsList() {
-        if (savedRequestsList == null) {
-            savedRequestsList = requestDao.getSavedRequestsSortedByDate();
+        if (requestsList == null) {
+            requestsList = requestDao.getSavedRequestsSortedByDate();
         }
-        return savedRequestsList;
+        return requestsList;
+    }
+
+    public DataSource.Factory<Integer, RequestWithHeaders> searchRequestsHistoryList(String searchText) {
+        return requestDao.searchRequestsInHistorySortedByDate(searchText);
+    }
+
+    public DataSource.Factory<Integer, RequestWithHeaders> searchSavedRequestsList(String searchText) {
+        return requestDao.searchSavedRequestsSortedByDate(searchText);
     }
 
     // You must call this on a non-UI thread or your app will throw an exception. Room ensures

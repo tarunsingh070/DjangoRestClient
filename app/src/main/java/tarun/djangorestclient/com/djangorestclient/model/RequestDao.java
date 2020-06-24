@@ -89,6 +89,14 @@ public abstract class RequestDao {
     abstract DataSource.Factory<Integer, RequestWithHeaders> getSavedRequestsSortedByDate();
 
     @Transaction
+    @Query("SELECT * from request WHERE is_in_history AND url LIKE '%' || :searchText || '%' ORDER BY updated_at_timestamp DESC")
+    abstract DataSource.Factory<Integer, RequestWithHeaders> searchRequestsInHistorySortedByDate(String searchText);
+
+    @Transaction
+    @Query("SELECT * from request WHERE is_saved AND url LIKE '%' || :searchText || '%' ORDER BY updated_at_timestamp DESC")
+    abstract DataSource.Factory<Integer, RequestWithHeaders> searchSavedRequestsSortedByDate(String searchText);
+
+    @Transaction
     @Query("SELECT * from request WHERE requestId = :requestId")
     abstract LiveData<RequestWithHeaders> getRequestById(long requestId);
 }

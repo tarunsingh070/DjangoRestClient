@@ -18,8 +18,9 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.paging.PagedList;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -56,6 +57,7 @@ public class RequestsListFragment extends Fragment implements
     private RequestListAdapter adapter;
     private Snackbar requestDeletedSnackbar;
     private RequestsListFragmentListener listener;
+    private LiveData<PagedList<RequestWithHeaders>> requestsList;
 
     public RequestsListFragment() {
         // Required empty public constructor
@@ -128,13 +130,18 @@ public class RequestsListFragment extends Fragment implements
         binding.tvEmptyLabel.setText(requestsListToShow == LIST_REQUESTS_HISTORY ?
                 R.string.no_requests_history : R.string.no_requests_saved);
 
-        requestsListViewModel.getAllrequests().observe(getViewLifecycleOwner(), new Observer<PagedList<RequestWithHeaders>>() {
-            @Override
-            public void onChanged(PagedList<RequestWithHeaders> requests) {
-                adapter.submitList(requests);
-                adapter.notifyDataSetChanged();
-                binding.tvEmptyLabel.setVisibility(requests.isEmpty() ? View.VISIBLE : View.GONE);
-            }
+        observeRequestsList(requestsListViewModel.getAllrequests());
+    }
+
+    private void observeRequestsList(LiveData<PagedList<RequestWithHeaders>> updatedRequestsList) {
+        if (requestsList != null) {
+            requestsList.removeObservers(getViewLifecycleOwner());
+        }
+        requestsList = updatedRequestsList;
+        requestsList.observe(getViewLifecycleOwner(), requests -> {
+            adapter.submitList(requests);
+            adapter.notifyDataSetChanged();
+            binding.tvEmptyLabel.setVisibility(requests.isEmpty() ? View.VISIBLE : View.GONE);
         });
     }
 
@@ -203,6 +210,46 @@ public class RequestsListFragment extends Fragment implements
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.requests_list_fragment_menu, menu);
+
+        MenuItem searchViewMenuItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) searchViewMenuItem.getActionView();
+        searchView.setQueryHint(getString(R.string.search_request_url));
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                if (!query.isEmpty()) {
+                    observeRequestsList(requestsListViewModel.searchRequestsByUrl(query));
+                    binding.tvEmptyLabel.setText(R.string.no_results);
+                }
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                if (s.isEmpty()) {
+                    observeRequestsList(requestsListViewModel.getAllrequests());
+                    binding.tvEmptyLabel.setText(requestsListToShow == LIST_REQUESTS_HISTORY ?
+                            R.string.no_requests_history : R.string.no_requests_saved);
+                }
+                return false;
+            }
+        });
+
+        searchViewMenuItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem menuItem) {
+                return true;
+            }
+
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem menuItem) {
+                observeRequestsList(requestsListViewModel.getAllrequests());
+                binding.tvEmptyLabel.setText(requestsListToShow == LIST_REQUESTS_HISTORY ?
+                        R.string.no_requests_history : R.string.no_requests_saved);
+                return true;
+            }
+        });
+
         super.onCreateOptionsMenu(menu, inflater);
     }
 

@@ -21,6 +21,9 @@ public class RequestsListViewModel extends AndroidViewModel {
         super(application);
         requestRepository = new RequestRepository(application);
         this.requestsListToShow = requestsListToShow;
+    }
+
+    LiveData<PagedList<RequestWithHeaders>> getAllrequests() {
         if (requestsListToShow == RequestsListFragment.LIST_REQUESTS_HISTORY) {
             requests = new LivePagedListBuilder<>(requestRepository.getRequestsHistoryList(),
                     REQUESTS_LIST_PAGE_SIZE).build();
@@ -28,9 +31,17 @@ public class RequestsListViewModel extends AndroidViewModel {
             requests = new LivePagedListBuilder<>(requestRepository.getSavedRequestsList(),
                     REQUESTS_LIST_PAGE_SIZE).build();
         }
+        return requests;
     }
 
-    LiveData<PagedList<RequestWithHeaders>> getAllrequests() {
+    LiveData<PagedList<RequestWithHeaders>> searchRequestsByUrl(String searchText) {
+        if (requestsListToShow == RequestsListFragment.LIST_REQUESTS_HISTORY) {
+            requests = new LivePagedListBuilder<>(requestRepository.searchRequestsHistoryList(searchText),
+                    REQUESTS_LIST_PAGE_SIZE).build();
+        } else {
+            requests = new LivePagedListBuilder<>(requestRepository.searchSavedRequestsList(searchText),
+                    REQUESTS_LIST_PAGE_SIZE).build();
+        }
         return requests;
     }
 
@@ -40,7 +51,6 @@ public class RequestsListViewModel extends AndroidViewModel {
         } else {
             requestRepository.deleteAllSavedRequests();
         }
-
     }
 
     void deleteRequestById(long requestId) {

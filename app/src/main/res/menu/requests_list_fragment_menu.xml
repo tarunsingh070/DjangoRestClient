@@ -6,4 +6,11 @@
         android:icon="@drawable/ic_delete_sweep_white"
         android:title="@string/action_delete_all_requests"
         app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/action_search"
+        android:icon="@drawable/ic_search_white"
+        app:showAsAction="always|collapseActionView"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        android:title="@string/action_search_requests"/>
 </menu>
