@@ -76,6 +76,9 @@
             android:layout_alignParentEnd="true"
             android:layout_margin="20dp"
             android:src="@drawable/ic_content_copy_white"
+            app:tint="@android:color/white"
+            android:backgroundTint="@color/colorAccent"
+            app:borderWidth="0dp"
             app:fabSize="mini" />
 
     </RelativeLayout>

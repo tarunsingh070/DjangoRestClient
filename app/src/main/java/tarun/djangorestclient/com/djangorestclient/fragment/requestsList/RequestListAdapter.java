@@ -3,6 +3,7 @@ package tarun.djangorestclient.com.djangorestclient.fragment.requestsList;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -12,11 +13,11 @@ import java.util.List;
 import androidx.paging.PagedListAdapter;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
-import tarun.djangorestclient.com.djangorestclient.R;
 import tarun.djangorestclient.com.djangorestclient.databinding.ItemRequestBinding;
 import tarun.djangorestclient.com.djangorestclient.model.entity.Header;
 import tarun.djangorestclient.com.djangorestclient.model.entity.Request;
 import tarun.djangorestclient.com.djangorestclient.model.entity.RequestWithHeaders;
+import tarun.djangorestclient.com.djangorestclient.utils.DateFormatHelper;
 
 public class RequestListAdapter extends PagedListAdapter<RequestWithHeaders, RequestListAdapter.RequestViewHolder> {
 
@@ -27,12 +28,16 @@ public class RequestListAdapter extends PagedListAdapter<RequestWithHeaders, Req
          * @param requestId The Id of the request selected
          */
         void onRequestClicked(long requestId);
+
+        void onRequestInfoButtonClicked(RequestWithHeaders request);
     }
 
     class RequestViewHolder extends RecyclerView.ViewHolder {
         private final TextView requestType;
         private final TextView requestUrl;
-        private final TextView requestHeadersCount;
+        //        private final TextView requestHeadersCount;
+        private final TextView requestLastUpdatedTimestamp;
+        private final ImageView requestInfo;
         public final RelativeLayout viewBackground;
         public final LinearLayout viewForeground;
 
@@ -40,7 +45,9 @@ public class RequestListAdapter extends PagedListAdapter<RequestWithHeaders, Req
             super(binding.getRoot());
             requestType = binding.tvRequestType;
             requestUrl = binding.tvRequestUrl;
-            requestHeadersCount = binding.tvHeadersCount;
+//            requestHeadersCount = binding.tvHeadersCount;
+            requestLastUpdatedTimestamp = binding.tvTimestamp;
+            requestInfo = binding.ivRequestInfo;
             viewBackground = binding.viewBackground;
             viewForeground = binding.viewForeground;
         }
@@ -91,9 +98,12 @@ public class RequestListAdapter extends PagedListAdapter<RequestWithHeaders, Req
 
         holder.requestType.setText(requestWithHeaders.getRequest().getRequestType().name());
         holder.requestUrl.setText(requestWithHeaders.getRequest().getUrl());
-        holder.requestHeadersCount.setText(String.format(context.getString(R.string.header_count),
-                requestWithHeaders.getHeaders().size()));
+//        holder.requestHeadersCount.setText(String.format(context.getString(R.string.header_count),
+//                requestWithHeaders.getHeaders().size()));
 
+        holder.requestLastUpdatedTimestamp.setText(DateFormatHelper.getString(requestWithHeaders.getRequest().getUpdatedAt()));
+
+        holder.requestInfo.setOnClickListener(view -> listener.onRequestInfoButtonClicked(getItem(position)));
         holder.viewForeground.setOnClickListener(view ->
                 listener.onRequestClicked(requestWithHeaders.getRequest().getRequestId()));
     }

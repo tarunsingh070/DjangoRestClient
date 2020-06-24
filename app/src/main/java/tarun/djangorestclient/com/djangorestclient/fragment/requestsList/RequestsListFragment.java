@@ -9,7 +9,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.snackbar.Snackbar;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,8 +27,12 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import tarun.djangorestclient.com.djangorestclient.R;
+import tarun.djangorestclient.com.djangorestclient.adapter.HeadersRecyclerViewAdapter;
+import tarun.djangorestclient.com.djangorestclient.databinding.BottomSheetRequestInfoBinding;
 import tarun.djangorestclient.com.djangorestclient.databinding.FragmentRequestsListBinding;
 import tarun.djangorestclient.com.djangorestclient.fragment.DjangoViewModelFactory;
+import tarun.djangorestclient.com.djangorestclient.model.entity.Header;
+import tarun.djangorestclient.com.djangorestclient.model.entity.Request;
 import tarun.djangorestclient.com.djangorestclient.model.entity.RequestWithHeaders;
 
 /**
@@ -222,5 +230,49 @@ public class RequestsListFragment extends Fragment implements
     @Override
     public void onRequestClicked(long requestId) {
         listener.onRequestClicked(requestId);
+    }
+
+    @Override
+    public void onRequestInfoButtonClicked(RequestWithHeaders requestWithHeaders) {
+        showAdditionalRequestInfo(requestWithHeaders);
+    }
+
+    /**
+     * Show the additional response information inside a bottom sheet dialog.
+     */
+    private void showAdditionalRequestInfo(RequestWithHeaders requestWithHeaders) {
+        BottomSheetRequestInfoBinding requestInfoBinding =
+                BottomSheetRequestInfoBinding.inflate(getLayoutInflater());
+
+        Request request = requestWithHeaders.getRequest();
+        requestInfoBinding.tvRequestUrl.setText(request.getUrl());
+        requestInfoBinding.tvRequestType.setText(request.getRequestType().name());
+
+        if (!requestWithHeaders.getHeaders().isEmpty()) {
+            setupHeadersRecyclerView(requestInfoBinding.headersRecyclerView, requestWithHeaders.getHeaders());
+        } else {
+            requestInfoBinding.requestHeadersContainer.setVisibility(View.GONE);
+        }
+
+        if (request.getBody() != null && !request.getBody().isEmpty()) {
+            requestInfoBinding.tvRequestBody.setText(request.getBody());
+        } else {
+            requestInfoBinding.requestBodyContainer.setVisibility(View.GONE);
+        }
+
+        BottomSheetDialog dialog = new BottomSheetDialog(getContext());
+        dialog.setContentView(requestInfoBinding.getRoot());
+        dialog.show();
+    }
+
+    private void setupHeadersRecyclerView(RecyclerView headersRecyclerView, List<Header> headers) {
+        HeadersRecyclerViewAdapter headersRecyclerViewAdapter = new HeadersRecyclerViewAdapter(true,
+                new ArrayList<>(headers));
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        headersRecyclerView.setLayoutManager(linearLayoutManager);
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(),
+                linearLayoutManager.getOrientation());
+        headersRecyclerView.addItemDecoration(dividerItemDecoration);
+        headersRecyclerView.setAdapter(headersRecyclerViewAdapter);
     }
 }

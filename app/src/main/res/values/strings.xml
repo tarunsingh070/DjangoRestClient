@@ -28,7 +28,6 @@
     <string name="hint_request_body">Raw request body text goes here</string>
     <string name="request_saved">Request saved.</string>
     <string name="request_updated">Request updated.</string>
-    <string name="request_type">Type</string>
     <string name="sending">Sending…</string>
     <string name="update_request_dialog_title">Update saved request?</string>
     <string name="update_request_dialog_message">Would you like to update the existing saved request or create and save a new one?</string>
@@ -79,7 +78,10 @@
     <string name="delete_requests_dialog_title">Delete requests?</string>
     <string name="delete_requests_history">This will clear all requests from history.</string>
     <string name="delete_saved_requests">This will clear all saved requests.</string>
+    <string name="request_body">Request body</string>
+    <string name="request_headers">Request Headers</string>
     <string name="request_deleted">Request deleted!</string>
+    <string name="request_type">Request type</string>
 
     <!-- Miscellaneous strings -->
     <string name="accept">Accept</string>

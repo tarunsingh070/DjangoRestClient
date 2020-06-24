@@ -11,6 +11,8 @@ import tarun.djangorestclient.com.djangorestclient.model.entity.RequestWithHeade
 
 public class RequestsListViewModel extends AndroidViewModel {
 
+    private static final int REQUESTS_LIST_PAGE_SIZE = 50;
+
     private RequestRepository requestRepository;
     private LiveData<PagedList<RequestWithHeaders>> requests;
     private int requestsListToShow;
@@ -20,9 +22,11 @@ public class RequestsListViewModel extends AndroidViewModel {
         requestRepository = new RequestRepository(application);
         this.requestsListToShow = requestsListToShow;
         if (requestsListToShow == RequestsListFragment.LIST_REQUESTS_HISTORY) {
-            requests = new LivePagedListBuilder<>(requestRepository.getRequestsHistoryList(), 10).build();
+            requests = new LivePagedListBuilder<>(requestRepository.getRequestsHistoryList(),
+                    REQUESTS_LIST_PAGE_SIZE).build();
         } else {
-            requests = new LivePagedListBuilder<>(requestRepository.getSavedRequestsList(), 10).build();
+            requests = new LivePagedListBuilder<>(requestRepository.getSavedRequestsList(),
+                    REQUESTS_LIST_PAGE_SIZE).build();
         }
     }
 

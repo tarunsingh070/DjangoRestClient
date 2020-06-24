@@ -22,7 +22,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:labelFor="@+id/request_types_spinner"
-                android:text="@string/request_type"/>
+                android:text="@string/type"/>
 
             <Spinner
                 android:id="@+id/request_types_spinner"
@@ -86,7 +86,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="10dp"
-                    android:src="@drawable/ic_add_black"
+                    android:src="@drawable/ic_add_white"
+                    app:tint="@android:color/white"
+                    android:backgroundTint="@color/colorAccent"
+                    app:borderWidth="0dp"
                     app:fabSize="mini"/>
 
             </LinearLayout>

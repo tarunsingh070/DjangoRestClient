@@ -16,7 +16,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import tarun.djangorestclient.com.djangorestclient.R;
 import tarun.djangorestclient.com.djangorestclient.databinding.HeaderRowLayoutBinding;
-import tarun.djangorestclient.com.djangorestclient.fragment.RequestFragment;
 import tarun.djangorestclient.com.djangorestclient.model.entity.Header;
 
 /**
@@ -25,12 +24,19 @@ import tarun.djangorestclient.com.djangorestclient.model.entity.Header;
 
 public class HeadersRecyclerViewAdapter extends RecyclerView.Adapter<HeadersRecyclerViewAdapter.ViewHolder> {
 
+    // A flag indicating if the headers list will be a read only list or editable.
+    private boolean isReadOnly;
     private final ArrayList<Header> headers;
     private final HeaderOptionsClickedListener headerOptionsClickedListener;
 
-    public HeadersRecyclerViewAdapter(RequestFragment requestFragment, ArrayList<Header> headers) {
-        this.headerOptionsClickedListener = requestFragment;
+    public HeadersRecyclerViewAdapter(boolean isReadOnly, ArrayList<Header> headers) {
+        this(null, headers, isReadOnly);
+    }
+
+    public HeadersRecyclerViewAdapter(HeaderOptionsClickedListener listener, ArrayList<Header> headers, boolean isReadOnly) {
+        this.headerOptionsClickedListener = listener;
         this.headers = headers;
+        this.isReadOnly = isReadOnly;
     }
 
     @NonNull
@@ -46,6 +52,12 @@ public class HeadersRecyclerViewAdapter extends RecyclerView.Adapter<HeadersRecy
         holder.header = headers.get(position);
         holder.binding.tvHeaderName.setText(getHeaderName(holder.header));
         holder.binding.tvHeaderValue.setText(holder.header.getHeaderValue());
+        if (isReadOnly) {
+            holder.binding.deleteHeaderButton.setVisibility(View.GONE);
+            holder.binding.editHeaderButton.setVisibility(View.GONE);
+            return;
+        }
+
         holder.binding.deleteHeaderButton.setOnClickListener(holder);
         holder.binding.editHeaderButton.setOnClickListener(holder);
     }

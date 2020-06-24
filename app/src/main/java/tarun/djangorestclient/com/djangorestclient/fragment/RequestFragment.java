@@ -35,7 +35,6 @@ import com.google.android.material.snackbar.Snackbar;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -61,6 +60,7 @@ import tarun.djangorestclient.com.djangorestclient.model.entity.Header.HeaderTyp
 import tarun.djangorestclient.com.djangorestclient.model.entity.Request;
 import tarun.djangorestclient.com.djangorestclient.model.entity.Request.RequestType;
 import tarun.djangorestclient.com.djangorestclient.model.entity.RequestWithHeaders;
+import tarun.djangorestclient.com.djangorestclient.utils.DateFormatHelper;
 import tarun.djangorestclient.com.djangorestclient.utils.HttpUtil;
 import tarun.djangorestclient.com.djangorestclient.utils.MiscUtil;
 import tarun.djangorestclient.com.djangorestclient.utils.RestClient;
@@ -132,7 +132,8 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
         binding.etInputUrl.setSelection(getString(R.string.url_default_text).length());
         binding.requestTypesSpinner.setSelection(0);
         binding.etRequestBody.getText().clear();
-        headersRecyclerViewAdapter = new HeadersRecyclerViewAdapter(this, request.getHeaders());
+        headersRecyclerViewAdapter = new HeadersRecyclerViewAdapter(this,
+                request.getHeaders(), false);
         bindViews();
     }
 
@@ -322,7 +323,7 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
             request.setBody(binding.etRequestBody.getText().toString());
         }
 
-        request.setUpdatedAt(new Date());
+        request.setUpdatedAt(DateFormatHelper.getCurrentDate());
         return request;
     }
 

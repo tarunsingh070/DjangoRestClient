@@ -4,22 +4,22 @@
         <item
             android:id="@+id/nav_rest_calls"
             android:icon="@drawable/ic_cloud_upload_black"
-            android:title="@string/rest_requests" />
-        <item
-            android:id="@+id/nav_settings"
-            android:icon="@drawable/ic_settings_black"
-            android:title="@string/settings" />
-        <item
-            android:id="@+id/nav_about"
-            android:icon="@drawable/ic_stars_black"
-            android:title="@string/about" />
-        <item
-            android:id="@+id/nav_history"
-            android:icon="@drawable/ic_history_black"
-            android:title="@string/history" />
+            android:title="@string/rest_requests"/>
         <item
             android:id="@+id/nav_saved"
             android:icon="@drawable/ic_save_black"
-            android:title="@string/saved_requests" />
+            android:title="@string/saved_requests"/>
+        <item
+            android:id="@+id/nav_history"
+            android:icon="@drawable/ic_history_black"
+            android:title="@string/history"/>
+        <item
+        android:id="@+id/nav_settings"
+        android:icon="@drawable/ic_settings_black"
+        android:title="@string/settings"/>
+        <item
+        android:id="@+id/nav_about"
+        android:icon="@drawable/ic_stars_black"
+        android:title="@string/about"/>
     </group>
 </menu>
