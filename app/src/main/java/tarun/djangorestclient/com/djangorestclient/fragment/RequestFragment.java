@@ -29,6 +29,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -281,31 +282,39 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
         }
 
         Request request = prepareRequestObject();
+        try {
+            MiscUtil.showSpinner(getActivity());
 
-        switch (request.getRequestType()) {
-            case GET:
-                restClient.get(request.getUrl(), request.getHeaders(), getRequestCallback());
-                break;
+            switch (request.getRequestType()) {
+                case GET:
+                    restClient.get(request.getUrl(), request.getHeaders(), getRequestCallback());
+                    break;
 
-            case POST:
-                restClient.post(request.getUrl(), request.getHeaders(), request.getBody(), getRequestCallback());
-                break;
+                case POST:
+                    restClient.post(request.getUrl(), request.getHeaders(), request.getBody(), getRequestCallback());
+                    break;
 
-            case PUT:
-                restClient.put(request.getUrl(), request.getHeaders(), request.getBody(), getRequestCallback());
-                break;
+                case PUT:
+                    restClient.put(request.getUrl(), request.getHeaders(), request.getBody(), getRequestCallback());
+                    break;
 
-            case DELETE:
-                restClient.delete(request.getUrl(), request.getHeaders(), request.getBody(), getRequestCallback());
-                break;
+                case DELETE:
+                    restClient.delete(request.getUrl(), request.getHeaders(), request.getBody(), getRequestCallback());
+                    break;
 
-            case HEAD:
-                restClient.head(request.getUrl(), request.getHeaders(), getRequestCallback());
-                break;
+                case HEAD:
+                    restClient.head(request.getUrl(), request.getHeaders(), getRequestCallback());
+                    break;
 
-            case PATCH:
-                restClient.patch(request.getUrl(), request.getHeaders(), request.getBody(), getRequestCallback());
-                break;
+                case PATCH:
+                    restClient.patch(request.getUrl(), request.getHeaders(), request.getBody(), getRequestCallback());
+                    break;
+            }
+        } catch (IllegalArgumentException e) {
+            // If any headers have an invalid value, then IllegalArgumentException is thrown.
+            MiscUtil.hideSpinner(getActivity());
+            Toast.makeText(requireContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+            return;
         }
 
         request.setInHistory(true);
@@ -330,8 +339,6 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
     }
 
     private Callback getRequestCallback() {
-        MiscUtil.showSpinner(getActivity());
-
         return new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {

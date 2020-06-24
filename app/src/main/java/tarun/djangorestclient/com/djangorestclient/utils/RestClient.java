@@ -74,49 +74,42 @@ public class RestClient {
     public void get(String url, List<Header> headers, Callback callback) {
         Request request = new Request.Builder().url(url).headers(HttpUtil.getParsedHeaders(headers)).get()
                 .build();
-        updateClient();
-        Call call = client.newCall(request);
-        call.enqueue(callback);
+        enqueueRequest(request, callback);
     }
 
     public void post(String url, List<Header> headers, String body, Callback callback) {
         Request request = new Request.Builder().url(url).headers(HttpUtil.getParsedHeaders(headers)).post
                 (body == null ? Util.EMPTY_REQUEST : RequestBody.create(body, null)).build();
-        updateClient();
-        Call call = client.newCall(request);
-        call.enqueue(callback);
+        enqueueRequest(request, callback);
     }
 
     public void head(String url, List<Header> headers, Callback callback) {
         Request request = new Request.Builder().url(url).headers(HttpUtil.getParsedHeaders(headers)).head()
                 .build();
-        updateClient();
-        Call call = client.newCall(request);
-        call.enqueue(callback);
+        enqueueRequest(request, callback);
     }
 
     public void put(String url, List<Header> headers, String body, Callback callback) {
         Request request = new Request.Builder().url(url).headers(HttpUtil.getParsedHeaders(headers)).put
                 (body == null ? Util.EMPTY_REQUEST : RequestBody.create(body, null)).build();
-        updateClient();
-        Call call = client.newCall(request);
-        call.enqueue(callback);
+        enqueueRequest(request, callback);
     }
 
     public void delete(String url, List<Header> headers, String body, Callback callback) {
         Request request = new Request.Builder().url(url).headers(HttpUtil.getParsedHeaders(headers)).delete
                 (body == null ? null : RequestBody.create(body, null)).build();
-        updateClient();
-        Call call = client.newCall(request);
-        call.enqueue(callback);
+        enqueueRequest(request, callback);
     }
 
     public void patch(String url, List<Header> headers, String body, Callback callback) {
         Request request = new Request.Builder().url(url).headers(HttpUtil.getParsedHeaders(headers)).patch
                 (body == null ? Util.EMPTY_REQUEST : RequestBody.create(body, null)).build();
+        enqueueRequest(request, callback);
+    }
+
+    private void enqueueRequest(Request request, Callback callback) {
         updateClient();
         Call call = client.newCall(request);
         call.enqueue(callback);
     }
-
 }
