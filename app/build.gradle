@@ -1,12 +1,17 @@
 apply plugin: 'com.android.application'
 
+// Load keystore.properties file for our signing configs
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+def keystoreProperties = new Properties()
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
 android {
     signingConfigs {
         releaseConfig {
-            keyAlias 'DjangoRestClientKey'
-            keyPassword '07010102710'
-            storeFile file('/Users/tarunsingh/Android Dev/My Apps/Keys/DjangoRestClientKey')
-            storePassword '07010102710'
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile file(keystoreProperties['storeFile'])
+            storePassword keystoreProperties['storePassword']
         }
     }
     compileSdkVersion 29
@@ -55,7 +60,7 @@ dependencies {
 
     // Lifecycle components
     implementation "androidx.lifecycle:lifecycle-extensions:$rootProject.archLifecycleVersion"
-    annotationProcessor "androidx.lifecycle:lifecycle-compiler:$rootProject.archLifecycleVersion"
+    annotationProcessor "android.arch.lifecycle:common-java8:$rootProject.archLifecycleVersion"
 
     // UI
     implementation "com.google.android.material:material:$rootProject.materialVersion"
