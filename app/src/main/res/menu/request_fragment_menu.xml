@@ -2,17 +2,20 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/action_clear_request"
+    <item
+        android:id="@+id/action_clear_request"
         android:icon="@drawable/ic_refresh_white"
         android:title="@string/action_clear_request"
         app:showAsAction="ifRoom"/>
 
-    <item android:id="@+id/action_save_request"
+    <item
+        android:id="@+id/action_save_request"
         android:icon="@drawable/ic_save_white"
         android:title="@string/action_save_request"
         app:showAsAction="ifRoom"/>
 
-    <item android:id="@+id/action_send_request"
+    <item
+        android:id="@+id/action_send_request"
         android:icon="@drawable/ic_send_white"
         android:title="@string/action_send_request"
         app:showAsAction="always"/>

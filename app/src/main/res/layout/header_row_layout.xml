@@ -4,8 +4,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-<!--    Without the above Extra Linear layout parent, the layout messes up. -->
-<!--    Some kind of bug : https://stackoverflow.com/a/33997626     -->
+    <!--    Without the above Extra Linear layout parent, the layout messes up. -->
+    <!--    Some kind of bug : https://stackoverflow.com/a/33997626     -->
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"

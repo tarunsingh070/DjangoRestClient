@@ -18,6 +18,15 @@ public class RestResponse {
     private CharSequence responseHeaders;
     private String responseBody;
 
+    /**
+     * Constructor.
+     *
+     * @param responseCode    The response code received.
+     * @param responseTime    The response time.
+     * @param url             The URL of the response.
+     * @param responseHeaders The list of response Headers received as a String.
+     * @param responseBody    The response body received.
+     */
     public RestResponse(int responseCode, long responseTime, String url, CharSequence responseHeaders, String responseBody) {
         this.responseCode = responseCode;
         this.responseTime = responseTime;
@@ -65,5 +74,4 @@ public class RestResponse {
     public void setResponseBody(String responseBody) {
         this.responseBody = responseBody;
     }
-
 }

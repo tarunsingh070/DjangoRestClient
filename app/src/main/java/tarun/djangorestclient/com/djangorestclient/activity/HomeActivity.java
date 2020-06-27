@@ -48,13 +48,6 @@ public class HomeActivity extends AppCompatActivity implements
         actionbar.setHomeAsUpIndicator(R.drawable.ic_menu);
         actionbar.setElevation(0);
 
-        setupViews();
-    }
-
-    /**
-     * Setup all initialized views.
-     */
-    private void setupViews() {
         setupNavigationView();
     }
 
@@ -63,7 +56,7 @@ public class HomeActivity extends AppCompatActivity implements
      */
     private void setupNavigationView() {
         binding.navigationView.setNavigationItemSelectedListener(menuItem -> {
-            // close drawer when item is tapped
+            // close drawer when an item is tapped
             binding.drawerLayout.closeDrawers();
 
             // Simply return if selected menu item was already selected.
@@ -116,10 +109,21 @@ public class HomeActivity extends AppCompatActivity implements
         binding.navigationView.getMenu().performIdentifierAction(R.id.nav_rest_calls, 0);
     }
 
+    /**
+     * Replaces the fragment based on the Fragment tag passed in.
+     *
+     * @param fragmentTag The tag of the fragment to be replaced.
+     */
     private void replaceFragment(final String fragmentTag) {
         replaceFragment(fragmentTag, null);
     }
 
+    /**
+     * Replaces the fragment based on the Fragment tag passed in.
+     *
+     * @param fragmentTag The tag of the fragment to be replaced.
+     * @param args        The arguments to be sent to the fragment being replaced.
+     */
     private void replaceFragment(final String fragmentTag, Bundle args) {
         // Swap the fragments to update the UI based on the item selected.
 

@@ -99,6 +99,11 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat impleme
         timeoutPref.setOnPreferenceChangeListener(getPreferenceChangeListener());
     }
 
+    /**
+     * Create and return a listener for when a shared preference value is changed.
+     *
+     * @return The instance of {@link Preference.OnPreferenceChangeListener} created.
+     */
     private Preference.OnPreferenceChangeListener getPreferenceChangeListener() {
         if (preferenceChangeListener == null) {
             preferenceChangeListener = (preference, newValue) -> {

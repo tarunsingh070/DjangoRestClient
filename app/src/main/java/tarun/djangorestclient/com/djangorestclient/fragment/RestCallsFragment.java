@@ -18,7 +18,8 @@ import tarun.djangorestclient.com.djangorestclient.databinding.FragmentRestCalls
 import tarun.djangorestclient.com.djangorestclient.model.RestResponse;
 
 /**
- * This fragment shows the Request and Response screens in a tabular fashion for the user to make requests and view responses.
+ * This fragment shows the Request and Response screens in a tabular fashion for the user to make
+ * requests and view responses.
  */
 public class RestCallsFragment extends Fragment {
     public static final String TAG = "RestCallsFragment";
@@ -74,5 +75,4 @@ public class RestCallsFragment extends Fragment {
         binding.tabLayout.getTabAt(1).select();
         responseFragment.updateUI(restResponse);
     }
-
 }

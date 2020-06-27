@@ -32,6 +32,12 @@ public abstract class RequestRoomDatabase extends RoomDatabase {
     static final ExecutorService databaseWriteExecutor =
             Executors.newFixedThreadPool(NUMBER_OF_THREADS);
 
+    /**
+     * Gets the instance of {@link RequestRoomDatabase}
+     *
+     * @param context An instance of {@link Context}
+     * @return The instance of {@link RequestRoomDatabase}
+     */
     static RequestRoomDatabase getDatabase(final Context context) {
         if (INSTANCE == null) {
             synchronized (RequestRoomDatabase.class) {

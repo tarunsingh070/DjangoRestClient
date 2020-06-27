@@ -21,13 +21,18 @@ public class RequestResponsePagerAdapter extends FragmentPagerAdapter {
 
     private static final int NUM_TABS = 2;
 
-    private static final String TAG = RequestResponsePagerAdapter.class.getSimpleName();
-
     private RequestFragment requestFragment;
     private ResponseFragment responseFragment;
 
+    /**
+     * Constructor.
+     *
+     * @param fm               An instance of {@link FragmentManager}
+     * @param requestFragment  An instance of {@link RequestFragment}
+     * @param responseFragment An instance of {@link ResponseFragment}
+     */
     public RequestResponsePagerAdapter(FragmentManager fm, RequestFragment requestFragment, ResponseFragment responseFragment) {
-        super(fm);
+        super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         this.requestFragment = requestFragment;
         this.responseFragment = responseFragment;
     }

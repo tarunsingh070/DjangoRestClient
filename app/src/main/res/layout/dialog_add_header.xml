@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -25,7 +24,7 @@
             android:layout_height="wrap_content"
             style="@style/ScreenLabelsStyle.AddHeaderDialogLabelsStyle"
             android:labelFor="@+id/spinner_header_types"
-            android:text="@string/type" />
+            android:text="@string/type"/>
 
         <Spinner
             android:id="@+id/spinner_header_types"
@@ -47,7 +46,7 @@
             android:layout_height="wrap_content"
             android:labelFor="@+id/et_header_value_1"
             style="@style/ScreenLabelsStyle.AddHeaderDialogLabelsStyle"
-            android:text="@string/value" />
+            android:text="@string/value"/>
 
         <EditText
             android:id="@+id/et_header_value_1"
@@ -72,7 +71,7 @@
             android:layout_height="wrap_content"
             android:labelFor="@+id/et_header_value_2"
             style="@style/ScreenLabelsStyle.AddHeaderDialogLabelsStyle"
-            android:text="@string/password" />
+            android:text="@string/password"/>
 
         <EditText
             android:id="@+id/et_header_value_2"

@@ -99,6 +99,7 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
      * Use this factory method to create a new instance of
      * this fragment.
      *
+     * @param args The arguments to be passed into this fragment.
      * @return A new instance of fragment RequestFragment.
      */
     public static RequestFragment newInstance(Bundle args) {
@@ -128,20 +129,22 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
         return binding.getRoot();
     }
 
+    /**
+     * Initialize all the views on Request screen.
+     */
     private void initializeViews() {
         binding.etInputUrl.setText(R.string.url_default_text);
         binding.etInputUrl.setSelection(getString(R.string.url_default_text).length());
         binding.requestTypesSpinner.setSelection(0);
         binding.etRequestBody.getText().clear();
-        headersRecyclerViewAdapter = new HeadersRecyclerViewAdapter(this,
-                request.getHeaders(), false);
+        headersRecyclerViewAdapter = new HeadersRecyclerViewAdapter(false,
+                request.getHeaders(), this);
         bindViews();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         if (getArguments() != null) {
             long requestId = getArguments().getLong(KEY_REQUEST_ID);
             if (requestId > 0) {
@@ -150,6 +153,9 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
         }
     }
 
+    /**
+     * Reset the values of all the views on Request screen to empty or their default values.
+     */
     private void resetRequestViews() {
         request = new Request();
         if (getArguments() != null) {
@@ -159,12 +165,20 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
         initializeViews();
     }
 
+    /**
+     * Stops observing the current request for new updates.
+     */
     private void stopObservingRequestById() {
         if (requestWithHeadersLiveData != null) {
             requestWithHeadersLiveData.removeObservers(getViewLifecycleOwner());
         }
     }
 
+    /**
+     * Fetch a request by it's ID.
+     *
+     * @param requestId The ID of the request to be fetched.
+     */
     private void fetchRequestById(long requestId) {
         requestWithHeadersLiveData = requestRepository.getRequestById(requestId);
         requestWithHeadersLiveData.observe(getViewLifecycleOwner(), requestWithHeaders -> {
@@ -237,6 +251,11 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
         binding.requestTypesSpinner.setOnItemSelectedListener(getRequestTypesSpinnerListener());
     }
 
+    /**
+     * Updates all the views on Request screen with the Request data passed in.
+     *
+     * @param request The {@link Request} whose data is to be filled into the screen.
+     */
     private void updateViewsWithRequestData(Request request) {
         // Set Request type.
         List<String> requestTypeList = Arrays.asList(getResources().getStringArray(R.array.requestTypes));
@@ -317,12 +336,20 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
             return;
         }
 
+        // Before saving the request in History, set the necessary values and clear the IDs of the
+        // Request and all it's headers (to prevent duplicate insertion) in case user is seeing
+        // some pre-saved or historic request.
         request.setInHistory(true);
         request.setSaved(false);
         request.clearIds();
-        requestRepository.insert(request);
+        requestRepository.insertRequest(request);
     }
 
+    /**
+     * Prepares the Request object before sending the request.
+     *
+     * @return The prepared instance of {@link Request}
+     */
     private Request prepareRequestObject() {
         request.setUrl(binding.etInputUrl.getText().toString());
 
@@ -338,6 +365,11 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
         return request;
     }
 
+    /**
+     * Creates and returns the callback for handling the response received after sending the request.
+     *
+     * @return The instance of {@link Callback} created.
+     */
     private Callback getRequestCallback() {
         return new Callback() {
             @Override
@@ -423,6 +455,12 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
         return null;
     }
 
+    /**
+     * Creates and returns the listener to handle the event when user selects a request type
+     * from the spinner.
+     *
+     * @return The created instance of {@link AdapterView.OnItemSelectedListener}
+     */
     private AdapterView.OnItemSelectedListener getRequestTypesSpinnerListener() {
         return new AdapterView.OnItemSelectedListener() {
             @Override
@@ -446,6 +484,9 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
         };
     }
 
+    /**
+     * Saves the Request in the local DB after performing validation of all the values entered.
+     */
     private void saveRequest() {
         String url = binding.etInputUrl.getText().toString();
         if (!Patterns.WEB_URL.matcher(url).matches()) {
@@ -461,6 +502,9 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
         }
     }
 
+    /**
+     * Shows the Update Request dialog.
+     */
     void showUpdateRequestDialog() {
         new AlertDialog.Builder(requireContext())
                 .setTitle(R.string.update_request_dialog_title)
@@ -482,6 +526,14 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
                 .show();
     }
 
+    /**
+     * Inserts a new one or updates an existing request in the local DB based on the value of shouldInsert param.
+     *
+     * @param shouldInsert     Boolean indicating if the request should be inserted as a new one or
+     *                         should update an existing one in the DB.
+     * @param messageToDisplay The Toast message to display to the user based on whether the request
+     *                         is updated or inserted as a new one.
+     */
     private void insertOrUpdateRequestInDb(boolean shouldInsert, int messageToDisplay) {
         Request request = prepareRequestObject();
         request.setInHistory(false);
@@ -489,7 +541,7 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
 
         if (shouldInsert) {
             request.clearIds();
-            requestRepository.insert(request);
+            requestRepository.insertRequest(request);
         } else {
             RequestWithHeaders existingRequestWithHeaders = requestWithHeadersLiveData.getValue();
             requestRepository.update(request, existingRequestWithHeaders.getHeaders());
@@ -570,6 +622,16 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
         alertDialog.show();
     }
 
+    /**
+     * Creates and gets a click listener for when user taps the Ok button to add/update a header.
+     *
+     * @param headerTypesSpinner The instance of the Header type spinner.
+     * @param etUserInput1       Reference to the Input field 1.
+     * @param etUserInput2       Reference to the Input field 2.
+     * @param alertDialog        Reference to the Add/update header dialog being shown to the user.
+     * @param position           The position type for the current header.
+     * @return The instance of the {@link View.OnClickListener} created.
+     */
     private View.OnClickListener getOkButtonClickListener(final Spinner headerTypesSpinner, final EditText etUserInput1
             , final EditText etUserInput2, final AlertDialog alertDialog, final int position) {
         return new View.OnClickListener() {
@@ -642,6 +704,15 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
         };
     }
 
+    /**
+     * Gets the listener to handle the event when user selects the header type from the list.
+     *
+     * @param layoutHeaderFields2 The view for layout type 2 which is shown if user selects Custom
+     *                            or Basic Authorization header types.
+     * @param tvHeaderLabel1      The view of the label for input field 1.
+     * @param tvHeaderLabel2      The view of the label for input field 2.
+     * @return An instance of the {@link AdapterView.OnItemSelectedListener} created.
+     */
     private AdapterView.OnItemSelectedListener getHeaderTypesSpinnerListener(final LinearLayout layoutHeaderFields2
             , final TextView tvHeaderLabel1, final TextView tvHeaderLabel2) {
         return new AdapterView.OnItemSelectedListener() {
@@ -677,7 +748,9 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
     /**
      * Update the header in the list of headers with the new info provided.
      *
-     * @param position: The position of existing header.
+     * @param headerType The new {@link HeaderType}
+     * @param userInput1 The value from the first input field.
+     * @param position:  The position of existing header.
      */
     private void updateHeader(HeaderType headerType, String userInput1, int position) {
         Header existingHeader = request.getHeaders().get(position);
@@ -693,7 +766,10 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
     /**
      * Update the header in the list of headers with the new info provided.
      *
-     * @param position: The position of existing header.
+     * @param headerType The new {@link HeaderType}
+     * @param userInput1 The value from the first input field.
+     * @param userInput2 The value from the second input field.
+     * @param position:  The position of existing header.
      */
     private void updateHeader(HeaderType headerType, String userInput1, String userInput2, int position) {
         Header existingHeader = request.getHeaders().get(position);
@@ -707,7 +783,10 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
     }
 
     /**
-     * Create a new header with the info provided by use and add it to the list of headers.
+     * Create a new header with the info provided by user and add it to the list of headers.
+     *
+     * @param headerType The {@link HeaderType} of the header to be added.
+     * @param userInput1 The value from the first input field that user entered.
      */
     private void addHeader(HeaderType headerType, String userInput1) {
         Header header = getNewHeader(headerType, userInput1);
@@ -717,6 +796,10 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
 
     /**
      * Create a new header with the info provided by use and add it to the list of headers.
+     *
+     * @param headerType The {@link HeaderType} of the header to be added.
+     * @param userInput1 The value from the first input field that user entered.
+     * @param userInput2 The value from the second input field that user entered.
      */
     private void addHeader(HeaderType headerType, String userInput1, String userInput2) {
         Header header = getNewHeader(headerType, userInput1, userInput2);
@@ -727,6 +810,8 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
     /**
      * Create a new header object based on user provided info.
      *
+     * @param headerType The {@link HeaderType} of the new header to be created.
+     * @param userInput1 The value from the first input field that user entered.
      * @return The newly created Header object.
      */
     private Header getNewHeader(HeaderType headerType, String userInput1) {
@@ -736,6 +821,9 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
     /**
      * Create a new header object based on user provided info.
      *
+     * @param headerType The {@link HeaderType} of the header to be added.
+     * @param userInput1 The value from the first input field that user entered.
+     * @param userInput2 The value from the second input field that user entered.
      * @return The newly created Header object.
      */
     private Header getNewHeader(HeaderType headerType, String userInput1, String userInput2) {
@@ -784,7 +872,11 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
      * Interface to listen for the event when the response for the corresponding request made is available.
      */
     public interface OnResponseReceivedListener {
+        /**
+         * Handles the event when a response is received after user sends the request.
+         *
+         * @param restResponse The {@link RestResponse} received.
+         */
         void onResponseReceived(RestResponse restResponse);
     }
-
 }

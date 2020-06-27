@@ -20,31 +20,31 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/request_url"
-            android:textColor="@color/colorPrimary" />
+            android:textColor="@color/colorPrimary"/>
 
-        <View style="@style/Divider" />
+        <View style="@style/Divider"/>
 
         <TextView
             android:id="@+id/tv_request_url"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
-            android:textColor="@android:color/black" />
+            android:textColor="@android:color/black"/>
 
         <TextView
             style="@style/ScreenLabelsStyle.AddHeaderDialogLabelsStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/response_headers"
-            android:textColor="@color/colorPrimary" />
+            android:textColor="@color/colorPrimary"/>
 
-        <View style="@style/Divider" />
+        <View style="@style/Divider"/>
 
         <TextView
             android:id="@+id/tv_response_headers"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/colorPrimaryDark" />
+            android:textColor="@color/colorPrimaryDark"/>
 
     </LinearLayout>
 

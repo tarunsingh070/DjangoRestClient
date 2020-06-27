@@ -24,16 +24,28 @@ import tarun.djangorestclient.com.djangorestclient.model.entity.Header;
 
 public class HeadersRecyclerViewAdapter extends RecyclerView.Adapter<HeadersRecyclerViewAdapter.ViewHolder> {
 
-    // A flag indicating if the headers list will be a read only list or editable.
     private boolean isReadOnly;
     private final ArrayList<Header> headers;
     private final HeaderOptionsClickedListener headerOptionsClickedListener;
 
+    /**
+     * Constructor.
+     *
+     * @param isReadOnly Boolean indicating if the headers list will be a read-only list or editable.
+     * @param headers    The list of headers to be shown, if any.
+     */
     public HeadersRecyclerViewAdapter(boolean isReadOnly, ArrayList<Header> headers) {
-        this(null, headers, isReadOnly);
+        this(isReadOnly, headers, null);
     }
 
-    public HeadersRecyclerViewAdapter(HeaderOptionsClickedListener listener, ArrayList<Header> headers, boolean isReadOnly) {
+    /**
+     * Constructor.
+     *
+     * @param listener   An instance of {@link HeaderOptionsClickedListener}
+     * @param headers    The list of headers to be shown, if any.
+     * @param isReadOnly Boolean indicating if the headers list will be a read-only list or editable.
+     */
+    public HeadersRecyclerViewAdapter(boolean isReadOnly, ArrayList<Header> headers, HeaderOptionsClickedListener listener) {
         this.headerOptionsClickedListener = listener;
         this.headers = headers;
         this.isReadOnly = isReadOnly;
@@ -80,6 +92,11 @@ public class HeadersRecyclerViewAdapter extends RecyclerView.Adapter<HeadersRecy
         final HeaderRowLayoutBinding binding;
         Header header;
 
+        /**
+         * Constructor.
+         *
+         * @param binding The {@link HeaderRowLayoutBinding} instance.
+         */
         ViewHolder(HeaderRowLayoutBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
@@ -103,9 +120,18 @@ public class HeadersRecyclerViewAdapter extends RecyclerView.Adapter<HeadersRecy
      * Listener Interface to listen for Edit header and Delete header events.
      */
     public interface HeaderOptionsClickedListener {
+        /**
+         * Handles the event when user clicks the button to delete a header.
+         *
+         * @param position The position of the header clicked.
+         */
         void onDeleteHeaderClicked(int position);
 
+        /**
+         * Handles the event when user clicks the button to edit a header.
+         *
+         * @param position The position of the header clicked.
+         */
         void onEditHeaderClicked(int position);
     }
-
 }

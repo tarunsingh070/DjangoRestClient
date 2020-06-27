@@ -7,11 +7,20 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import tarun.djangorestclient.com.djangorestclient.fragment.requestsList.RequestsListViewModel;
 
+/**
+ * A generic view model factory class to create an instance of the required view model while passing
+ * in one or more arguments as well into the View model.
+ */
 public class DjangoViewModelFactory implements ViewModelProvider.Factory {
     private Application application;
     private int requestsListToShow;
 
-
+    /**
+     * Constructor.
+     *
+     * @param application        An instance of {@link Application}
+     * @param requestsListToShow The type of requests list to show.
+     */
     public DjangoViewModelFactory(Application application, int requestsListToShow) {
         this.application = application;
         this.requestsListToShow = requestsListToShow;

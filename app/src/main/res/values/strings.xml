@@ -78,6 +78,7 @@
     <string name="no_requests_history">No requests in history yet!</string>
     <string name="no_requests_saved">No saved requests yet!</string>
     <string name="header_count">Header count = %d</string>
+    <string name="delete">Delete</string>
     <string name="delete_requests_dialog_title">Delete requests?</string>
     <string name="delete_requests_history">This will clear all requests from history.</string>
     <string name="delete_saved_requests">This will clear all saved requests.</string>

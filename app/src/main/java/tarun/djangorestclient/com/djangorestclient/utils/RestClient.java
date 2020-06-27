@@ -33,13 +33,18 @@ public class RestClient {
     private final SharedPreferences sharedPreferences;
     private OkHttpClient client = new OkHttpClient.Builder().build();
 
+    /**
+     * Constructor.
+     *
+     * @param context An instance of {@link Context}
+     */
     public RestClient(Context context) {
         this.context = context;
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
     /**
-     * Update the OkHttpClientConfigurations based on the shared preference values.
+     * Update the OkHttpClientConfigurations with the lates shared preference values.
      */
     private void updateClient() {
         // Fetch the timeout values from shared preferences.
@@ -107,6 +112,12 @@ public class RestClient {
         enqueueRequest(request, callback);
     }
 
+    /**
+     * Enqueues the request to be sent and sets the callback to return the response to.
+     *
+     * @param request  The request to be sent.
+     * @param callback The callback to return the response to.
+     */
     private void enqueueRequest(Request request, Callback callback) {
         updateClient();
         Call call = client.newCall(request);

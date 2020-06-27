@@ -22,7 +22,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="@string/response_code_label" />
+                android:text="@string/response_code_label"/>
 
             <TextView
                 android:id="@+id/tv_response_time"
@@ -30,11 +30,11 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="@string/response_time_ms_label" />
+                android:text="@string/response_time_ms_label"/>
 
         </LinearLayout>
 
-        <View style="@style/Divider" />
+        <View style="@style/Divider"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -42,7 +42,7 @@
             android:layout_gravity="center_horizontal"
             android:layout_margin="5dp"
             android:text="@string/response_body_label"
-            android:textStyle="bold" />
+            android:textStyle="bold"/>
 
         <ScrollView
             android:id="@+id/scroll_view"
@@ -58,7 +58,7 @@
                 android:id="@+id/tv_response_body"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="5dp" />
+                android:padding="5dp"/>
 
         </ScrollView>
 
@@ -79,7 +79,7 @@
             app:tint="@android:color/white"
             android:backgroundTint="@color/colorAccent"
             app:borderWidth="0dp"
-            app:fabSize="mini" />
+            app:fabSize="mini"/>
 
     </RelativeLayout>
 

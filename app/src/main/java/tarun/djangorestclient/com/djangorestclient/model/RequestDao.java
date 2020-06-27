@@ -70,13 +70,9 @@ public abstract class RequestDao {
     @Query("DELETE FROM request WHERE is_saved")
     abstract void deleteAllSavedRequests();
 
-    // You can use just @Delete annotation as well if you pass in the exact object you want deleted
-    // i.e. you'' have to create a Request object with the same ID (primary key) and pass it here.
-    //    @Delete
     @Query("DELETE FROM request WHERE requestId = :requestId")
     abstract void deleteRequestById(long requestId);
 
-    //    @Delete
     @Query("DELETE FROM header WHERE headerId = :headerId")
     abstract void deleteHeader(long headerId);
 

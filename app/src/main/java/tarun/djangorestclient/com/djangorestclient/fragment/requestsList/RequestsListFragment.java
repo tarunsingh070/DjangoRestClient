@@ -37,9 +37,7 @@ import tarun.djangorestclient.com.djangorestclient.model.entity.Request;
 import tarun.djangorestclient.com.djangorestclient.model.entity.RequestWithHeaders;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link RequestsListFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * The fragment for showing a list of Requests.
  */
 public class RequestsListFragment extends Fragment implements
         RecyclerItemTouchHelper.RecyclerItemTouchHelperListener,
@@ -73,10 +71,10 @@ public class RequestsListFragment extends Fragment implements
     }
 
     /**
-     * Use this factory method to create a new instance of
-     * this fragment.
+     * Factory method to get an instance of {@link RequestsListFragment}.
      *
-     * @return A new instance of fragment RequestsListFragment.
+     * @param args The arguments to be passed to this fragment.
+     * @return A new instance of fragment {@link RequestsListFragment}.
      */
     public static RequestsListFragment newInstance(Bundle args) {
         RequestsListFragment fragment = new RequestsListFragment();
@@ -133,6 +131,11 @@ public class RequestsListFragment extends Fragment implements
         observeRequestsList(requestsListViewModel.getAllrequests());
     }
 
+    /**
+     * This method starts observing a list of Requests.
+     *
+     * @param updatedRequestsList The list of Requests to be observed.
+     */
     private void observeRequestsList(LiveData<PagedList<RequestWithHeaders>> updatedRequestsList) {
         if (requestsList != null) {
             requestsList.removeObservers(getViewLifecycleOwner());
@@ -145,6 +148,11 @@ public class RequestsListFragment extends Fragment implements
         });
     }
 
+    /**
+     * Sets up the Requests list recycler View.
+     *
+     * @param adapter The adapter to be attached to the recycler view.
+     */
     private void setupRecyclerView(RequestListAdapter adapter) {
         binding.requestsListRecyclerView.setAdapter(adapter);
         binding.requestsListRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -161,6 +169,11 @@ public class RequestsListFragment extends Fragment implements
         adapter.removeRequest(position);
     }
 
+    /**
+     * Deletes a request from the Requests list at the position specified.
+     *
+     * @param position The position from which the request is to be deleted.
+     */
     void deleteRequestFromList(int position) {
         RequestWithHeaders requestToDelete = adapter.getRequestAtPosition(position);
 
@@ -203,6 +216,12 @@ public class RequestsListFragment extends Fragment implements
                 .deleteRequestById(requestToDelete.getRequest().getRequestId());
     }
 
+    /**
+     * Restores a request back into the Requests list at the position specified.
+     *
+     * @param deletedRequest The instance of the deleted {@link RequestWithHeaders} which needs to be restored.
+     * @param position       The position at which to restore the deleted {@link RequestWithHeaders}.
+     */
     void restoreRequestIntoList(RequestWithHeaders deletedRequest, int position) {
         adapter.insertRequest(position);
     }
@@ -257,14 +276,17 @@ public class RequestsListFragment extends Fragment implements
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_delete_all_requests:
-                showDeleteConfirmationDialog();
+                showDeleteAllConfirmationDialog();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    void showDeleteConfirmationDialog() {
+    /**
+     * Shows the confirmation dialog when user tries to delete all the requests.
+     */
+    void showDeleteAllConfirmationDialog() {
         new AlertDialog.Builder(requireContext())
                 .setTitle(R.string.delete_requests_dialog_title)
                 .setMessage(requestsListToShow == LIST_REQUESTS_HISTORY ?
@@ -312,6 +334,12 @@ public class RequestsListFragment extends Fragment implements
         dialog.show();
     }
 
+    /**
+     * Sets up the recycler view for showing the list of headers inside the preview bottom up sheet.
+     *
+     * @param headersRecyclerView The instance of recycler view to be setup.
+     * @param headers             The list of headers to be shown.
+     */
     private void setupHeadersRecyclerView(RecyclerView headersRecyclerView, List<Header> headers) {
         HeadersRecyclerViewAdapter headersRecyclerViewAdapter = new HeadersRecyclerViewAdapter(true,
                 new ArrayList<>(headers));

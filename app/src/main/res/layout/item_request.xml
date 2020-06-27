@@ -18,7 +18,7 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_marginEnd="12dp"
-            android:src="@drawable/ic_delete_white" />
+            android:src="@drawable/ic_delete_white"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -26,9 +26,9 @@
             android:layout_centerVertical="true"
             android:layout_marginEnd="12dp"
             android:layout_toStartOf="@id/delete_icon"
-            android:text="Delete"
+            android:text="@string/delete"
             android:textColor="#fff"
-            android:textSize="16sp" />
+            android:textSize="16sp"/>
 
     </RelativeLayout>
 
@@ -65,13 +65,13 @@
                 android:textColor="@color/colorPrimary"
                 tools:text="https://www.google.com"/>
 
-<!--            <TextView-->
-<!--                android:id="@+id/tv_headers_count"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:textAppearance="@android:style/TextAppearance.Small"-->
-<!--                tools:text="Header count = 5"-->
-<!--                android:visibility="gone"/>-->
+            <!--            <TextView-->
+            <!--                android:id="@+id/tv_headers_count"-->
+            <!--                android:layout_width="match_parent"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:textAppearance="@android:style/TextAppearance.Small"-->
+            <!--                tools:text="Header count = 5"-->
+            <!--                android:visibility="gone"/>-->
 
             <TextView
                 android:id="@+id/tv_timestamp"
@@ -82,7 +82,7 @@
                 android:layout_below="@id/tv_request_url"
                 android:layout_alignParentBottom="true"
                 android:textColor="@android:color/black"
-                android:text="27 March, 2020"/>
+                tools:text="27 March, 2020"/>
 
             <ImageView
                 android:id="@+id/iv_request_info"

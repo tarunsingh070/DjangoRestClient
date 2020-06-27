@@ -76,22 +76,52 @@ public class MiscUtil {
         return true;
     }
 
+    /**
+     * Displays a toast of {@link Toast#LENGTH_SHORT} duration.
+     *
+     * @param context An instance of {@link Context}
+     * @param message The resource Id of the message to show.
+     */
     public static void displayShortToast(Context context, int message) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * Displays a toast of {@link Toast#LENGTH_LONG} duration.
+     *
+     * @param context An instance of {@link Context}
+     * @param message The resource Id of the message to show.
+     */
     public static void displayLongToast(Context context, int message) {
         Toast.makeText(context, message, Toast.LENGTH_LONG).show();
     }
 
+    /**
+     * Displays a toast of {@link Toast#LENGTH_SHORT} duration.
+     *
+     * @param context An instance of {@link Context}
+     * @param message The String message to show.
+     */
     public static void displayShortToast(Context context, String message) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * Displays a toast of {@link Toast#LENGTH_LONG} duration.
+     *
+     * @param context An instance of {@link Context}
+     * @param message The String message to show.
+     */
     public static void displayLongToast(Context context, String message) {
         Toast.makeText(context, message, Toast.LENGTH_LONG).show();
     }
 
+    /**
+     * Checks if the text passed in contains whitespaces or not.
+     *
+     * @param text The text to be checked for whitespaces.
+     * @return True if the text contains whitespaces, false otherwise.
+     */
     public static boolean containsWhiteSpaces(String text) {
         Pattern pattern = Pattern.compile("\\s");
         Matcher matcher = pattern.matcher(text);

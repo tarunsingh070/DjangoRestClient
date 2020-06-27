@@ -25,10 +25,21 @@ public class RequestRepository {
         requestDao = database.requestDao();
     }
 
+    /**
+     * Gets a request by ID.
+     *
+     * @param requestId The request ID of the request to fetch.
+     * @return A LiveData instance of {@link RequestWithHeaders}
+     */
     public LiveData<RequestWithHeaders> getRequestById(long requestId) {
         return requestDao.getRequestById(requestId);
     }
 
+    /**
+     * Gets the list of all requests in history.
+     *
+     * @return A DataSource.Factory instance containing the list of {@link RequestWithHeaders} in history.
+     */
     public DataSource.Factory<Integer, RequestWithHeaders> getRequestsHistoryList() {
         if (requestsList == null) {
             requestsList = requestDao.getRequestsInHistorySortedByDate();
@@ -36,6 +47,11 @@ public class RequestRepository {
         return requestsList;
     }
 
+    /**
+     * Gets the list of all saved requests.
+     *
+     * @return A DataSource.Factory instance containing the list of saved {@link RequestWithHeaders}.
+     */
     public DataSource.Factory<Integer, RequestWithHeaders> getSavedRequestsList() {
         if (requestsList == null) {
             requestsList = requestDao.getSavedRequestsSortedByDate();
@@ -43,22 +59,46 @@ public class RequestRepository {
         return requestsList;
     }
 
-    public DataSource.Factory<Integer, RequestWithHeaders> searchRequestsHistoryList(String searchText) {
-        return requestDao.searchRequestsInHistorySortedByDate(searchText);
+    /**
+     * Search for requests in history based on the URL of the requests.
+     *
+     * @param searchUrlText The URL search term.
+     * @return A DataSource.Factory instance containing the list of matching {@link RequestWithHeaders}.
+     */
+    public DataSource.Factory<Integer, RequestWithHeaders> searchRequestsHistoryList(String searchUrlText) {
+        return requestDao.searchRequestsInHistorySortedByDate(searchUrlText);
     }
 
-    public DataSource.Factory<Integer, RequestWithHeaders> searchSavedRequestsList(String searchText) {
-        return requestDao.searchSavedRequestsSortedByDate(searchText);
+    /**
+     * Search for the saved requests based on the URL of the requests.
+     *
+     * @param searchUrlText The URL search term.
+     * @return A DataSource.Factory instance containing the list of matching {@link RequestWithHeaders}.
+     */
+    public DataSource.Factory<Integer, RequestWithHeaders> searchSavedRequestsList(String searchUrlText) {
+        return requestDao.searchSavedRequestsSortedByDate(searchUrlText);
     }
 
-    // You must call this on a non-UI thread or your app will throw an exception. Room ensures
-    // that you're not doing any long running operations on the main thread, blocking the UI.
-    public void insert(Request request) {
+    /**
+     * Inserts a {@link Request} object into the Room DB.
+     *
+     * @param request The instance of {@link Request} to insert into DB.
+     */
+    public void insertRequest(Request request) {
+        // You must call this on a non-UI thread or your app will throw an exception. Room ensures
+        // that you're not doing any long running operations on the main thread, blocking the UI.
         RequestRoomDatabase.databaseWriteExecutor.execute(() -> {
             requestDao.insertRequestWithHeaders(request);
         });
     }
 
+    /**
+     * Updates an existing {@link Request} object into the Room DB along with it's associated list
+     * of {@link Header}.
+     *
+     * @param updatedRequest  The updated {@link Request} object to save.
+     * @param existingHeaders The list of updated {@link Header} to save in DB.
+     */
     public void update(Request updatedRequest, List<Header> existingHeaders) {
         RequestRoomDatabase.databaseWriteExecutor.execute(() -> {
             List<Header> headersToInsert = new ArrayList<>();
@@ -81,18 +121,29 @@ public class RequestRepository {
         });
     }
 
+    /**
+     * Deletes all the requests from history.
+     */
     public void deleteAllRequestsFromHistory() {
         RequestRoomDatabase.databaseWriteExecutor.execute(() -> {
             requestDao.deleteAllRequestsAndHeadersFromHistory();
         });
     }
 
+    /**
+     * Deletes all the saved requests.
+     */
     public void deleteAllSavedRequests() {
         RequestRoomDatabase.databaseWriteExecutor.execute(() -> {
             requestDao.deleteAllSavedRequestsAndHeaders();
         });
     }
 
+    /**
+     * Delete a request by Id.
+     *
+     * @param requestId The ID of the request to be deleted from the DB.
+     */
     public void deleteRequestById(long requestId) {
         RequestRoomDatabase.databaseWriteExecutor.execute(() -> {
             requestDao.deleteRequestById(requestId);

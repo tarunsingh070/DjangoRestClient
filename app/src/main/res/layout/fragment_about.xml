@@ -37,11 +37,6 @@
         android:layout_centerHorizontal="true"
         android:text="@string/copyright"/>
 
-    <!--    <View-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="0dp"-->
-    <!--        android:layout_weight="1"/>-->
-
     <com.google.android.material.button.MaterialButton
         android:id="@+id/button_rate_me"
         android:layout_width="match_parent"

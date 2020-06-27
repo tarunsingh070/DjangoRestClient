@@ -14,6 +14,5 @@
         android:id="@+id/restViewPager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
-    </androidx.viewpager.widget.ViewPager>
+        android:layout_weight="1"/>
 </LinearLayout>

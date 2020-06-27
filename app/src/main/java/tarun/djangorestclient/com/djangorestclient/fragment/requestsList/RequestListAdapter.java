@@ -29,6 +29,11 @@ public class RequestListAdapter extends PagedListAdapter<RequestWithHeaders, Req
          */
         void onRequestClicked(long requestId);
 
+        /**
+         * Handles the event when a user taps the info button of a request.
+         *
+         * @param request The request whose info button has been clicked.
+         */
         void onRequestInfoButtonClicked(RequestWithHeaders request);
     }
 
@@ -56,6 +61,12 @@ public class RequestListAdapter extends PagedListAdapter<RequestWithHeaders, Req
     private final Context context;
     private RequestListAdapterListener listener;
 
+    /**
+     * Constructor.
+     *
+     * @param context  An instance of {@link Context}
+     * @param listener An instance of {@link RequestListAdapterListener}
+     */
     RequestListAdapter(Context context, RequestListAdapterListener listener) {
         super(DIFF_CALLBACK);
         this.context = context;
@@ -108,14 +119,30 @@ public class RequestListAdapter extends PagedListAdapter<RequestWithHeaders, Req
                 listener.onRequestClicked(requestWithHeaders.getRequest().getRequestId()));
     }
 
+    /**
+     * Getter for the {@link Request} object at the position passed in.
+     *
+     * @param position The position of the {@link Request} object to be retrieved.
+     * @return The {@link Request} object at the position passed in.
+     */
     public RequestWithHeaders getRequestAtPosition(int position) {
         return getItem(position);
     }
 
+    /**
+     * Remove the request row at the position specified.
+     *
+     * @param position The position from which the Request row is to be deleted.
+     */
     void removeRequest(int position) {
         notifyItemRemoved(position);
     }
 
+    /**
+     * Insert back the request row at the position specified.
+     *
+     * @param position The position at which the Request row is to be inserted.
+     */
     void insertRequest(int position) {
         notifyItemInserted(position);
     }
