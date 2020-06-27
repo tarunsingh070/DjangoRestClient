@@ -8,7 +8,6 @@ package tarun.djangorestclient.com.djangorestclient.fragment;
 
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -509,19 +508,13 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
         new AlertDialog.Builder(requireContext())
                 .setTitle(R.string.update_request_dialog_title)
                 .setMessage(R.string.update_request_dialog_message)
-                .setPositiveButton(R.string.update_request_dialog_update, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        insertOrUpdateRequestInDb(false, R.string.request_updated);
-                        dialogInterface.dismiss();
-                    }
+                .setPositiveButton(R.string.update_request_dialog_update, (dialogInterface, i) -> {
+                    insertOrUpdateRequestInDb(false, R.string.request_updated);
+                    dialogInterface.dismiss();
                 })
-                .setNeutralButton(R.string.update_request_dialog_create_new, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        insertOrUpdateRequestInDb(true, R.string.request_saved);
-                        dialogInterface.dismiss();
-                    }
+                .setNeutralButton(R.string.update_request_dialog_create_new, (dialogInterface, i) -> {
+                    insertOrUpdateRequestInDb(true, R.string.request_saved);
+                    dialogInterface.dismiss();
                 })
                 .show();
     }

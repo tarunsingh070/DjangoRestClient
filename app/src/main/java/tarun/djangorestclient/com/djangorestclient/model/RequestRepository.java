@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2018 Django Rest Client Project, DjangoTech - All Rights Reserved
+ * Unauthorized copying of this file, via any medium is strictly prohibited, proprietary and confidential.
+ * Written by Tarun Singh <tarunsingh070@gmail.com>, June 2020.
+ */
+
 package tarun.djangorestclient.com.djangorestclient.model;
 
 import android.app.Application;
@@ -87,9 +93,7 @@ public class RequestRepository {
     public void insertRequest(Request request) {
         // You must call this on a non-UI thread or your app will throw an exception. Room ensures
         // that you're not doing any long running operations on the main thread, blocking the UI.
-        RequestRoomDatabase.databaseWriteExecutor.execute(() -> {
-            requestDao.insertRequestWithHeaders(request);
-        });
+        RequestRoomDatabase.databaseWriteExecutor.execute(() -> requestDao.insertRequestWithHeaders(request));
     }
 
     /**
@@ -125,18 +129,14 @@ public class RequestRepository {
      * Deletes all the requests from history.
      */
     public void deleteAllRequestsFromHistory() {
-        RequestRoomDatabase.databaseWriteExecutor.execute(() -> {
-            requestDao.deleteAllRequestsAndHeadersFromHistory();
-        });
+        RequestRoomDatabase.databaseWriteExecutor.execute(() -> requestDao.deleteAllRequestsAndHeadersFromHistory());
     }
 
     /**
      * Deletes all the saved requests.
      */
     public void deleteAllSavedRequests() {
-        RequestRoomDatabase.databaseWriteExecutor.execute(() -> {
-            requestDao.deleteAllSavedRequestsAndHeaders();
-        });
+        RequestRoomDatabase.databaseWriteExecutor.execute(() -> requestDao.deleteAllSavedRequestsAndHeaders());
     }
 
     /**
@@ -145,8 +145,6 @@ public class RequestRepository {
      * @param requestId The ID of the request to be deleted from the DB.
      */
     public void deleteRequestById(long requestId) {
-        RequestRoomDatabase.databaseWriteExecutor.execute(() -> {
-            requestDao.deleteRequestById(requestId);
-        });
+        RequestRoomDatabase.databaseWriteExecutor.execute(() -> requestDao.deleteRequestById(requestId));
     }
 }

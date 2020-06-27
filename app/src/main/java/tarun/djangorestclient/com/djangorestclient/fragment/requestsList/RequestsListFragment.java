@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2018 Django Rest Client Project, DjangoTech - All Rights Reserved
+ * Unauthorized copying of this file, via any medium is strictly prohibited, proprietary and confidential.
+ * Written by Tarun Singh <tarunsingh070@gmail.com>, June 2020.
+ */
+
 package tarun.djangorestclient.com.djangorestclient.fragment.requestsList;
 
 import android.content.Context;
@@ -128,7 +134,7 @@ public class RequestsListFragment extends Fragment implements
         binding.tvEmptyLabel.setText(requestsListToShow == LIST_REQUESTS_HISTORY ?
                 R.string.no_requests_history : R.string.no_requests_saved);
 
-        observeRequestsList(requestsListViewModel.getAllrequests());
+        observeRequestsList(requestsListViewModel.getAllRequests());
     }
 
     /**
@@ -246,7 +252,7 @@ public class RequestsListFragment extends Fragment implements
             @Override
             public boolean onQueryTextChange(String s) {
                 if (s.isEmpty()) {
-                    observeRequestsList(requestsListViewModel.getAllrequests());
+                    observeRequestsList(requestsListViewModel.getAllRequests());
                     binding.tvEmptyLabel.setText(requestsListToShow == LIST_REQUESTS_HISTORY ?
                             R.string.no_requests_history : R.string.no_requests_saved);
                 }
@@ -262,7 +268,7 @@ public class RequestsListFragment extends Fragment implements
 
             @Override
             public boolean onMenuItemActionCollapse(MenuItem menuItem) {
-                observeRequestsList(requestsListViewModel.getAllrequests());
+                observeRequestsList(requestsListViewModel.getAllRequests());
                 binding.tvEmptyLabel.setText(requestsListToShow == LIST_REQUESTS_HISTORY ?
                         R.string.no_requests_history : R.string.no_requests_saved);
                 return true;

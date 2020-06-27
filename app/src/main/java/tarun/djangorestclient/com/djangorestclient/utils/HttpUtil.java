@@ -54,9 +54,8 @@ public class HttpUtil {
 
         // Receiving side
         byte[] data = Base64.decode(credsToDecode, Base64.NO_WRAP | Base64.URL_SAFE);
-        String decodedCreds = new String(data, StandardCharsets.UTF_8);
 
-        return decodedCreds;
+        return new String(data, StandardCharsets.UTF_8);
     }
 
     /**
