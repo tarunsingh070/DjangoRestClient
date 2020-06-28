@@ -41,6 +41,7 @@ import tarun.djangorestclient.com.djangorestclient.fragment.DjangoViewModelFacto
 import tarun.djangorestclient.com.djangorestclient.model.entity.Header;
 import tarun.djangorestclient.com.djangorestclient.model.entity.Request;
 import tarun.djangorestclient.com.djangorestclient.model.entity.RequestWithHeaders;
+import tarun.djangorestclient.com.djangorestclient.utils.HttpUtil;
 
 /**
  * The fragment for showing a list of Requests.
@@ -309,13 +310,13 @@ public class RequestsListFragment extends Fragment implements
 
     @Override
     public void onRequestInfoButtonClicked(RequestWithHeaders requestWithHeaders) {
-        showAdditionalRequestInfo(requestWithHeaders);
+        showAdditionalRequestInfoBottomSheet(requestWithHeaders);
     }
 
     /**
      * Show the additional response information inside a bottom sheet dialog.
      */
-    private void showAdditionalRequestInfo(RequestWithHeaders requestWithHeaders) {
+    private void showAdditionalRequestInfoBottomSheet(RequestWithHeaders requestWithHeaders) {
         BottomSheetRequestInfoBinding requestInfoBinding =
                 BottomSheetRequestInfoBinding.inflate(getLayoutInflater());
 
@@ -330,7 +331,7 @@ public class RequestsListFragment extends Fragment implements
         }
 
         if (request.getBody() != null && !request.getBody().isEmpty()) {
-            requestInfoBinding.tvRequestBody.setText(request.getBody());
+            requestInfoBinding.tvRequestBody.setText(HttpUtil.getFormattedJsonText(request.getBody()));
         } else {
             requestInfoBinding.requestBodyContainer.setVisibility(View.GONE);
         }

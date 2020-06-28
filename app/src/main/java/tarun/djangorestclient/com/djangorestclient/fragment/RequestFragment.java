@@ -264,8 +264,8 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
         binding.etInputUrl.setText(request.getUrl());
 
         // Set Request body text.
-        if (request.getBody() != null) {
-            binding.etRequestBody.setText(request.getBody());
+        if (request.getBody() != null && !request.getBody().isEmpty()) {
+            binding.etRequestBody.setText(HttpUtil.getFormattedJsonText(request.getBody()));
         }
 
         // Refresh the headers list.
