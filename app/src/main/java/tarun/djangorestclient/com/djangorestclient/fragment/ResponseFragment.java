@@ -25,6 +25,7 @@ import tarun.djangorestclient.com.djangorestclient.R;
 import tarun.djangorestclient.com.djangorestclient.databinding.BottomSheetResponseInfoBinding;
 import tarun.djangorestclient.com.djangorestclient.databinding.FragmentResponseBinding;
 import tarun.djangorestclient.com.djangorestclient.model.RestResponse;
+import tarun.djangorestclient.com.djangorestclient.utils.HttpUtil;
 import tarun.djangorestclient.com.djangorestclient.utils.MiscUtil;
 
 import static android.content.Context.CLIPBOARD_SERVICE;
@@ -100,7 +101,7 @@ public class ResponseFragment extends Fragment {
         getActivity().invalidateOptionsMenu();
         binding.tvResponseCode.setText(getString(R.string.response_code_label_with_value, restResponse.getResponseCode()));
         binding.tvResponseTime.setText(getString(R.string.response_time_ms_label_with_value, restResponse.getResponseTime()));
-        binding.tvResponseBody.setText(restResponse.getResponseBody());
+        binding.tvResponseBody.setText(HttpUtil.getFormattedJsonText(restResponse.getResponseBody()));
     }
 
     /**
