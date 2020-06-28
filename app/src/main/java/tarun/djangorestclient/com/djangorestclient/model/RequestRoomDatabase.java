@@ -18,7 +18,7 @@ import androidx.room.TypeConverters;
 import tarun.djangorestclient.com.djangorestclient.model.entity.Header;
 import tarun.djangorestclient.com.djangorestclient.model.entity.Request;
 
-@Database(entities = {Request.class, Header.class}, version = 1, exportSchema = true)
+@Database(entities = {Request.class, Header.class}, version = 1)
 @TypeConverters({Converters.class})
 public abstract class RequestRoomDatabase extends RoomDatabase {
 
