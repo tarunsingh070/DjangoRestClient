@@ -17,7 +17,7 @@ android {
     compileSdkVersion 29
     defaultConfig {
         applicationId "tarun.djangorestclient.com.djangorestclient"
-        minSdkVersion 21
+        minSdkVersion 19
         targetSdkVersion 29
         versionCode 3
         versionName "2.0.0"
@@ -45,9 +45,9 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'com.google.android.material:material:1.1.0'
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'com.google.android.material:material:1.2.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'com.squareup.okhttp3:okhttp:4.7.2'
     implementation 'androidx.preference:preference:1.1.1'
@@ -68,7 +68,7 @@ dependencies {
     testImplementation 'junit:junit:4.13'
     testImplementation "androidx.paging:paging-common:$paging_version"
 
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     androidTestImplementation "androidx.arch.core:core-testing:$rootProject.coreTestingVersion"
 }
