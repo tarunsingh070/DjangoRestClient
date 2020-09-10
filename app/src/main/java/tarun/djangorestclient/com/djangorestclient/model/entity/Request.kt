@@ -3,162 +3,72 @@
  * Unauthorized copying of this file, via any medium is strictly prohibited, proprietary and confidential.
  * Written by Tarun Singh <tarunsingh070@gmail.com>, March 2018.
  */
+package tarun.djangorestclient.com.djangorestclient.model.entity
 
-package tarun.djangorestclient.com.djangorestclient.model.entity;
-
-import java.util.ArrayList;
-import java.util.Date;
-
-import androidx.annotation.NonNull;
-import androidx.room.ColumnInfo;
-import androidx.room.Entity;
-import androidx.room.Ignore;
-import androidx.room.PrimaryKey;
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.Ignore
+import androidx.room.PrimaryKey
+import java.util.*
 
 /**
  * Model class to store all information for a request.
  */
-
 @Entity(tableName = "request")
-public class Request {
+data class Request(@PrimaryKey(autoGenerate = true)
+                   var requestId: Long = -1,
+                   var url: String = "",
+                   @Ignore
+                   var headers: ArrayList<Header> = ArrayList<Header>(),
+                   var body: String? = null,
 
-    public enum RequestType {
+                   @ColumnInfo(name = "is_in_history")
+                   var isInHistory: Boolean = false,
+
+                   @ColumnInfo(name = "is_saved")
+                   var isSaved: Boolean = false,
+
+                   @ColumnInfo(name = "updated_at_timestamp")
+                   var updatedAt: Date? = null) {
+
+    enum class RequestType {
         GET, POST, PUT, DELETE, HEAD, PATCH
     }
 
-    @PrimaryKey(autoGenerate = true)
-    private long requestId;
-
-    @NonNull
-    private String url;
-
-    @NonNull
     @ColumnInfo(name = "request_type")
-    private RequestType requestType;
-
-    @Ignore
-    private ArrayList<Header> headers = new ArrayList<>();
-
-    private String body;
-
-    @ColumnInfo(name = "is_in_history")
-    private boolean isInHistory;
-
-    @ColumnInfo(name = "is_saved")
-    private boolean isSaved;
-
-    @ColumnInfo(name = "updated_at_timestamp")
-    private Date updatedAt;
-
-    public Request() {
-    }
+    lateinit var requestType: RequestType
 
     /**
-     * Copy Constructor.
-     *
-     * @param request The {@link Request} instance to be copied.
+     * Creates and returns a copy of the current object.
      */
-    public Request(Request request) {
-        this.requestId = request.requestId;
-        this.url = request.url;
-        this.requestType = request.requestType;
-        this.headers = request.headers;
-        this.body = request.body;
-        this.isInHistory = request.isInHistory;
-        this.isSaved = request.isSaved;
-        this.updatedAt = request.updatedAt;
+    fun copyRequest(): Request {
+        val copy = copy()
+        copy.requestType = requestType
+        return copy
     }
 
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public RequestType getRequestType() {
-        return requestType;
-    }
-
-    public void setRequestType(RequestType requestType) {
-        this.requestType = requestType;
-    }
-
-    public ArrayList<Header> getHeaders() {
-        return headers;
-    }
-
-    public void setHeaders(ArrayList<Header> headers) {
-        this.headers = headers;
-    }
-
-    public String getBody() {
-        return body;
-    }
-
-    public void setBody(String body) {
-        this.body = body;
-    }
-
-    public long getRequestId() {
-        return requestId;
-    }
-
-    public void setRequestId(long requestId) {
-        this.requestId = requestId;
-    }
-
-    public void clearIds() {
-        requestId = 0;
-        for (Header header : headers) {
-            header.clearHeaderId();
+    fun clearIds() {
+        requestId = 0
+        for (header in headers) {
+            header.clearHeaderId()
         }
     }
 
-    public boolean isInHistory() {
-        return isInHistory;
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || javaClass != other.javaClass) return false
+        val request = other as Request
+        if (requestId != request.requestId) return false
+        if (url != request.url) return false
+        if (requestType != request.requestType) return false
+        return if (body != null) body == request.body else request.body == null
     }
 
-    public boolean isSaved() {
-        return isSaved;
-    }
-
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setInHistory(boolean inHistory) {
-        isInHistory = inHistory;
-    }
-
-    public void setSaved(boolean saved) {
-        isSaved = saved;
-    }
-
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Request request = (Request) o;
-
-        if (getRequestId() != request.getRequestId()) return false;
-        if (!getUrl().equals(request.getUrl())) return false;
-        if (getRequestType() != request.getRequestType()) return false;
-        return getBody() != null ? getBody().equals(request.getBody()) : request.getBody() == null;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = (int) (getRequestId() ^ (getRequestId() >>> 32));
-        result = 31 * result + getUrl().hashCode();
-        result = 31 * result + getRequestType().hashCode();
-        result = 31 * result + (getBody() != null ? getBody().hashCode() : 0);
-        return result;
+    override fun hashCode(): Int {
+        var result = requestId.hashCode()
+        result = 31 * result + url.hashCode()
+        result = 31 * result + (body?.hashCode() ?: 0)
+        result = 31 * result + requestType.hashCode()
+        return result
     }
 }

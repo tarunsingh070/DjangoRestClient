@@ -190,7 +190,7 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
 
                         // Create a deep copy of the request object so we don't update the original
                         // request object.
-                        request = new Request(requestWithHeaders.getRequest());
+                        request = requestWithHeaders.getRequest().copyRequest();
                         request.setHeaders(existingHeadersList);
                         updateViewsWithRequestData(request);
                     }
