@@ -56,7 +56,6 @@ import tarun.djangorestclient.com.djangorestclient.databinding.FragmentRequestBi
 import tarun.djangorestclient.com.djangorestclient.model.RequestRepository;
 import tarun.djangorestclient.com.djangorestclient.model.RestResponse;
 import tarun.djangorestclient.com.djangorestclient.model.entity.Header;
-import tarun.djangorestclient.com.djangorestclient.model.entity.Header.HeaderType;
 import tarun.djangorestclient.com.djangorestclient.model.entity.Request;
 import tarun.djangorestclient.com.djangorestclient.model.entity.Request.RequestType;
 import tarun.djangorestclient.com.djangorestclient.model.entity.RequestWithHeaders;
@@ -597,16 +596,16 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
 
         // If the header dialog was opened to edit an existing header, pre-fill the header fields with existing info.
         if (isExistingHeader && header != null) {
-            if (header.getHeaderTypeEnum() == HeaderType.AUTHORIZATION_BASIC) {
-                addHeaderBinding.spinnerHeaderTypes.setSelection(headerTypesSpinnerAdapter.getPosition(HeaderType.AUTHORIZATION_BASIC.toString()));
+            if (header.getHeaderTypeEnum() == Header.HeaderType.AUTHORIZATION_BASIC) {
+                addHeaderBinding.spinnerHeaderTypes.setSelection(headerTypesSpinnerAdapter.getPosition(Header.HeaderType.AUTHORIZATION_BASIC.toString()));
 
                 String decodedCreds = HttpUtil.getBase64DecodedAuthCreds(header.getHeaderValue());
                 String[] creds = decodedCreds.split(":");
 
                 addHeaderBinding.etHeaderValue1.setText(creds[0]);
                 addHeaderBinding.etHeaderValue2.setText(creds[1]);
-            } else if (header.getHeaderTypeEnum() == HeaderType.CUSTOM) {
-                addHeaderBinding.spinnerHeaderTypes.setSelection(headerTypesSpinnerAdapter.getPosition(HeaderType.CUSTOM.toString()));
+            } else if (header.getHeaderTypeEnum() == Header.HeaderType.CUSTOM) {
+                addHeaderBinding.spinnerHeaderTypes.setSelection(headerTypesSpinnerAdapter.getPosition(Header.HeaderType.CUSTOM.toString()));
                 addHeaderBinding.etHeaderValue1.setText(header.getHeaderType());
                 addHeaderBinding.etHeaderValue2.setText(header.getHeaderValue());
             } else {
@@ -634,13 +633,13 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
             @Override
             public void onClick(View v) {
                 final boolean isExistingHeader = (position != NEW_HEADER_POSITION);
-                HeaderType headerType = getHeaderType((String) headerTypesSpinner.getSelectedItem());
+                Header.HeaderType headerType = getHeaderType((String) headerTypesSpinner.getSelectedItem());
 
                 String userInput1 = etUserInput1.getText().toString().trim();
                 String userInput2 = etUserInput2.getText().toString().trim();
 
-                boolean isAuthBasicHeader = (headerType == HeaderType.AUTHORIZATION_BASIC);
-                boolean isCustomHeader = (headerType == HeaderType.CUSTOM);
+                boolean isAuthBasicHeader = (headerType == Header.HeaderType.AUTHORIZATION_BASIC);
+                boolean isCustomHeader = (headerType == Header.HeaderType.CUSTOM);
 
                 // Perform add/update operations on the current header based on header type.
                 if (isAuthBasicHeader || isCustomHeader) {
@@ -688,14 +687,14 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
              * Get the corresponding HeaderTypeEnum instance based on the String parameter received.
              * @return HeaderType enum instance.
              */
-            private HeaderType getHeaderType(String headerTypeString) {
-                for (HeaderType type : HeaderType.values()) {
+            private Header.HeaderType getHeaderType(String headerTypeString) {
+                for (Header.HeaderType type : Header.HeaderType.values()) {
                     if (TextUtils.equals(headerTypeString, type.toString())) {
                         return type;
                     }
                 }
 
-                return HeaderType.CUSTOM;
+                return Header.HeaderType.CUSTOM;
             }
         };
     }
@@ -744,11 +743,11 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
     /**
      * Update the header in the list of headers with the new info provided.
      *
-     * @param headerType The new {@link HeaderType}
+     * @param headerType The new {@link Header.HeaderType}
      * @param userInput1 The value from the first input field.
      * @param position:  The position of existing header.
      */
-    private void updateHeader(HeaderType headerType, String userInput1, int position) {
+    private void updateHeader(Header.HeaderType headerType, String userInput1, int position) {
         Header existingHeader = request.getHeaders().get(position);
         Header updatedHeader = getNewHeader(headerType, userInput1);
         updatedHeader.setHeaderId(existingHeader.getHeaderId());
@@ -762,12 +761,12 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
     /**
      * Update the header in the list of headers with the new info provided.
      *
-     * @param headerType The new {@link HeaderType}
+     * @param headerType The new {@link tarun.djangorestclient.com.djangorestclient.model.entity.Header.HeaderType}
      * @param userInput1 The value from the first input field.
      * @param userInput2 The value from the second input field.
      * @param position:  The position of existing header.
      */
-    private void updateHeader(HeaderType headerType, String userInput1, String userInput2, int position) {
+    private void updateHeader(Header.HeaderType headerType, String userInput1, String userInput2, int position) {
         Header existingHeader = request.getHeaders().get(position);
         Header updatedHeader = getNewHeader(headerType, userInput1, userInput2);
         updatedHeader.setHeaderId(existingHeader.getHeaderId());
@@ -781,10 +780,10 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
     /**
      * Create a new header with the info provided by user and add it to the list of headers.
      *
-     * @param headerType The {@link HeaderType} of the header to be added.
+     * @param headerType The {@link Header.HeaderType} of the header to be added.
      * @param userInput1 The value from the first input field that user entered.
      */
-    private void addHeader(HeaderType headerType, String userInput1) {
+    private void addHeader(Header.HeaderType headerType, String userInput1) {
         Header header = getNewHeader(headerType, userInput1);
         request.getHeaders().add(header);
         headersRecyclerViewAdapter.notifyDataSetChanged();
@@ -793,11 +792,11 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
     /**
      * Create a new header with the info provided by use and add it to the list of headers.
      *
-     * @param headerType The {@link HeaderType} of the header to be added.
+     * @param headerType The {@link Header.HeaderType} of the header to be added.
      * @param userInput1 The value from the first input field that user entered.
      * @param userInput2 The value from the second input field that user entered.
      */
-    private void addHeader(HeaderType headerType, String userInput1, String userInput2) {
+    private void addHeader(Header.HeaderType headerType, String userInput1, String userInput2) {
         Header header = getNewHeader(headerType, userInput1, userInput2);
         request.getHeaders().add(header);
         headersRecyclerViewAdapter.notifyDataSetChanged();
@@ -806,26 +805,26 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
     /**
      * Create a new header object based on user provided info.
      *
-     * @param headerType The {@link HeaderType} of the new header to be created.
+     * @param headerType The {@link Header.HeaderType} of the new header to be created.
      * @param userInput1 The value from the first input field that user entered.
      * @return The newly created Header object.
      */
-    private Header getNewHeader(HeaderType headerType, String userInput1) {
+    private Header getNewHeader(Header.HeaderType headerType, String userInput1) {
         return new Header(headerType.toString(), userInput1);
     }
 
     /**
      * Create a new header object based on user provided info.
      *
-     * @param headerType The {@link HeaderType} of the header to be added.
+     * @param headerType The {@link Header.HeaderType} of the header to be added.
      * @param userInput1 The value from the first input field that user entered.
      * @param userInput2 The value from the second input field that user entered.
      * @return The newly created Header object.
      */
-    private Header getNewHeader(HeaderType headerType, String userInput1, String userInput2) {
-        if (headerType == HeaderType.AUTHORIZATION_BASIC) {
+    private Header getNewHeader(Header.HeaderType headerType, String userInput1, String userInput2) {
+        if (headerType == Header.HeaderType.AUTHORIZATION_BASIC) {
             String headerValue = HttpUtil.getBase64EncodedAuthCreds(getContext(), userInput1, userInput2);
-            return new Header(HeaderType.AUTHORIZATION_BASIC.toString(), headerValue);
+            return new Header(Header.HeaderType.AUTHORIZATION_BASIC.toString(), headerValue);
         } else {
             return new Header(userInput1, userInput2);
         }

@@ -20,7 +20,6 @@ import java.util.List;
 import okhttp3.Headers;
 import tarun.djangorestclient.com.djangorestclient.R;
 import tarun.djangorestclient.com.djangorestclient.model.entity.Header;
-import tarun.djangorestclient.com.djangorestclient.model.entity.Header.HeaderType;
 
 /**
  * Utility class with common http related utility methods.
@@ -71,7 +70,7 @@ public class HttpUtil {
         Headers.Builder headerBuilder = new Headers.Builder();
         for (Header header : headers) {
             String headerName;
-            if (header.getHeaderTypeEnum() == HeaderType.AUTHORIZATION_BASIC) {
+            if (header.getHeaderTypeEnum() == Header.HeaderType.AUTHORIZATION_BASIC) {
                 headerName = "Authorization";
             } else {
                 headerName = header.getHeaderType();
