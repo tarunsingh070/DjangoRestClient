@@ -111,7 +111,7 @@ public class RequestRepository {
         RequestRoomDatabase.databaseWriteExecutor.execute(() -> {
             List<Header> headersToInsert = new ArrayList<>();
             List<Header> headersToUpdate = new ArrayList<>();
-            List<Header> headersToDelete;
+            List<Header> headersToDelete = new ArrayList<>();
 
             for (Header header : updatedRequest.getHeaders()) {
                 header.setParentRequestId(updatedRequest.getRequestId());
@@ -122,8 +122,20 @@ public class RequestRepository {
                 }
             }
 
-            existingHeaders.removeAll(headersToUpdate);
-            headersToDelete = existingHeaders;
+            /**
+             * FixMe : The following logic is horrible. Find something better.
+             */
+            outer : for (Header existingHeader : existingHeaders) {
+                for (Header updatedHeader : headersToUpdate) {
+                    if (existingHeader.getHeaderId() == updatedHeader.getHeaderId()) {
+                        continue outer;
+                    }
+                }
+
+                headersToDelete.add(existingHeader);
+            }
+//            existingHeaders.removeAll(headersToUpdate);
+//            headersToDelete = existingHeaders;
 
             requestDao.updateRequestWithHeaders(updatedRequest, headersToInsert, headersToUpdate, headersToDelete);
         });

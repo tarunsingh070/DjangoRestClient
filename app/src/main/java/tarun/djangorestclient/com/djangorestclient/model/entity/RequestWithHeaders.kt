@@ -3,55 +3,28 @@
  * Unauthorized copying of this file, via any medium is strictly prohibited, proprietary and confidential.
  * Written by Tarun Singh <tarunsingh070@gmail.com>, June 2020.
  */
+package tarun.djangorestclient.com.djangorestclient.model.entity
 
-package tarun.djangorestclient.com.djangorestclient.model.entity;
+import androidx.room.Embedded
+import androidx.room.Relation
 
-import java.util.ArrayList;
-import java.util.List;
-
-import androidx.room.Embedded;
-import androidx.room.Relation;
-
-public class RequestWithHeaders {
-    @Embedded
-    private Request request;
-
-    @Relation(
-            parentColumn = "requestId",
-            entityColumn = "parentRequestId"
-    )
-    private List<Header> headers;
-
-    public Request getRequest() {
-        return request;
-    }
-
-    public void setRequest(Request request) {
-        this.request = request;
-    }
-
-    public List<Header> getHeaders() {
-        return headers;
-    }
-
-    public void setHeaders(ArrayList<Header> headers) {
-        this.headers = headers;
-    }
+data class RequestWithHeaders(@Embedded
+                              var request: Request? = null,
+                              @Relation(parentColumn = "requestId", entityColumn = "parentRequestId")
+                              var headers: List<Header>? = null) {
 
     // We need these equals and hashcode methods to identify if the original live data object has been
     // modified or some other object while observing a live instance of this class.
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
 
-        RequestWithHeaders that = (RequestWithHeaders) o;
+        other as RequestWithHeaders
 
-        return getRequest().equals(that.getRequest());
+        return request == other.request
     }
 
-    @Override
-    public int hashCode() {
-        return getRequest().hashCode();
+    override fun hashCode(): Int {
+        return request?.hashCode() ?: 0
     }
 }

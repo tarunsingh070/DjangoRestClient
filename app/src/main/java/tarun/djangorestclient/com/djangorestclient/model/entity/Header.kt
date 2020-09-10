@@ -28,9 +28,9 @@ data class Header(@ColumnInfo(name = "header_type")
     }
 
     @PrimaryKey(autoGenerate = true)
-    var headerId: Long = -1
+    var headerId: Long = 0
 
-    var parentRequestId: Long = -1
+    var parentRequestId: Long = 0
 
     /**
      * Get the corresponding HeaderTypeEnum instance based on the String parameter received.

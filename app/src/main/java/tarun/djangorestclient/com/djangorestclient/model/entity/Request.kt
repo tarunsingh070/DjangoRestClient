@@ -16,7 +16,7 @@ import java.util.*
  */
 @Entity(tableName = "request")
 data class Request(@PrimaryKey(autoGenerate = true)
-                   var requestId: Long = -1,
+                   var requestId: Long = 0,
                    var url: String = "",
                    @Ignore
                    var headers: ArrayList<Header> = ArrayList<Header>(),
