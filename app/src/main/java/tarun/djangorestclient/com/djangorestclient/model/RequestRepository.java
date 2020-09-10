@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Transformations;
 import androidx.paging.DataSource;
 import tarun.djangorestclient.com.djangorestclient.model.entity.Header;
 import tarun.djangorestclient.com.djangorestclient.model.entity.Request;
@@ -38,7 +39,10 @@ public class RequestRepository {
      * @return A LiveData instance of {@link RequestWithHeaders}
      */
     public LiveData<RequestWithHeaders> getRequestById(long requestId) {
-        return requestDao.getRequestById(requestId);
+        // We want this live data object to emit value only when this particular instance has changed
+        // instead of emitting every time some data changes in the whole RequestWithHeaders room DB table
+        // which is what happens by default.
+        return Transformations.distinctUntilChanged(requestDao.getRequestById(requestId));
     }
 
     /**

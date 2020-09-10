@@ -53,6 +53,22 @@ public class Request {
     public Request() {
     }
 
+    /**
+     * Copy Constructor.
+     *
+     * @param request The {@link Request} instance to be copied.
+     */
+    public Request(Request request) {
+        this.requestId = request.requestId;
+        this.url = request.url;
+        this.requestType = request.requestType;
+        this.headers = request.headers;
+        this.body = request.body;
+        this.isInHistory = request.isInHistory;
+        this.isSaved = request.isSaved;
+        this.updatedAt = request.updatedAt;
+    }
+
     public String getUrl() {
         return url;
     }
@@ -92,7 +108,7 @@ public class Request {
     public void setRequestId(long requestId) {
         this.requestId = requestId;
     }
-    
+
     public void clearIds() {
         requestId = 0;
         for (Header header : headers) {

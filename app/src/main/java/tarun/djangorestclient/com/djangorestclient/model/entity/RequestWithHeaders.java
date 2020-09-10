@@ -37,4 +37,21 @@ public class RequestWithHeaders {
     public void setHeaders(ArrayList<Header> headers) {
         this.headers = headers;
     }
+
+    // We need these equals and hashcode methods to identify if the original live data object has been
+    // modified or some other object while observing a live instance of this class.
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        RequestWithHeaders that = (RequestWithHeaders) o;
+
+        return getRequest().equals(that.getRequest());
+    }
+
+    @Override
+    public int hashCode() {
+        return getRequest().hashCode();
+    }
 }

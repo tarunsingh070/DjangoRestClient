@@ -180,19 +180,22 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
      */
     private void fetchRequestById(long requestId) {
         requestWithHeadersLiveData = requestRepository.getRequestById(requestId);
-        requestWithHeadersLiveData.observe(getViewLifecycleOwner(), requestWithHeaders -> {
-            // Update the existing headers list object itself and set it in the Request object
-            // since that's the one "HeadersRecyclerViewAdapter" is using to populate the list.
-            if (requestWithHeaders != null) {
-                ArrayList<Header> existingHeadersList = request.getHeaders();
-                existingHeadersList.clear();
-                existingHeadersList.addAll(requestWithHeaders.getHeaders());
+        requestWithHeadersLiveData
+                .observe(getViewLifecycleOwner(), requestWithHeaders -> {
+                    // Update the existing headers list object itself and set it in the Request object
+                    // since that's the one "HeadersRecyclerViewAdapter" is using to populate the list.
+                    if (requestWithHeaders != null) {
+                        ArrayList<Header> existingHeadersList = request.getHeaders();
+                        existingHeadersList.clear();
+                        existingHeadersList.addAll(requestWithHeaders.getHeaders());
 
-                request = requestWithHeaders.getRequest();
-                request.setHeaders(existingHeadersList);
-                updateViewsWithRequestData(request);
-            }
-        });
+                        // Create a deep copy of the request object so we don't update the original
+                        // request object.
+                        request = new Request(requestWithHeaders.getRequest());
+                        request.setHeaders(existingHeadersList);
+                        updateViewsWithRequestData(request);
+                    }
+                });
     }
 
     @Override
