@@ -8,8 +8,6 @@ package tarun.djangorestclient.com.djangorestclient.model.entity;
 
 import android.text.TextUtils;
 
-import java.util.Objects;
-
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
@@ -126,15 +124,23 @@ public class Header {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof Header)) {
-            return false;
-        }
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-        return o == this || headerId == ((Header) o).headerId;
+        Header header = (Header) o;
+
+        if (getHeaderId() != header.getHeaderId()) return false;
+        if (getParentRequestId() != header.getParentRequestId()) return false;
+        if (!getHeaderType().equals(header.getHeaderType())) return false;
+        return getHeaderValue().equals(header.getHeaderValue());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(headerId);
+        int result = (int) (getHeaderId() ^ (getHeaderId() >>> 32));
+        result = 31 * result + getHeaderType().hashCode();
+        result = 31 * result + getHeaderValue().hashCode();
+        result = 31 * result + (int) (getParentRequestId() ^ (getParentRequestId() >>> 32));
+        return result;
     }
 }
