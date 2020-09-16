@@ -305,6 +305,10 @@ class RequestFragment : Fragment(), HeaderOptionsClickedListener {
 
         if (requestType !== RequestType.GET && requestType !== RequestType.HEAD) {
             request.body = binding.etRequestBody.text.toString()
+        } else {
+            // Explicitly remove any existing body contents in case user changed the request type
+            // from a type which accepts a request body (eg POST) to one which doesn't (eg GET).
+            request.body = null
         }
 
         request.updatedAt = DateFormatHelper.getCurrentDate()
