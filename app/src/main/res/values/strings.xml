@@ -94,7 +94,7 @@
     <string name="invalid_url_msg">Please enter a valid url starting with http:// or https://</string>
     <string name="space_separated_strings">%1$s %2$s</string>
     <string name="confirmation_dialog_title">Confirm Exit !</string>
-    <string name="confirmation_dialog_message">All input data (if any) will be discarded. \nAre you sure you want to exit ?</string>
+    <string name="confirmation_dialog_message">Any Request input data will be discarded. \nAre you sure you want to exit ?</string>
     <string name="no_connection_msg">Internet connectivity not available.</string>
     <string name="undo">UNDO</string>
     <string name="no_results">No results!</string>
