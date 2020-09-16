@@ -20,7 +20,7 @@ android {
     compileSdkVersion 29
     defaultConfig {
         applicationId "tarun.djangorestclient.com.djangorestclient"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 29
         versionCode 3
         versionName "2.0.0"
