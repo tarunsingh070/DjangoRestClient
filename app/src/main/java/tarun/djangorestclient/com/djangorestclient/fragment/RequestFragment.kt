@@ -3,150 +3,120 @@
  * Unauthorized copying of this file, via any medium is strictly prohibited, proprietary and confidential.
  * Written by Tarun Singh <tarunsingh070@gmail.com>, March 2018.
  */
+package tarun.djangorestclient.com.djangorestclient.fragment
 
-package tarun.djangorestclient.com.djangorestclient.fragment;
-
-
-import android.content.Context;
-import android.os.Bundle;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.SpannableStringBuilder;
-import android.text.TextUtils;
-import android.text.style.ForegroundColorSpan;
-import android.util.Log;
-import android.util.Patterns;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.google.android.material.snackbar.Snackbar;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LiveData;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Headers;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
-import tarun.djangorestclient.com.djangorestclient.R;
-import tarun.djangorestclient.com.djangorestclient.adapter.HeadersRecyclerViewAdapter;
-import tarun.djangorestclient.com.djangorestclient.databinding.DialogAddHeaderBinding;
-import tarun.djangorestclient.com.djangorestclient.databinding.FragmentRequestBinding;
-import tarun.djangorestclient.com.djangorestclient.model.RequestRepository;
-import tarun.djangorestclient.com.djangorestclient.model.RestResponse;
-import tarun.djangorestclient.com.djangorestclient.model.entity.Header;
-import tarun.djangorestclient.com.djangorestclient.model.entity.Request;
-import tarun.djangorestclient.com.djangorestclient.model.entity.Request.RequestType;
-import tarun.djangorestclient.com.djangorestclient.model.entity.RequestWithHeaders;
-import tarun.djangorestclient.com.djangorestclient.utils.DateFormatHelper;
-import tarun.djangorestclient.com.djangorestclient.utils.HttpUtil;
-import tarun.djangorestclient.com.djangorestclient.utils.MiscUtil;
-import tarun.djangorestclient.com.djangorestclient.utils.RestClient;
+import android.content.Context
+import android.content.DialogInterface
+import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.SpannableStringBuilder
+import android.text.TextUtils
+import android.text.style.ForegroundColorSpan
+import android.util.Log
+import android.util.Patterns
+import android.view.*
+import android.widget.*
+import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.Headers
+import okhttp3.Response
+import tarun.djangorestclient.com.djangorestclient.R
+import tarun.djangorestclient.com.djangorestclient.adapter.HeadersRecyclerViewAdapter
+import tarun.djangorestclient.com.djangorestclient.adapter.HeadersRecyclerViewAdapter.HeaderOptionsClickedListener
+import tarun.djangorestclient.com.djangorestclient.databinding.DialogAddHeaderBinding
+import tarun.djangorestclient.com.djangorestclient.databinding.FragmentRequestBinding
+import tarun.djangorestclient.com.djangorestclient.model.RequestRepository
+import tarun.djangorestclient.com.djangorestclient.model.RestResponse
+import tarun.djangorestclient.com.djangorestclient.model.entity.Header
+import tarun.djangorestclient.com.djangorestclient.model.entity.Header.HeaderType
+import tarun.djangorestclient.com.djangorestclient.model.entity.Request
+import tarun.djangorestclient.com.djangorestclient.model.entity.Request.RequestType
+import tarun.djangorestclient.com.djangorestclient.model.entity.RequestWithHeaders
+import tarun.djangorestclient.com.djangorestclient.utils.DateFormatHelper
+import tarun.djangorestclient.com.djangorestclient.utils.HttpUtil
+import tarun.djangorestclient.com.djangorestclient.utils.MiscUtil
+import tarun.djangorestclient.com.djangorestclient.utils.RestClient
+import java.io.IOException
 
 /**
  * This fragment shows user all necessary fields to make REST requests.
  */
-public class RequestFragment extends Fragment implements HeadersRecyclerViewAdapter.HeaderOptionsClickedListener {
+class RequestFragment : Fragment(), HeaderOptionsClickedListener {
+    companion object {
+        const val TITLE = "Request"
+        private val TAG = RequestFragment::class.java.simpleName
+        private const val NEW_HEADER_POSITION = -1
+        const val KEY_REQUEST_ID = "key_request_id"
 
-    public static final String TITLE = "Request";
-
-    private static final String TAG = RequestFragment.class.getSimpleName();
-
-    private static final int NEW_HEADER_POSITION = -1;
-
-    public static final String KEY_REQUEST_ID = "key_request_id";
-
-    private HeadersRecyclerViewAdapter headersRecyclerViewAdapter;
-
-    private FragmentRequestBinding binding;
-
-    private Request request;
-
-    private LiveData<RequestWithHeaders> requestWithHeadersLiveData;
-
-    private OnResponseReceivedListener mListener;
-    private RestClient restClient;
-    private RequestRepository requestRepository;
-
-    public RequestFragment() {
-        // Required empty public constructor
+        /**
+         * Use this factory method to create a new instance of
+         * this fragment.
+         *
+         * @param args The arguments to be passed into this fragment.
+         * @return A new instance of fragment RequestFragment.
+         */
+        @JvmStatic
+        fun newInstance(args: Bundle?): RequestFragment {
+            val fragment = RequestFragment()
+            fragment.arguments = args
+            return fragment
+        }
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment.
-     *
-     * @param args The arguments to be passed into this fragment.
-     * @return A new instance of fragment RequestFragment.
-     */
-    public static RequestFragment newInstance(Bundle args) {
-        RequestFragment fragment = new RequestFragment();
-        fragment.setArguments(args);
-        return fragment;
+    private lateinit var headersRecyclerViewAdapter: HeadersRecyclerViewAdapter
+    private lateinit var binding: FragmentRequestBinding
+    private lateinit var request: Request
+    private lateinit var requestWithHeadersLiveData: LiveData<RequestWithHeaders?>
+    private lateinit var mListener: OnResponseReceivedListener
+    private lateinit var restClient: RestClient
+    private lateinit var requestRepository: RequestRepository
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+        request = Request()
+        restClient = RestClient(context)
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-        request = new Request();
-        restClient = new RestClient(getContext());
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        binding = FragmentRequestBinding.inflate(inflater, container, false);
+        binding = FragmentRequestBinding.inflate(inflater, container, false)
 
         // Todo: Create a ViewModel for RequestFragment and move this there.
-        requestRepository = new RequestRepository(requireActivity().getApplication());
+        requestRepository = RequestRepository(requireActivity().application)
 
-        initializeViews();
-        return binding.getRoot();
+        initializeViews()
+        return binding.root
     }
 
     /**
      * Initialize all the views on Request screen.
      */
-    private void initializeViews() {
-        binding.etInputUrl.setText(R.string.url_default_text);
-        binding.etInputUrl.setSelection(getString(R.string.url_default_text).length());
-        binding.requestTypesSpinner.setSelection(0);
-        binding.etRequestBody.getText().clear();
-        headersRecyclerViewAdapter = new HeadersRecyclerViewAdapter(false,
-                request.getHeaders(), this);
-        bindViews();
+    private fun initializeViews() {
+        binding.etInputUrl.setText(R.string.url_default_text)
+        binding.etInputUrl.setSelection(getString(R.string.url_default_text).length)
+        binding.requestTypesSpinner.setSelection(0)
+        binding.etRequestBody.text.clear()
+        headersRecyclerViewAdapter = HeadersRecyclerViewAdapter(false,
+                request.headers, this)
+        bindViews()
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        if (getArguments() != null) {
-            long requestId = getArguments().getLong(KEY_REQUEST_ID);
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        if (arguments != null) {
+            val requestId = requireArguments().getLong(KEY_REQUEST_ID)
             if (requestId > 0) {
-                fetchRequestById(requestId);
+                fetchRequestById(requestId)
             }
         }
     }
@@ -154,22 +124,18 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
     /**
      * Reset the values of all the views on Request screen to empty or their default values.
      */
-    private void resetRequestViews() {
-        request = new Request();
-        if (getArguments() != null) {
-            stopObservingRequestById();
-            getArguments().clear();
-        }
-        initializeViews();
+    private fun resetRequestViews() {
+        request = Request()
+        stopObservingRequestById()
+        requireArguments().clear()
+        initializeViews()
     }
 
     /**
      * Stops observing the current request for new updates.
      */
-    private void stopObservingRequestById() {
-        if (requestWithHeadersLiveData != null) {
-            requestWithHeadersLiveData.removeObservers(getViewLifecycleOwner());
-        }
+    private fun stopObservingRequestById() {
+        requestWithHeadersLiveData.removeObservers(viewLifecycleOwner)
     }
 
     /**
@@ -177,236 +143,210 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
      *
      * @param requestId The ID of the request to be fetched.
      */
-    private void fetchRequestById(long requestId) {
-        requestWithHeadersLiveData = requestRepository.getRequestById(requestId);
+    private fun fetchRequestById(requestId: Long) {
+        requestWithHeadersLiveData = requestRepository.getRequestById(requestId)
         requestWithHeadersLiveData
-                .observe(getViewLifecycleOwner(), requestWithHeaders -> {
+                .observe(viewLifecycleOwner, { requestWithHeaders: RequestWithHeaders? ->
                     // Update the existing headers list object itself and set it in the Request object
                     // since that's the one "HeadersRecyclerViewAdapter" is using to populate the list.
                     if (requestWithHeaders != null) {
-                        ArrayList<Header> existingHeadersList = request.getHeaders();
-                        existingHeadersList.clear();
-                        existingHeadersList.addAll(requestWithHeaders.getHeaders());
+                        val existingHeadersList = request.headers
+                        existingHeadersList.clear()
+                        existingHeadersList.addAll(requestWithHeaders.headers!!)
 
                         // Create a deep copy of the request object so we don't update the original
                         // request object.
-                        request = requestWithHeaders.getRequest().copyRequest();
-                        request.setHeaders(existingHeadersList);
-                        updateViewsWithRequestData(request);
+                        request = requestWithHeaders.request.copyRequest()
+                        request.headers = existingHeadersList
+                        updateViewsWithRequestData(request)
                     }
-                });
+                })
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.request_fragment_menu, menu);
-        super.onCreateOptionsMenu(menu, inflater);
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.request_fragment_menu, menu)
+        super.onCreateOptionsMenu(menu, inflater)
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // Handle item selection
-        switch (item.getItemId()) {
-            case R.id.action_send_request:
-                MiscUtil.hideKeyboard(getContext(), requireActivity());
-                sendRequest();
-                return true;
-            case R.id.action_save_request:
-                saveRequest();
-                return true;
-            case R.id.action_clear_request:
-                resetRequestViews();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        return when (item.itemId) {
+            R.id.action_send_request -> {
+                MiscUtil.hideKeyboard(context, requireActivity())
+                sendRequest()
+                true
+            }
+            R.id.action_save_request -> {
+                saveRequest()
+                true
+            }
+            R.id.action_clear_request -> {
+                resetRequestViews()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
         // This makes sure that the container activity has implemented
         // the callback interface. If not, it throws an exception
-        try {
-            mListener = (OnResponseReceivedListener) context;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString()
-                    + " must implement OnResponseReceivedListener");
+        mListener = try {
+            context as OnResponseReceivedListener
+        } catch (e: ClassCastException) {
+            throw ClassCastException(context.toString()
+                    + " must implement OnResponseReceivedListener")
         }
     }
 
     /**
      * Bind the views to their respective necessary attributes.
      */
-    private void bindViews() {
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-        binding.headersRecyclerView.setLayoutManager(linearLayoutManager);
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(),
-                linearLayoutManager.getOrientation());
-        binding.headersRecyclerView.addItemDecoration(dividerItemDecoration);
-        binding.headersRecyclerView.setAdapter(headersRecyclerViewAdapter);
-
-        binding.etRequestBody.setOnTouchListener(getTouchListenerForScrollableViews());
-
-        binding.addHeaderFab.setOnClickListener(v -> displayAddHeaderDialog());
-        binding.requestTypesSpinner.setOnItemSelectedListener(getRequestTypesSpinnerListener());
+    private fun bindViews() {
+        val linearLayoutManager = LinearLayoutManager(context)
+        binding.headersRecyclerView.layoutManager = linearLayoutManager
+        val dividerItemDecoration = DividerItemDecoration(context,
+                linearLayoutManager.orientation)
+        binding.headersRecyclerView.addItemDecoration(dividerItemDecoration)
+        binding.headersRecyclerView.adapter = headersRecyclerViewAdapter
+        binding.etRequestBody.setOnTouchListener(getTouchListenerForScrollableViews())
+        binding.addHeaderFab.setOnClickListener { displayAddHeaderDialog() }
+        binding.requestTypesSpinner.onItemSelectedListener = getRequestTypesSpinnerListener()
     }
 
     /**
      * Updates all the views on Request screen with the Request data passed in.
      *
-     * @param request The {@link Request} whose data is to be filled into the screen.
+     * @param request The [Request] whose data is to be filled into the screen.
      */
-    private void updateViewsWithRequestData(Request request) {
+    private fun updateViewsWithRequestData(request: Request) {
         // Set Request type.
-        List<String> requestTypeList = Arrays.asList(getResources().getStringArray(R.array.requestTypes));
-        binding.requestTypesSpinner.setSelection(requestTypeList.indexOf(request.getRequestType().name()));
+        val requestTypeList = listOf(*resources.getStringArray(R.array.requestTypes))
+        binding.requestTypesSpinner.setSelection(requestTypeList.indexOf(request.requestType.name))
 
         // Set Request URL.
-        binding.etInputUrl.setText(request.getUrl());
+        binding.etInputUrl.setText(request.url)
 
         // Set Request body text.
-        if (request.getBody() != null && !request.getBody().isEmpty()) {
-            binding.etRequestBody.setText(HttpUtil.getFormattedJsonText(request.getBody()));
+        if (request.body != null && request.body!!.isNotEmpty()) {
+            binding.etRequestBody.setText(HttpUtil.getFormattedJsonText(request.body))
         }
 
         // Refresh the headers list.
-        headersRecyclerViewAdapter.notifyDataSetChanged();
-    }
+        headersRecyclerViewAdapter.notifyDataSetChanged()
+    }// Disallow the touch request for parent scroll on touch of child view.// Setting on Touch Listener for handling the touch inside ScrollView
 
     /**
      * Touch listener for the scrollable views to be able scroll independently inside the parent scroll view.
      */
-    private View.OnTouchListener getTouchListenerForScrollableViews() {
+    private fun getTouchListenerForScrollableViews(): View.OnTouchListener {
         // Setting on Touch Listener for handling the touch inside ScrollView
-        return (v, event) -> {
+        return View.OnTouchListener { v: View, event: MotionEvent? ->
             // Disallow the touch request for parent scroll on touch of child view.
-            v.getParent().requestDisallowInterceptTouchEvent(true);
-            return false;
-        };
+            v.parent.requestDisallowInterceptTouchEvent(true)
+            false
+        }
     }
 
     /**
      * Make the appropriate type of rest request call based on the request type chosen by user.
      */
-    private void sendRequest() {
+    private fun sendRequest() {
         // Verify that the input url is a non-empty valid url and
         // internet connectivity is available before proceeding.
-        String url = binding.etInputUrl.getText().toString();
+        val url = binding.etInputUrl.text.toString()
         if (!Patterns.WEB_URL.matcher(url).matches()) {
-            MiscUtil.displayLongToast(getContext(), R.string.invalid_url_msg);
-            return;
-        } else if (!HttpUtil.isNetworkAvailable(getContext())) {
-            MiscUtil.displayShortToast(getContext(), R.string.no_connection_msg);
-            return;
+            MiscUtil.displayLongToast(context, R.string.invalid_url_msg)
+            return
+        } else if (!HttpUtil.isNetworkAvailable(context)) {
+            MiscUtil.displayShortToast(context, R.string.no_connection_msg)
+            return
         }
 
-        Request request = prepareRequestObject();
+        val request = prepareRequestObject()
         try {
-            MiscUtil.showSpinner(getActivity());
-
-            switch (request.getRequestType()) {
-                case GET:
-                    restClient.get(request.getUrl(), request.getHeaders(), getRequestCallback());
-                    break;
-
-                case POST:
-                    restClient.post(request.getUrl(), request.getHeaders(), request.getBody(), getRequestCallback());
-                    break;
-
-                case PUT:
-                    restClient.put(request.getUrl(), request.getHeaders(), request.getBody(), getRequestCallback());
-                    break;
-
-                case DELETE:
-                    restClient.delete(request.getUrl(), request.getHeaders(), request.getBody(), getRequestCallback());
-                    break;
-
-                case HEAD:
-                    restClient.head(request.getUrl(), request.getHeaders(), getRequestCallback());
-                    break;
-
-                case PATCH:
-                    restClient.patch(request.getUrl(), request.getHeaders(), request.getBody(), getRequestCallback());
-                    break;
+            MiscUtil.showSpinner(activity)
+            when (request.requestType) {
+                RequestType.GET -> restClient[request.url, request.headers, requestCallback]
+                RequestType.POST -> restClient.post(request.url, request.headers, request.body, requestCallback)
+                RequestType.PUT -> restClient.put(request.url, request.headers, request.body, requestCallback)
+                RequestType.DELETE -> restClient.delete(request.url, request.headers, request.body, requestCallback)
+                RequestType.HEAD -> restClient.head(request.url, request.headers, requestCallback)
+                RequestType.PATCH -> restClient.patch(request.url, request.headers, request.body, requestCallback)
             }
-        } catch (IllegalArgumentException e) {
+        } catch (e: IllegalArgumentException) {
             // If any headers have an invalid value, then IllegalArgumentException is thrown.
-            MiscUtil.hideSpinner(getActivity());
-            Toast.makeText(requireContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-            return;
+            MiscUtil.hideSpinner(activity)
+            Toast.makeText(requireContext(), e.message, Toast.LENGTH_LONG).show()
+            return
         }
 
         // Before saving the request in History, set the necessary values and clear the IDs of the
         // Request and all it's headers (to prevent duplicate insertion) in case user is seeing
         // some pre-saved or historic request.
-        request.setInHistory(true);
-        request.setSaved(false);
-        request.clearIds();
-        requestRepository.insertRequest(request);
+        request.isInHistory = true
+        request.isSaved = false
+        request.clearIds()
+        requestRepository.insertRequest(request)
     }
 
     /**
      * Prepares the Request object before sending the request.
      *
-     * @return The prepared instance of {@link Request}
+     * @return The prepared instance of [Request]
      */
-    private Request prepareRequestObject() {
-        request.setUrl(binding.etInputUrl.getText().toString());
+    private fun prepareRequestObject(): Request {
+        request.url = binding.etInputUrl.text.toString()
 
-        String requestTypeString = (String) binding.requestTypesSpinner.getSelectedItem();
-        RequestType requestType = getRequestType(requestTypeString);
-        request.setRequestType(requestType);
+        val requestTypeString = binding.requestTypesSpinner.selectedItem as String
+        val requestType = getRequestType(requestTypeString)
+        request.requestType = requestType!!
 
-        if (requestType != RequestType.GET && requestType != RequestType.HEAD) {
-            request.setBody(binding.etRequestBody.getText().toString());
+        if (requestType !== RequestType.GET && requestType !== RequestType.HEAD) {
+            request.body = binding.etRequestBody.text.toString()
         }
 
-        request.setUpdatedAt(DateFormatHelper.getCurrentDate());
-        return request;
+        request.updatedAt = DateFormatHelper.getCurrentDate()
+        return request
     }
 
     /**
      * Creates and returns the callback for handling the response received after sending the request.
      *
-     * @return The instance of {@link Callback} created.
+     * @return The instance of [Callback] created.
      */
-    private Callback getRequestCallback() {
-        return new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                if (!isVisible()) {
-                    return;
+    private val requestCallback: Callback
+        get() = object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                if (!isVisible) {
+                    return
                 }
 
-                MiscUtil.hideSpinner(getActivity());
+                MiscUtil.hideSpinner(activity)
                 if (call.isCanceled()) {
-                    return;
+                    return
                 }
 
-                handleError(e);
+                handleError(e)
             }
 
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (!isVisible()) {
-                    return;
+            @Throws(IOException::class)
+            override fun onResponse(call: Call, response: Response) {
+                if (!isVisible) {
+                    return
                 }
 
-                ResponseBody responseBody = response.body();
+                val responseBody = response.body
                 if (responseBody != null) {
-
-                    String url = response.request().url().toString();
-                    long requestTime = response.receivedResponseAtMillis() - response.sentRequestAtMillis();
-                    CharSequence responseHeaders = headersToCharSequence(response.headers());
-
-                    final RestResponse restResponse = new RestResponse(response.code(), requestTime, url
-                            , responseHeaders, responseBody.string());
-
-                    getActivity().runOnUiThread(() -> mListener.onResponseReceived(restResponse));
+                    val url = response.request.url.toString()
+                    val requestTime = response.receivedResponseAtMillis - response.sentRequestAtMillis
+                    val responseHeaders = headersToCharSequence(response.headers)
+                    val restResponse = RestResponse(response.code, requestTime, url, responseHeaders, responseBody.string())
+                    requireActivity().runOnUiThread { mListener.onResponseReceived(restResponse) }
                 }
 
-                MiscUtil.hideSpinner(getActivity());
+                MiscUtil.hideSpinner(activity)
             }
 
             /**
@@ -414,29 +354,30 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
              * @param headers: List of headers received in response.
              * @return List of headers received in CharSequence format.
              */
-            private CharSequence headersToCharSequence(Headers headers) {
-                if (headers == null) return null;
-                SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
-                for (int i = 0, size = headers.size(); i < size; i++) {
-                    Spannable value = new SpannableString(headers.value(i));
-                    value.setSpan(new ForegroundColorSpan(getResources().getColor(android.R.color.tertiary_text_light))
-                            , 0, value.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    spannableStringBuilder.append(headers.name(i)).append(": ").append(value).append("\n");
+            private fun headersToCharSequence(headers: Headers): CharSequence {
+                val spannableStringBuilder = SpannableStringBuilder()
+                var i = 0
+                val size = headers.size
+                while (i < size) {
+                    val value: Spannable = SpannableString(headers.value(i))
+                    value.setSpan(ForegroundColorSpan(ContextCompat.getColor(requireContext(),
+                            R.color.tertiary_text_light)), 0, value.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                    spannableStringBuilder.append(headers.name(i)).append(": ").append(value).append("\n")
+                    i++
                 }
-                spannableStringBuilder.delete(spannableStringBuilder.length() - 1, spannableStringBuilder
-                        .length());
-                return spannableStringBuilder;
+                spannableStringBuilder.delete(spannableStringBuilder.length - 1, spannableStringBuilder
+                        .length)
+                return spannableStringBuilder
             }
-        };
-    }
+        }
 
     /**
      * Handle the error on UI thread.
      *
      * @param exception The exception that caused the rest call to fail.
      */
-    private void handleError(final IOException exception) {
-        getActivity().runOnUiThread(() -> MiscUtil.displayLongToast(getContext(), exception.getMessage()));
+    private fun handleError(exception: IOException) {
+        requireActivity().runOnUiThread { MiscUtil.displayLongToast(context, exception.message) }
     }
 
     /**
@@ -444,112 +385,110 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
      *
      * @return RequestType enum instance.
      */
-    private Request.RequestType getRequestType(String requestTypeString) {
-        for (RequestType type : RequestType.values()) {
+    private fun getRequestType(requestTypeString: String): RequestType? {
+        for (type in RequestType.values()) {
             if (TextUtils.equals(requestTypeString, type.toString())) {
-                return type;
+                return type
             }
         }
 
         // We shouldn't reach here.
-        Log.e(TAG, " : Unidentified Request type : " + requestTypeString);
-        return null;
+        Log.e(TAG, " : Unidentified Request type : $requestTypeString")
+        return null
     }
 
     /**
      * Creates and returns the listener to handle the event when user selects a request type
      * from the spinner.
      *
-     * @return The created instance of {@link AdapterView.OnItemSelectedListener}
+     * @return The created instance of [AdapterView.OnItemSelectedListener]
      */
-    private AdapterView.OnItemSelectedListener getRequestTypesSpinnerListener() {
-        return new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                /*
-                  Show/hide request body area based on the request type chosen by user.
+    private fun getRequestTypesSpinnerListener(): AdapterView.OnItemSelectedListener {
+        return object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                /**
+                 * Show/hide request body area based on the request type chosen by user.
                  */
-                String selectedRequestTypeString = (String) parent.getItemAtPosition(position);
+                val selectedRequestTypeString = parent?.getItemAtPosition(position) as String
                 if (TextUtils.equals(selectedRequestTypeString, RequestType.GET.toString())
                         || TextUtils.equals(selectedRequestTypeString, RequestType.HEAD.toString())) {
-                    binding.layoutRequestBody.setVisibility(View.GONE);
+                    binding.layoutRequestBody.visibility = View.GONE
                 } else {
-                    binding.layoutRequestBody.setVisibility(View.VISIBLE);
+                    binding.layoutRequestBody.visibility = View.VISIBLE
                 }
             }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
+            override fun onNothingSelected(parent: AdapterView<*>?) {
                 // Do nothing.
             }
-        };
+        }
     }
 
     /**
      * Saves the Request in the local DB after performing validation of all the values entered.
      */
-    private void saveRequest() {
-        String url = binding.etInputUrl.getText().toString();
+    private fun saveRequest() {
+        val url = binding.etInputUrl.text.toString()
         if (!Patterns.WEB_URL.matcher(url).matches()) {
-            MiscUtil.displayLongToast(getContext(), R.string.invalid_url_msg);
-            return;
+            MiscUtil.displayLongToast(context, R.string.invalid_url_msg)
+            return
         }
 
         // If user came here via saved requests, then ask if they wanna update it or save a new request.
-        if (request.getRequestId() > 0 && request.isSaved()) {
-            showUpdateRequestDialog();
+        if (request.requestId > 0 && request.isSaved) {
+            showUpdateRequestDialog()
         } else {
-            insertOrUpdateRequestInDb(true, R.string.request_saved);
+            insertOrUpdateRequestInDb(true, R.string.request_saved)
         }
     }
 
     /**
      * Shows the Update Request dialog.
      */
-    void showUpdateRequestDialog() {
-        new AlertDialog.Builder(requireContext())
+    private fun showUpdateRequestDialog() {
+        AlertDialog.Builder(requireContext())
                 .setTitle(R.string.update_request_dialog_title)
                 .setMessage(R.string.update_request_dialog_message)
-                .setPositiveButton(R.string.update_request_dialog_update, (dialogInterface, i) -> {
-                    insertOrUpdateRequestInDb(false, R.string.request_updated);
-                    dialogInterface.dismiss();
-                })
-                .setNeutralButton(R.string.update_request_dialog_create_new, (dialogInterface, i) -> {
-                    insertOrUpdateRequestInDb(true, R.string.request_saved);
-                    dialogInterface.dismiss();
-                })
-                .show();
+                .setPositiveButton(R.string.update_request_dialog_update) { dialogInterface: DialogInterface, i: Int ->
+                    insertOrUpdateRequestInDb(false, R.string.request_updated)
+                    dialogInterface.dismiss()
+                }
+                .setNeutralButton(R.string.update_request_dialog_create_new) { dialogInterface: DialogInterface, i: Int ->
+                    insertOrUpdateRequestInDb(true, R.string.request_saved)
+                    dialogInterface.dismiss()
+                }
+                .show()
     }
 
     /**
      * Inserts a new one or updates an existing request in the local DB based on the value of shouldInsert param.
      *
      * @param shouldInsert     Boolean indicating if the request should be inserted as a new one or
-     *                         should update an existing one in the DB.
+     * should update an existing one in the DB.
      * @param messageToDisplay The Toast message to display to the user based on whether the request
-     *                         is updated or inserted as a new one.
+     * is updated or inserted as a new one.
      */
-    private void insertOrUpdateRequestInDb(boolean shouldInsert, int messageToDisplay) {
-        Request request = prepareRequestObject();
-        request.setInHistory(false);
-        request.setSaved(true);
+    private fun insertOrUpdateRequestInDb(shouldInsert: Boolean, messageToDisplay: Int) {
+        val request = prepareRequestObject()
+        request.isInHistory = false
+        request.isSaved = true
 
         if (shouldInsert) {
-            request.clearIds();
-            requestRepository.insertRequest(request);
+            request.clearIds()
+            requestRepository.insertRequest(request)
         } else {
-            RequestWithHeaders existingRequestWithHeaders = requestWithHeadersLiveData.getValue();
-            requestRepository.update(request, existingRequestWithHeaders.getHeaders());
+            val existingRequestWithHeaders = requestWithHeadersLiveData.value
+            requestRepository.update(request, existingRequestWithHeaders!!.headers!!)
         }
-        MiscUtil.displayShortToast(getContext(), messageToDisplay);
+        MiscUtil.displayShortToast(context, messageToDisplay)
     }
 
     /**
      * Display the add header dialog to allow the user to add a new header.
      */
-    private void displayAddHeaderDialog() {
+    private fun displayAddHeaderDialog() {
         // Since the user wants to add a new header, pass the NEW_HEADER_POSITION as position for this header.
-        displayEditHeaderDialog(NEW_HEADER_POSITION);
+        displayEditHeaderDialog(NEW_HEADER_POSITION)
     }
 
     /**
@@ -557,64 +496,63 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
      *
      * @param position : The current position of this header in the list of headers already added by user.
      */
-    private void displayEditHeaderDialog(int position) {
-        Header header = null;
+    private fun displayEditHeaderDialog(position: Int) {
+        var header: Header? = null
         // If the position is not equals to the default position for a new header i.e. NEW_HEADER_POSITION,
         // that means a header already exists at that position.
-        final boolean isExistingHeader = (position != NEW_HEADER_POSITION);
+        val isExistingHeader = position != NEW_HEADER_POSITION
 
         // Get the existing header object from the list if the dialog is being opened to edit an existing header.
         if (isExistingHeader) {
-            header = request.getHeaders().get(position);
+            header = request.headers[position]
         }
 
-        DialogAddHeaderBinding addHeaderBinding = DialogAddHeaderBinding.inflate(getLayoutInflater());
-
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-                getContext());
-        alertDialogBuilder.setView(addHeaderBinding.getRoot());
+        val addHeaderBinding = DialogAddHeaderBinding.inflate(layoutInflater)
+        val alertDialogBuilder = AlertDialog.Builder(
+                requireContext())
+        alertDialogBuilder.setView(addHeaderBinding.root)
 
         // create alert dialog
-        final AlertDialog alertDialog = alertDialogBuilder.create();
+        val alertDialog = alertDialogBuilder.create()
 
         // Bind views.
-        ArrayAdapter<CharSequence> headerTypesSpinnerAdapter = ArrayAdapter.createFromResource(getContext(), R.array.headerTypes, android.R.layout.simple_spinner_item);
-        headerTypesSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        addHeaderBinding.spinnerHeaderTypes.setAdapter(headerTypesSpinnerAdapter);
-        addHeaderBinding.spinnerHeaderTypes
-                .setOnItemSelectedListener(getHeaderTypesSpinnerListener(addHeaderBinding.layoutHeaderFields2,
-                        addHeaderBinding.tvHeaderLabel1, addHeaderBinding.tvHeaderLabel2));
-
+        val headerTypesSpinnerAdapter = ArrayAdapter.createFromResource(requireContext(), R.array.headerTypes, android.R.layout.simple_spinner_item)
+        headerTypesSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        addHeaderBinding.spinnerHeaderTypes.adapter = headerTypesSpinnerAdapter
+        addHeaderBinding.spinnerHeaderTypes.onItemSelectedListener = getHeaderTypesSpinnerListener(addHeaderBinding.layoutHeaderFields2,
+                addHeaderBinding.tvHeaderLabel1, addHeaderBinding.tvHeaderLabel2)
         addHeaderBinding.okButton.setOnClickListener(getOkButtonClickListener(addHeaderBinding.spinnerHeaderTypes,
-                addHeaderBinding.etHeaderValue1, addHeaderBinding.etHeaderValue2, alertDialog, position));
-        addHeaderBinding.cancelButton.setOnClickListener(v -> {
-            MiscUtil.hideKeyboard(getContext(), getActivity());
-            if (alertDialog != null && alertDialog.isShowing()) {
-                alertDialog.dismiss();
+                addHeaderBinding.etHeaderValue1, addHeaderBinding.etHeaderValue2, alertDialog, position))
+        addHeaderBinding.cancelButton.setOnClickListener {
+            MiscUtil.hideKeyboard(context, activity)
+            if (alertDialog.isShowing) {
+                alertDialog.dismiss()
             }
-        });
+        }
 
         // If the header dialog was opened to edit an existing header, pre-fill the header fields with existing info.
         if (isExistingHeader && header != null) {
-            if (header.getHeaderTypeEnum() == Header.HeaderType.AUTHORIZATION_BASIC) {
-                addHeaderBinding.spinnerHeaderTypes.setSelection(headerTypesSpinnerAdapter.getPosition(Header.HeaderType.AUTHORIZATION_BASIC.toString()));
-
-                String decodedCreds = HttpUtil.getBase64DecodedAuthCreds(header.getHeaderValue());
-                String[] creds = decodedCreds.split(":");
-
-                addHeaderBinding.etHeaderValue1.setText(creds[0]);
-                addHeaderBinding.etHeaderValue2.setText(creds[1]);
-            } else if (header.getHeaderTypeEnum() == Header.HeaderType.CUSTOM) {
-                addHeaderBinding.spinnerHeaderTypes.setSelection(headerTypesSpinnerAdapter.getPosition(Header.HeaderType.CUSTOM.toString()));
-                addHeaderBinding.etHeaderValue1.setText(header.getHeaderType());
-                addHeaderBinding.etHeaderValue2.setText(header.getHeaderValue());
-            } else {
-                addHeaderBinding.spinnerHeaderTypes.setSelection(headerTypesSpinnerAdapter.getPosition(header.getHeaderType()));
-                addHeaderBinding.etHeaderValue1.setText(header.getHeaderValue());
+            when (header.getHeaderTypeEnum()) {
+                HeaderType.AUTHORIZATION_BASIC -> {
+                    addHeaderBinding.spinnerHeaderTypes.setSelection(headerTypesSpinnerAdapter.getPosition(HeaderType.AUTHORIZATION_BASIC.toString()))
+                    val decodedCreds = HttpUtil.getBase64DecodedAuthCreds(header.headerValue)
+                    val creds = decodedCreds.split(":".toRegex()).toTypedArray()
+                    addHeaderBinding.etHeaderValue1.setText(creds[0])
+                    addHeaderBinding.etHeaderValue2.setText(creds[1])
+                }
+                HeaderType.CUSTOM -> {
+                    addHeaderBinding.spinnerHeaderTypes.setSelection(headerTypesSpinnerAdapter.getPosition(HeaderType.CUSTOM.toString()))
+                    addHeaderBinding.etHeaderValue1.setText(header.headerType)
+                    addHeaderBinding.etHeaderValue2.setText(header.headerValue)
+                }
+                else -> {
+                    addHeaderBinding.spinnerHeaderTypes.setSelection(headerTypesSpinnerAdapter.getPosition(header.headerType))
+                    addHeaderBinding.etHeaderValue1.setText(header.headerValue)
+                }
             }
         }
 
-        alertDialog.show();
+        alertDialog.show()
     }
 
     /**
@@ -625,61 +563,58 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
      * @param etUserInput2       Reference to the Input field 2.
      * @param alertDialog        Reference to the Add/update header dialog being shown to the user.
      * @param position           The position type for the current header.
-     * @return The instance of the {@link View.OnClickListener} created.
+     * @return The instance of the [View.OnClickListener] created.
      */
-    private View.OnClickListener getOkButtonClickListener(final Spinner headerTypesSpinner, final EditText etUserInput1
-            , final EditText etUserInput2, final AlertDialog alertDialog, final int position) {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final boolean isExistingHeader = (position != NEW_HEADER_POSITION);
-                Header.HeaderType headerType = getHeaderType((String) headerTypesSpinner.getSelectedItem());
+    private fun getOkButtonClickListener(headerTypesSpinner: Spinner, etUserInput1: EditText,
+                                         etUserInput2: EditText, alertDialog: AlertDialog?,
+                                         position: Int): View.OnClickListener {
+        return object : View.OnClickListener {
+            override fun onClick(v: View) {
+                val isExistingHeader = position != NEW_HEADER_POSITION
+                val headerType = getHeaderType(headerTypesSpinner.selectedItem as String)
 
-                String userInput1 = etUserInput1.getText().toString().trim();
-                String userInput2 = etUserInput2.getText().toString().trim();
-
-                boolean isAuthBasicHeader = (headerType == Header.HeaderType.AUTHORIZATION_BASIC);
-                boolean isCustomHeader = (headerType == Header.HeaderType.CUSTOM);
+                val userInput1 = etUserInput1.text.toString().trim()
+                val userInput2 = etUserInput2.text.toString().trim()
+                val isAuthBasicHeader = headerType === HeaderType.AUTHORIZATION_BASIC
+                val isCustomHeader = headerType === HeaderType.CUSTOM
 
                 // Perform add/update operations on the current header based on header type.
                 if (isAuthBasicHeader || isCustomHeader) {
                     if (TextUtils.isEmpty(userInput1) || TextUtils.isEmpty(userInput2)) {
-                        MiscUtil.displayShortToast(getContext(), R.string.input_fields_empty_msg);
-                        return;
+                        MiscUtil.displayShortToast(context, R.string.input_fields_empty_msg)
+                        return
                     }
-
                     if (isCustomHeader && MiscUtil.containsWhiteSpaces(userInput1)) {
-                        MiscUtil.displayLongToast(getContext(), R.string.custom_header_name_no_whitespaces);
-                        return;
+                        MiscUtil.displayLongToast(context, R.string.custom_header_name_no_whitespaces)
+                        return
                     }
 
                     // Update the header if editing an existing header, add a new one otherwise.
                     if (isExistingHeader) {
-                        updateHeader(headerType, etUserInput1.getText().toString().trim(),
-                                etUserInput2.getText().toString().trim(), position);
+                        updateHeader(headerType, etUserInput1.text.toString().trim(),
+                                etUserInput2.text.toString().trim(), position)
                     } else {
-                        addHeader(headerType, etUserInput1.getText().toString().trim(),
-                                etUserInput2.getText().toString().trim());
+                        addHeader(headerType, etUserInput1.text.toString().trim(),
+                                etUserInput2.text.toString().trim())
                     }
-
                 } else {
                     if (TextUtils.isEmpty(userInput1)) {
-                        MiscUtil.displayShortToast(getContext(), R.string.input_fields_empty_msg);
-                        return;
+                        MiscUtil.displayShortToast(context, R.string.input_fields_empty_msg)
+                        return
                     }
 
                     // Update the header if editing an existing header, add a new one otherwise.
                     if (isExistingHeader) {
-                        updateHeader(headerType, etUserInput1.getText().toString().trim(), position);
+                        updateHeader(headerType, etUserInput1.text.toString().trim(), position)
                     } else {
-                        addHeader(headerType, etUserInput1.getText().toString().trim());
+                        addHeader(headerType, etUserInput1.text.toString().trim())
                     }
                 }
 
                 // Hide the keyboard and dismiss dialog since header has been added/updated at this point.
-                MiscUtil.hideKeyboard(getContext(), getActivity());
-                if (alertDialog != null && alertDialog.isShowing()) {
-                    alertDialog.dismiss();
+                MiscUtil.hideKeyboard(context, activity)
+                if (alertDialog != null && alertDialog.isShowing) {
+                    alertDialog.dismiss()
                 }
             }
 
@@ -687,191 +622,189 @@ public class RequestFragment extends Fragment implements HeadersRecyclerViewAdap
              * Get the corresponding HeaderTypeEnum instance based on the String parameter received.
              * @return HeaderType enum instance.
              */
-            private Header.HeaderType getHeaderType(String headerTypeString) {
-                for (Header.HeaderType type : Header.HeaderType.values()) {
+            private fun getHeaderType(headerTypeString: String): HeaderType {
+                for (type in HeaderType.values()) {
                     if (TextUtils.equals(headerTypeString, type.toString())) {
-                        return type;
+                        return type
                     }
                 }
-
-                return Header.HeaderType.CUSTOM;
+                return HeaderType.CUSTOM
             }
-        };
+        }
     }
 
     /**
      * Gets the listener to handle the event when user selects the header type from the list.
      *
      * @param layoutHeaderFields2 The view for layout type 2 which is shown if user selects Custom
-     *                            or Basic Authorization header types.
+     * or Basic Authorization header types.
      * @param tvHeaderLabel1      The view of the label for input field 1.
      * @param tvHeaderLabel2      The view of the label for input field 2.
-     * @return An instance of the {@link AdapterView.OnItemSelectedListener} created.
+     * @return An instance of the [AdapterView.OnItemSelectedListener] created.
      */
-    private AdapterView.OnItemSelectedListener getHeaderTypesSpinnerListener(final LinearLayout layoutHeaderFields2
-            , final TextView tvHeaderLabel1, final TextView tvHeaderLabel2) {
-        return new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+    private fun getHeaderTypesSpinnerListener(layoutHeaderFields2: LinearLayout, tvHeaderLabel1: TextView,
+                                              tvHeaderLabel2: TextView): AdapterView.OnItemSelectedListener {
+        return object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
                 /*
                   Show/hide certain views based on the header type chosen by user.
                  */
-                if (TextUtils.equals(((String) parent.getItemAtPosition(position)), getString(R.string.auth_basic))) {
-                    // Show Username and Password fields if header type chosen is "Authorization (Basic)".
-                    layoutHeaderFields2.setVisibility(View.VISIBLE);
-                    tvHeaderLabel1.setText(R.string.username);
-                    tvHeaderLabel2.setText(R.string.password);
-                } else if (TextUtils.equals(((String) parent.getItemAtPosition(position)), getString(R.string.custom))) {
-                    // Show HeaderName and HeaderValue fields if header type chosen is "Custom".
-                    layoutHeaderFields2.setVisibility(View.VISIBLE);
-                    tvHeaderLabel1.setText(R.string.header_name);
-                    tvHeaderLabel2.setText(R.string.header_value);
-                } else {
-                    // Show only the Value field if header type chosen is any other apart from the above two.
-                    layoutHeaderFields2.setVisibility(View.GONE);
-                    tvHeaderLabel1.setText(R.string.value);
+                when (parent.getItemAtPosition(position) as String) {
+                    getString(R.string.auth_basic) -> {
+                        // Show Username and Password fields if header type chosen is "Authorization (Basic)".
+                        layoutHeaderFields2.visibility = View.VISIBLE
+                        tvHeaderLabel1.setText(R.string.username)
+                        tvHeaderLabel2.setText(R.string.password)
+                    }
+                    getString(R.string.custom) -> {
+                        // Show HeaderName and HeaderValue fields if header type chosen is "Custom".
+                        layoutHeaderFields2.visibility = View.VISIBLE
+                        tvHeaderLabel1.setText(R.string.header_name)
+                        tvHeaderLabel2.setText(R.string.header_value)
+                    }
+                    else -> {
+                        // Show only the Value field if header type chosen is any other apart from the above two.
+                        layoutHeaderFields2.visibility = View.GONE
+                        tvHeaderLabel1.setText(R.string.value)
+                    }
                 }
             }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
+            override fun onNothingSelected(parent: AdapterView<*>?) {
                 // Do nothing
             }
-        };
+        }
     }
 
     /**
      * Update the header in the list of headers with the new info provided.
      *
-     * @param headerType The new {@link Header.HeaderType}
+     * @param headerType The new [Header.HeaderType]
      * @param userInput1 The value from the first input field.
      * @param position:  The position of existing header.
      */
-    private void updateHeader(Header.HeaderType headerType, String userInput1, int position) {
-        Header existingHeader = request.getHeaders().get(position);
-        Header updatedHeader = getNewHeader(headerType, userInput1);
-        updatedHeader.setHeaderId(existingHeader.getHeaderId());
+    private fun updateHeader(headerType: HeaderType, userInput1: String, position: Int) {
+        val existingHeader = request.headers[position]
+        val updatedHeader = getNewHeader(headerType, userInput1)
+        updatedHeader.headerId = existingHeader.headerId
 
         // Remove the existing header from the list and add the updated one at the same position.
-        request.getHeaders().remove(position);
-        request.getHeaders().add(position, updatedHeader);
-        headersRecyclerViewAdapter.notifyDataSetChanged();
+        request.headers.removeAt(position)
+        request.headers.add(position, updatedHeader)
+        headersRecyclerViewAdapter.notifyDataSetChanged()
     }
 
     /**
      * Update the header in the list of headers with the new info provided.
      *
-     * @param headerType The new {@link tarun.djangorestclient.com.djangorestclient.model.entity.Header.HeaderType}
+     * @param headerType The new [HeaderType]
      * @param userInput1 The value from the first input field.
      * @param userInput2 The value from the second input field.
      * @param position:  The position of existing header.
      */
-    private void updateHeader(Header.HeaderType headerType, String userInput1, String userInput2, int position) {
-        Header existingHeader = request.getHeaders().get(position);
-        Header updatedHeader = getNewHeader(headerType, userInput1, userInput2);
-        updatedHeader.setHeaderId(existingHeader.getHeaderId());
+    private fun updateHeader(headerType: HeaderType, userInput1: String, userInput2: String, position: Int) {
+        val existingHeader = request.headers[position]
+        val updatedHeader = getNewHeader(headerType, userInput1, userInput2)
+        updatedHeader.headerId = existingHeader.headerId
 
         // Remove the existing header from the list and add the updated one at the same position.
-        request.getHeaders().remove(position);
-        request.getHeaders().add(position, updatedHeader);
-        headersRecyclerViewAdapter.notifyDataSetChanged();
+        request.headers.removeAt(position)
+        request.headers.add(position, updatedHeader)
+        headersRecyclerViewAdapter.notifyDataSetChanged()
     }
 
     /**
      * Create a new header with the info provided by user and add it to the list of headers.
      *
-     * @param headerType The {@link Header.HeaderType} of the header to be added.
+     * @param headerType The [Header.HeaderType] of the header to be added.
      * @param userInput1 The value from the first input field that user entered.
      */
-    private void addHeader(Header.HeaderType headerType, String userInput1) {
-        Header header = getNewHeader(headerType, userInput1);
-        request.getHeaders().add(header);
-        headersRecyclerViewAdapter.notifyDataSetChanged();
+    private fun addHeader(headerType: HeaderType, userInput1: String) {
+        val header = getNewHeader(headerType, userInput1)
+        request.headers.add(header)
+        headersRecyclerViewAdapter.notifyDataSetChanged()
     }
 
     /**
      * Create a new header with the info provided by use and add it to the list of headers.
      *
-     * @param headerType The {@link Header.HeaderType} of the header to be added.
+     * @param headerType The [Header.HeaderType] of the header to be added.
      * @param userInput1 The value from the first input field that user entered.
      * @param userInput2 The value from the second input field that user entered.
      */
-    private void addHeader(Header.HeaderType headerType, String userInput1, String userInput2) {
-        Header header = getNewHeader(headerType, userInput1, userInput2);
-        request.getHeaders().add(header);
-        headersRecyclerViewAdapter.notifyDataSetChanged();
+    private fun addHeader(headerType: HeaderType, userInput1: String, userInput2: String) {
+        val header = getNewHeader(headerType, userInput1, userInput2)
+        request.headers.add(header)
+        headersRecyclerViewAdapter.notifyDataSetChanged()
     }
 
     /**
      * Create a new header object based on user provided info.
      *
-     * @param headerType The {@link Header.HeaderType} of the new header to be created.
+     * @param headerType The [Header.HeaderType] of the new header to be created.
      * @param userInput1 The value from the first input field that user entered.
      * @return The newly created Header object.
      */
-    private Header getNewHeader(Header.HeaderType headerType, String userInput1) {
-        return new Header(headerType.toString(), userInput1);
+    private fun getNewHeader(headerType: HeaderType, userInput1: String): Header {
+        return Header(headerType.toString(), userInput1)
     }
 
     /**
      * Create a new header object based on user provided info.
      *
-     * @param headerType The {@link Header.HeaderType} of the header to be added.
+     * @param headerType The [Header.HeaderType] of the header to be added.
      * @param userInput1 The value from the first input field that user entered.
      * @param userInput2 The value from the second input field that user entered.
      * @return The newly created Header object.
      */
-    private Header getNewHeader(Header.HeaderType headerType, String userInput1, String userInput2) {
-        if (headerType == Header.HeaderType.AUTHORIZATION_BASIC) {
-            String headerValue = HttpUtil.getBase64EncodedAuthCreds(getContext(), userInput1, userInput2);
-            return new Header(Header.HeaderType.AUTHORIZATION_BASIC.toString(), headerValue);
+    private fun getNewHeader(headerType: HeaderType, userInput1: String, userInput2: String): Header {
+        return if (headerType === HeaderType.AUTHORIZATION_BASIC) {
+            val headerValue = HttpUtil.getBase64EncodedAuthCreds(context, userInput1, userInput2)
+            Header(HeaderType.AUTHORIZATION_BASIC.toString(), headerValue)
         } else {
-            return new Header(userInput1, userInput2);
+            Header(userInput1, userInput2)
         }
     }
 
-    @Override
-    public void onDeleteHeaderClicked(final int position) {
+    override fun onDeleteHeaderClicked(position: Int) {
         // Delete the header at position received and update the header view list.
-        final Header lastDeletedHeaderObject = request.getHeaders().get(position);
+        val lastDeletedHeaderObject = request.headers[position]
 
-        request.getHeaders().remove(position);
-        binding.headersRecyclerView.removeViewAt(position);
-        headersRecyclerViewAdapter.notifyItemRemoved(position);
-        headersRecyclerViewAdapter.notifyItemRangeChanged(position, request.getHeaders().size());
+        request.headers.removeAt(position)
+        binding.headersRecyclerView.removeViewAt(position)
+        headersRecyclerViewAdapter.notifyItemRemoved(position)
+        headersRecyclerViewAdapter.notifyItemRangeChanged(position, request.headers.size)
 
         // Show a confirmation of header deletion and an option for user to undo header deletion.
-        Snackbar snackbar = Snackbar
-                .make(getView(), R.string.header_deleted, Snackbar.LENGTH_LONG)
-                .setAction(R.string.undo, view -> restoreLastDeletedHeader(lastDeletedHeaderObject, position));
-
-        snackbar.show();
+        val snackbar = Snackbar
+                .make(requireView(), R.string.header_deleted, Snackbar.LENGTH_LONG)
+                .setAction(R.string.undo) { view: View? -> restoreLastDeletedHeader(lastDeletedHeaderObject, position) }
+        snackbar.show()
     }
 
-    @Override
-    public void onEditHeaderClicked(int position) {
-        displayEditHeaderDialog(position);
+    override fun onEditHeaderClicked(position: Int) {
+        displayEditHeaderDialog(position)
     }
 
     /**
      * Restore the last deleted header to it's original position in the list of headers.
      */
-    private void restoreLastDeletedHeader(Header lastDeletedHeaderObject, int lastDeletedHeaderPosition) {
-        request.getHeaders().add(lastDeletedHeaderPosition, lastDeletedHeaderObject);
-        headersRecyclerViewAdapter.notifyDataSetChanged();
-        Snackbar snackbar = Snackbar.make(getView(), R.string.header_restored, Snackbar.LENGTH_SHORT);
-        snackbar.show();
+    private fun restoreLastDeletedHeader(lastDeletedHeaderObject: Header, lastDeletedHeaderPosition: Int) {
+        request.headers.add(lastDeletedHeaderPosition, lastDeletedHeaderObject)
+        headersRecyclerViewAdapter.notifyDataSetChanged()
+        val snackbar = Snackbar.make(requireView(), R.string.header_restored, Snackbar.LENGTH_SHORT)
+        snackbar.show()
     }
 
     /**
      * Interface to listen for the event when the response for the corresponding request made is available.
      */
-    public interface OnResponseReceivedListener {
+    interface OnResponseReceivedListener {
         /**
          * Handles the event when a response is received after user sends the request.
          *
-         * @param restResponse The {@link RestResponse} received.
+         * @param restResponse The [RestResponse] received.
          */
-        void onResponseReceived(RestResponse restResponse);
+        fun onResponseReceived(restResponse: RestResponse)
     }
 }

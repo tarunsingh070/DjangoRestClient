@@ -9,7 +9,7 @@ import androidx.room.Embedded
 import androidx.room.Relation
 
 data class RequestWithHeaders(@Embedded
-                              var request: Request? = null,
+                              var request: Request,
                               @Relation(parentColumn = "requestId", entityColumn = "parentRequestId")
                               var headers: List<Header>? = null) {
 
@@ -25,6 +25,6 @@ data class RequestWithHeaders(@Embedded
     }
 
     override fun hashCode(): Int {
-        return request?.hashCode() ?: 0
+        return request.hashCode()
     }
 }
