@@ -34,7 +34,7 @@ class HomeActivity : AppCompatActivity(), OnResponseReceivedListener, RequestsLi
 
     private var selectedNavMenuItemId = 0
     private lateinit var binding: ActivityHomeBinding
-    private var requestId: Long = -1
+    private var requestId: Long? = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,7 +74,7 @@ class HomeActivity : AppCompatActivity(), OnResponseReceivedListener, RequestsLi
             when (menuItem.itemId) {
                 R.id.nav_rest_calls -> {
                     args = Bundle()
-                    args.putLong(RequestFragment.KEY_REQUEST_ID, requestId)
+                    requestId?.let { args.putLong(RequestFragment.KEY_REQUEST_ID, it) }
                     replaceFragment(RestCallsFragment.TAG, args)
                 }
                 R.id.nav_settings -> replaceFragment(SettingsPreferenceFragment.TAG)
@@ -160,7 +160,7 @@ class HomeActivity : AppCompatActivity(), OnResponseReceivedListener, RequestsLi
                 .show()
     }
 
-    override fun onRequestClicked(requestId: Long) {
+    override fun onRequestClicked(requestId: Long?) {
         this.requestId = requestId
         binding.navigationView.menu.performIdentifierAction(R.id.nav_rest_calls, 0)
     }

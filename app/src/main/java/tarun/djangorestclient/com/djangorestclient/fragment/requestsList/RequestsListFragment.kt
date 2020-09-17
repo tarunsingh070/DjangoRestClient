@@ -70,7 +70,7 @@ class RequestsListFragment : Fragment(), RecyclerItemTouchHelperListener, Reques
          *
          * @param requestId The Id of the request selected
          */
-        fun onRequestClicked(requestId: Long)
+        fun onRequestClicked(requestId: Long?)
     }
 
     override fun onAttach(context: Context) {
@@ -158,7 +158,7 @@ class RequestsListFragment : Fragment(), RecyclerItemTouchHelperListener, Reques
      * @param position The position from which the request is to be deleted.
      */
     private fun deleteRequestFromList(position: Int) {
-        val (request) = adapter.getRequestAtPosition(position)
+        val request = adapter.getRequestAtPosition(position)?.request
 
         //FixMe: Currently, We have the following problem :
         // 1. Delete row "request-2" at position 2, snackbar with undo option will pop up. This will just remove row "request-2" from
@@ -195,8 +195,7 @@ class RequestsListFragment : Fragment(), RecyclerItemTouchHelperListener, Reques
 //
 //        requestDeletedSnackbar.show();
 
-        requestsListViewModel
-                .deleteRequestById(request.requestId)
+        requestsListViewModel.deleteRequestById(request?.requestId)
     }
 
     /**
@@ -276,30 +275,30 @@ class RequestsListFragment : Fragment(), RecyclerItemTouchHelperListener, Reques
                 .show()
     }
 
-    override fun onRequestClicked(requestId: Long) {
+    override fun onRequestClicked(requestId: Long?) {
         listener?.onRequestClicked(requestId)
     }
 
-    override fun onRequestInfoButtonClicked(requestWithHeaders: RequestWithHeaders) {
+    override fun onRequestInfoButtonClicked(requestWithHeaders: RequestWithHeaders?) {
         showAdditionalRequestInfoBottomSheet(requestWithHeaders)
     }
 
     /**
      * Show the additional response information inside a bottom sheet dialog.
      */
-    private fun showAdditionalRequestInfoBottomSheet(requestWithHeaders: RequestWithHeaders) {
+    private fun showAdditionalRequestInfoBottomSheet(requestWithHeaders: RequestWithHeaders?) {
         val requestInfoBinding = BottomSheetRequestInfoBinding.inflate(layoutInflater)
-        val request = requestWithHeaders.request
-        requestInfoBinding.tvRequestUrl.text = request.url
-        requestInfoBinding.tvRequestType.text = request.requestType.name
+        val request = requestWithHeaders?.request
+        requestInfoBinding.tvRequestUrl.text = request?.url
+        requestInfoBinding.tvRequestType.text = request?.requestType?.name
 
-        if (requestWithHeaders.headers.isNotEmpty()) {
+        if (requestWithHeaders?.headers != null && requestWithHeaders.headers.isNotEmpty()) {
             setupHeadersRecyclerView(requestInfoBinding.headersRecyclerView, requestWithHeaders.headers)
         } else {
             requestInfoBinding.requestHeadersContainer.visibility = View.GONE
         }
 
-        if (request.body != null && request.body!!.isNotEmpty()) {
+        if (request?.body != null && request.body!!.isNotEmpty()) {
             requestInfoBinding.tvRequestBody.text = HttpUtil.getFormattedJsonText(request.body)
         } else {
             requestInfoBinding.requestBodyContainer.visibility = View.GONE

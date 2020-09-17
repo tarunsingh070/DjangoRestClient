@@ -152,7 +152,7 @@ class RequestRepository(application: Application) {
      *
      * @param requestId The ID of the request to be deleted from the DB.
      */
-    fun deleteRequestById(requestId: Long) {
+    fun deleteRequestById(requestId: Long?) {
         RequestRoomDatabase.databaseWriteExecutor.execute { requestDao.deleteRequestById(requestId) }
     }
 }

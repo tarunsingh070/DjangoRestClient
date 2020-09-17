@@ -78,7 +78,7 @@ class RequestsListViewModel
      *
      * @param requestId The ID of the request to be deleted.
      */
-    fun deleteRequestById(requestId: Long) {
+    fun deleteRequestById(requestId: Long?) {
         requestRepository.deleteRequestById(requestId)
     }
 }

@@ -3,71 +3,57 @@
  * Unauthorized copying of this file, via any medium is strictly prohibited, proprietary and confidential.
  * Written by Tarun Singh <tarunsingh070@gmail.com>, June 2020.
  */
+package tarun.djangorestclient.com.djangorestclient.fragment.requestsList
 
-package tarun.djangorestclient.com.djangorestclient.fragment.requestsList;
-
-import android.graphics.Canvas;
-import android.view.View;
-
-import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.RecyclerView;
+import android.graphics.Canvas
+import android.view.View
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
+import tarun.djangorestclient.com.djangorestclient.fragment.requestsList.RequestListAdapter.RequestViewHolder
 
 /**
  * A custom ItemTouchHelper for customizing the design of requests list items while deleting with a swipe.
  */
-public class RecyclerItemTouchHelper extends ItemTouchHelper.SimpleCallback {
-    private RecyclerItemTouchHelperListener listener;
+class RecyclerItemTouchHelper(dragDirs: Int, swipeDirs: Int, private val listener: RecyclerItemTouchHelperListener) :
+        ItemTouchHelper.SimpleCallback(dragDirs, swipeDirs) {
 
-    public RecyclerItemTouchHelper(int dragDirs, int swipeDirs, RecyclerItemTouchHelperListener listener) {
-        super(dragDirs, swipeDirs);
-        this.listener = listener;
+    override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+        return true
     }
 
-    @Override
-    public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-        return true;
-    }
-
-    @Override
-    public void onSelectedChanged(RecyclerView.ViewHolder viewHolder, int actionState) {
+    override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
         if (viewHolder != null) {
-            final View foregroundView = ((RequestListAdapter.RequestViewHolder) viewHolder).viewForeground;
-
-            getDefaultUIUtil().onSelected(foregroundView);
+            val foregroundView: View = (viewHolder as RequestViewHolder).viewForeground
+            getDefaultUIUtil().onSelected(foregroundView)
         }
     }
 
-    @Override
-    public void onChildDrawOver(Canvas c, RecyclerView recyclerView,
-                                RecyclerView.ViewHolder viewHolder, float dX, float dY,
-                                int actionState, boolean isCurrentlyActive) {
-        final View foregroundView = ((RequestListAdapter.RequestViewHolder) viewHolder).viewForeground;
+    override fun onChildDrawOver(c: Canvas, recyclerView: RecyclerView,
+                                 viewHolder: RecyclerView.ViewHolder, dX: Float, dY: Float,
+                                 actionState: Int, isCurrentlyActive: Boolean) {
+        val foregroundView: View = (viewHolder as RequestViewHolder).viewForeground
         getDefaultUIUtil().onDrawOver(c, recyclerView, foregroundView, dX, dY,
-                actionState, isCurrentlyActive);
+                actionState, isCurrentlyActive)
     }
 
-    @Override
-    public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-        final View foregroundView = ((RequestListAdapter.RequestViewHolder) viewHolder).viewForeground;
-        getDefaultUIUtil().clearView(foregroundView);
+    override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
+        val foregroundView: View = (viewHolder as RequestViewHolder).viewForeground
+        getDefaultUIUtil().clearView(foregroundView)
     }
 
-    @Override
-    public void onChildDraw(Canvas c, RecyclerView recyclerView,
-                            RecyclerView.ViewHolder viewHolder, float dX, float dY,
-                            int actionState, boolean isCurrentlyActive) {
-        final View foregroundView = ((RequestListAdapter.RequestViewHolder) viewHolder).viewForeground;
-
+    override fun onChildDraw(c: Canvas, recyclerView: RecyclerView,
+                             viewHolder: RecyclerView.ViewHolder, dX: Float, dY: Float,
+                             actionState: Int, isCurrentlyActive: Boolean) {
+        val foregroundView: View = (viewHolder as RequestViewHolder).viewForeground
         getDefaultUIUtil().onDraw(c, recyclerView, foregroundView, dX, dY,
-                actionState, isCurrentlyActive);
+                actionState, isCurrentlyActive)
     }
 
-    @Override
-    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-        listener.onSwiped(viewHolder, direction, viewHolder.getAdapterPosition());
+    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+        listener.onSwiped(viewHolder, direction, viewHolder.adapterPosition)
     }
 
-    public interface RecyclerItemTouchHelperListener {
-        void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position);
+    interface RecyclerItemTouchHelperListener {
+        fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int, position: Int)
     }
 }

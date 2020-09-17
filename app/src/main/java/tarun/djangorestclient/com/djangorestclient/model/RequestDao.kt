@@ -67,7 +67,7 @@ abstract class RequestDao {
     abstract fun deleteAllSavedRequests()
 
     @Query("DELETE FROM request WHERE requestId = :requestId")
-    abstract fun deleteRequestById(requestId: Long)
+    abstract fun deleteRequestById(requestId: Long?)
 
     @Query("DELETE FROM header WHERE headerId = :headerId")
     abstract fun deleteHeader(headerId: Long)
