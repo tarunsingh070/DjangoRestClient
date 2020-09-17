@@ -43,7 +43,7 @@ import tarun.djangorestclient.com.djangorestclient.model.entity.RequestWithHeade
 import tarun.djangorestclient.com.djangorestclient.utils.DateFormatHelper
 import tarun.djangorestclient.com.djangorestclient.utils.HttpUtil
 import tarun.djangorestclient.com.djangorestclient.utils.MiscUtil
-import tarun.djangorestclient.com.djangorestclient.utils.RestClient
+import tarun.djangorestclient.com.djangorestclient.model.RestClient
 import java.io.IOException
 
 /**
