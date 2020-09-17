@@ -41,7 +41,6 @@ fun Context.isNetworkAvailable(): Boolean {
 /**
  * Formats a supposedly unformatted JSON input text and returns a formatted version text.
  *
- * @param text The unformatted JSON input text to be formatted.
  * @return The formatted JSON string or the same unformatted text if JSON string couldn't
  * be parsed due to it being not a valid JSON data or some other reason.
  */

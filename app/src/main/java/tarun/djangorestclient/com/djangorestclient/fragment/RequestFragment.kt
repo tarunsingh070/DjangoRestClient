@@ -152,7 +152,7 @@ class RequestFragment : Fragment(), HeaderOptionsClickedListener {
                     if (requestWithHeaders != null) {
                         val existingHeadersList = request.headers
                         existingHeadersList.clear()
-                        existingHeadersList.addAll(requestWithHeaders.headers!!)
+                        existingHeadersList.addAll(requestWithHeaders.headers)
 
                         // Create a deep copy of the request object so we don't update the original
                         // request object.
@@ -230,7 +230,7 @@ class RequestFragment : Fragment(), HeaderOptionsClickedListener {
 
         // Set Request body text.
         if (request.body != null && request.body!!.isNotEmpty()) {
-            binding.etRequestBody.setText(request.body?.let { it.getFormattedJsonText() })
+            binding.etRequestBody.setText(request.body?.getFormattedJsonText())
         }
 
         // Refresh the headers list.
@@ -482,7 +482,7 @@ class RequestFragment : Fragment(), HeaderOptionsClickedListener {
             requestRepository.insertRequest(request)
         } else {
             val existingRequestWithHeaders = requestWithHeadersLiveData.value
-            requestRepository.update(request, existingRequestWithHeaders!!.headers!!)
+            requestRepository.update(request, existingRequestWithHeaders!!.headers)
         }
         context?.displayShortToast(messageToDisplay)
     }

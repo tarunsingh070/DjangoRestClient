@@ -31,7 +31,6 @@ import tarun.djangorestclient.com.djangorestclient.fragment.requestsList.Recycle
 import tarun.djangorestclient.com.djangorestclient.fragment.requestsList.RequestListAdapter.RequestListAdapterListener
 import tarun.djangorestclient.com.djangorestclient.model.entity.Header
 import tarun.djangorestclient.com.djangorestclient.model.entity.RequestWithHeaders
-import tarun.djangorestclient.com.djangorestclient.utils.HttpUtil
 import java.util.*
 
 /**

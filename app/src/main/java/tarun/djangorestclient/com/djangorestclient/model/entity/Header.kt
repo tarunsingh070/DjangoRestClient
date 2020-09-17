@@ -48,7 +48,7 @@ data class Header(@ColumnInfo(name = "header_type")
     }
 
     fun clearHeaderId() {
-        headerId = 0;
+        headerId = 0
     }
 
     override fun equals(other: Any?): Boolean {
