@@ -53,7 +53,8 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'com.squareup.okhttp3:okhttp:4.7.2'
-    implementation 'androidx.preference:preference:1.1.1'
+    // Kotlin
+    implementation "androidx.preference:preference-ktx:$preference_version"
     implementation "androidx.paging:paging-runtime:$paging_version"
 
     // Room components

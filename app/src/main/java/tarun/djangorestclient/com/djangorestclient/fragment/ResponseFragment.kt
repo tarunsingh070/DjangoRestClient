@@ -3,134 +3,112 @@
  * Unauthorized copying of this file, via any medium is strictly prohibited, proprietary and confidential.
  * Written by Tarun Singh <tarunsingh070@gmail.com>, March 2018.
  */
+package tarun.djangorestclient.com.djangorestclient.fragment
 
-package tarun.djangorestclient.com.djangorestclient.fragment;
-
-
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.os.Bundle;
-import android.text.TextUtils;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-
-import com.google.android.material.bottomsheet.BottomSheetDialog;
-
-import androidx.fragment.app.Fragment;
-import tarun.djangorestclient.com.djangorestclient.R;
-import tarun.djangorestclient.com.djangorestclient.databinding.BottomSheetResponseInfoBinding;
-import tarun.djangorestclient.com.djangorestclient.databinding.FragmentResponseBinding;
-import tarun.djangorestclient.com.djangorestclient.model.RestResponse;
-import tarun.djangorestclient.com.djangorestclient.utils.HttpUtil;
-import tarun.djangorestclient.com.djangorestclient.utils.MiscUtil;
-
-import static android.content.Context.CLIPBOARD_SERVICE;
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.os.Bundle
+import android.view.*
+import androidx.fragment.app.Fragment
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import tarun.djangorestclient.com.djangorestclient.R
+import tarun.djangorestclient.com.djangorestclient.databinding.BottomSheetResponseInfoBinding
+import tarun.djangorestclient.com.djangorestclient.databinding.FragmentResponseBinding
+import tarun.djangorestclient.com.djangorestclient.model.RestResponse
+import tarun.djangorestclient.com.djangorestclient.utils.HttpUtil
+import tarun.djangorestclient.com.djangorestclient.utils.MiscUtil
 
 /**
  * This fragment shows user the response information received as a result of the REST request made by user.
  */
-public class ResponseFragment extends Fragment {
+class ResponseFragment : Fragment() {
+    companion object {
+        const val TITLE = "Response"
+        private val TAG = ResponseFragment::class.java.simpleName
 
-    public static final String TITLE = "Response";
-
-    private static final String TAG = ResponseFragment.class.getSimpleName();
-
-    private FragmentResponseBinding binding;
-
-    private RestResponse restResponse;
-
-    public ResponseFragment() {
-        // Required empty public constructor
+        /**
+         * Use this factory method to create a new instance of
+         * this fragment.
+         *
+         * @return A new instance of fragment ResponseFragment.
+         */
+        @JvmStatic
+        fun newInstance(): ResponseFragment {
+            return ResponseFragment()
+        }
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment.
-     *
-     * @return A new instance of fragment ResponseFragment.
-     */
-    public static ResponseFragment newInstance() {
-        return new ResponseFragment();
+    private lateinit var binding: FragmentResponseBinding
+    private var restResponse: RestResponse? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        binding = FragmentResponseBinding.inflate(inflater, container, false);
-        binding.fabCopyResponseBody.setOnClickListener(view -> copyResponseBodyTextToClipboard());
-
-        return binding.getRoot();
+        binding = FragmentResponseBinding.inflate(inflater, container, false)
+        binding.fabCopyResponseBody.setOnClickListener { copyResponseBodyTextToClipboard() }
+        return binding.root
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.response_fragment_menu, menu);
-        MenuItem item = menu.findItem(R.id.action_show_extra_info);
-        item.setVisible(restResponse != null);
-        super.onCreateOptionsMenu(menu, inflater);
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.response_fragment_menu, menu)
+        val item = menu.findItem(R.id.action_show_extra_info)
+        item.isVisible = restResponse != null
+        super.onCreateOptionsMenu(menu, inflater)
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // Handle item selection
-        switch (item.getItemId()) {
-            case R.id.action_show_extra_info:
-                showAdditionalResponseInfo(restResponse.getUrl(), restResponse.getResponseHeaders());
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        return when (item.itemId) {
+            R.id.action_show_extra_info -> {
+                showAdditionalResponseInfo(restResponse?.url, restResponse?.responseHeaders)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 
     /**
      * Update the response screen with the response info received.
      */
-    public void updateUI(RestResponse restResponse) {
-        this.restResponse = restResponse;
-        getActivity().invalidateOptionsMenu();
-        binding.tvResponseCode.setText(getString(R.string.response_code_label_with_value, restResponse.getResponseCode()));
-        binding.tvResponseTime.setText(getString(R.string.response_time_ms_label_with_value, restResponse.getResponseTime()));
-        binding.tvResponseBody.setText(HttpUtil.getFormattedJsonText(restResponse.getResponseBody()));
+    fun updateUI(restResponse: RestResponse) {
+        this.restResponse = restResponse
+        requireActivity().invalidateOptionsMenu()
+        binding.tvResponseCode.text = getString(R.string.response_code_label_with_value, restResponse.responseCode)
+        binding.tvResponseTime.text = getString(R.string.response_time_ms_label_with_value, restResponse.responseTime)
+        binding.tvResponseBody.text = HttpUtil.getFormattedJsonText(restResponse.responseBody)
     }
 
     /**
      * Show the additional response information inside a bottom sheet dialog.
      */
-    private void showAdditionalResponseInfo(String requestUrl, CharSequence responseHeaders) {
-        BottomSheetResponseInfoBinding responseInfoBinding =
-                BottomSheetResponseInfoBinding.inflate(getLayoutInflater());
+    private fun showAdditionalResponseInfo(requestUrl: String?, responseHeaders: CharSequence?) {
+        val responseInfoBinding = BottomSheetResponseInfoBinding.inflate(layoutInflater)
 
-        responseInfoBinding.tvRequestUrl.setText(requestUrl);
-        responseInfoBinding.tvResponseHeaders.setText(responseHeaders);
+        responseInfoBinding.tvRequestUrl.text = requestUrl
+        responseInfoBinding.tvResponseHeaders.text = responseHeaders
 
-        BottomSheetDialog dialog = new BottomSheetDialog(getContext());
-        dialog.setContentView(responseInfoBinding.getRoot());
-        dialog.show();
+        val dialog = BottomSheetDialog(requireContext())
+        dialog.setContentView(responseInfoBinding.root)
+        dialog.show()
     }
 
     /**
      * Copy the contents of response body to clipboard.
      */
-    private void copyResponseBodyTextToClipboard() {
-        if (restResponse != null && !TextUtils.isEmpty(restResponse.getResponseBody())) {
-            ClipboardManager clipboard = (ClipboardManager) getContext().getSystemService(CLIPBOARD_SERVICE);
-            ClipData clip = ClipData.newPlainText(getString(R.string.response_body_label), restResponse.getResponseBody());
-            clipboard.setPrimaryClip(clip);
-            MiscUtil.displayShortToast(getContext(), getString(R.string.fab_copy_success));
+    private fun copyResponseBodyTextToClipboard() {
+        if (restResponse?.responseBody.orEmpty().isNotEmpty()) {
+            val clipboard = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clip = ClipData.newPlainText(getString(R.string.response_body_label), restResponse?.responseBody)
+            clipboard.setPrimaryClip(clip)
+            MiscUtil.displayShortToast(context, getString(R.string.fab_copy_success))
         } else {
-            MiscUtil.displayShortToast(getContext(), getString(R.string.fab_copy_empty));
+            MiscUtil.displayShortToast(context, getString(R.string.fab_copy_empty))
         }
     }
-
 }
