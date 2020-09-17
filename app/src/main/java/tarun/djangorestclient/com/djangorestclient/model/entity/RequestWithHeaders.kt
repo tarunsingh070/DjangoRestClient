@@ -11,7 +11,7 @@ import androidx.room.Relation
 data class RequestWithHeaders(@Embedded
                               var request: Request,
                               @Relation(parentColumn = "requestId", entityColumn = "parentRequestId")
-                              var headers: List<Header>? = null) {
+                              var headers: List<Header>) {
 
     // We need these equals and hashcode methods to identify if the original live data object has been
     // modified or some other object while observing a live instance of this class.

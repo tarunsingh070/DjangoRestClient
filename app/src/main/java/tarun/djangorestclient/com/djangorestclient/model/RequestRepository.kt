@@ -15,7 +15,7 @@ import tarun.djangorestclient.com.djangorestclient.model.entity.RequestWithHeade
 
 class RequestRepository(application: Application) {
     private val requestDao: RequestDao
-    private var requestsList: DataSource.Factory<Int?, RequestWithHeaders?>? = null
+    private lateinit var requestsList: DataSource.Factory<Int, RequestWithHeaders>
 
     // FixMe: Note that in order to unit test the RequestRepository, you have to remove the Application
     //  dependency. This adds complexity and much more code, and this sample is not about testing.
@@ -44,9 +44,9 @@ class RequestRepository(application: Application) {
      *
      * @return A DataSource.Factory instance containing the list of [RequestWithHeaders] in history.
      */
-    val requestsHistoryList: DataSource.Factory<Int?, RequestWithHeaders?>?
+    val requestsHistoryList: DataSource.Factory<Int, RequestWithHeaders>
         get() {
-            if (requestsList == null) {
+            if (!this::requestsList.isInitialized) {
                 requestsList = requestDao.getRequestsInHistorySortedByDate()
             }
             return requestsList
@@ -57,9 +57,9 @@ class RequestRepository(application: Application) {
      *
      * @return A DataSource.Factory instance containing the list of saved [RequestWithHeaders].
      */
-    val savedRequestsList: DataSource.Factory<Int?, RequestWithHeaders?>?
+    val savedRequestsList: DataSource.Factory<Int, RequestWithHeaders>
         get() {
-            if (requestsList == null) {
+            if (!this::requestsList.isInitialized) {
                 requestsList = requestDao.getSavedRequestsSortedByDate()
             }
             return requestsList
@@ -71,7 +71,7 @@ class RequestRepository(application: Application) {
      * @param searchUrlText The URL search term.
      * @return A DataSource.Factory instance containing the list of matching [RequestWithHeaders].
      */
-    fun searchRequestsHistoryList(searchUrlText: String?): DataSource.Factory<Int?, RequestWithHeaders?>? {
+    fun searchRequestsHistoryList(searchUrlText: String?): DataSource.Factory<Int, RequestWithHeaders> {
         return requestDao.searchRequestsInHistorySortedByDate(searchUrlText)
     }
 
@@ -81,7 +81,7 @@ class RequestRepository(application: Application) {
      * @param searchUrlText The URL search term.
      * @return A DataSource.Factory instance containing the list of matching [RequestWithHeaders].
      */
-    fun searchSavedRequestsList(searchUrlText: String?): DataSource.Factory<Int?, RequestWithHeaders?>? {
+    fun searchSavedRequestsList(searchUrlText: String?): DataSource.Factory<Int, RequestWithHeaders> {
         return requestDao.searchSavedRequestsSortedByDate(searchUrlText)
     }
 

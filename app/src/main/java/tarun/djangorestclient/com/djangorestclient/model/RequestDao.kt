@@ -74,19 +74,19 @@ abstract class RequestDao {
 
     @Transaction
     @Query("SELECT * from request WHERE is_in_history ORDER BY updated_at_timestamp DESC")
-    abstract fun getRequestsInHistorySortedByDate(): DataSource.Factory<Int?, RequestWithHeaders?>?
+    abstract fun getRequestsInHistorySortedByDate(): DataSource.Factory<Int, RequestWithHeaders>
 
     @Transaction
     @Query("SELECT * from request WHERE is_saved ORDER BY updated_at_timestamp DESC")
-    abstract fun getSavedRequestsSortedByDate(): DataSource.Factory<Int?, RequestWithHeaders?>?
+    abstract fun getSavedRequestsSortedByDate(): DataSource.Factory<Int, RequestWithHeaders>
 
     @Transaction
     @Query("SELECT * from request WHERE is_in_history AND url LIKE '%' || :searchText || '%' ORDER BY updated_at_timestamp DESC")
-    abstract fun searchRequestsInHistorySortedByDate(searchText: String?): DataSource.Factory<Int?, RequestWithHeaders?>?
+    abstract fun searchRequestsInHistorySortedByDate(searchText: String?): DataSource.Factory<Int, RequestWithHeaders>
 
     @Transaction
     @Query("SELECT * from request WHERE is_saved AND url LIKE '%' || :searchText || '%' ORDER BY updated_at_timestamp DESC")
-    abstract fun searchSavedRequestsSortedByDate(searchText: String?): DataSource.Factory<Int?, RequestWithHeaders?>?
+    abstract fun searchSavedRequestsSortedByDate(searchText: String?): DataSource.Factory<Int, RequestWithHeaders>
 
     @Transaction
     @Query("SELECT * from request WHERE requestId = :requestId")

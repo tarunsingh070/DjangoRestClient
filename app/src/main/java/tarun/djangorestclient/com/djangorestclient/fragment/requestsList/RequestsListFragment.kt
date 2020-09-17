@@ -3,139 +3,118 @@
  * Unauthorized copying of this file, via any medium is strictly prohibited, proprietary and confidential.
  * Written by Tarun Singh <tarunsingh070@gmail.com>, June 2020.
  */
+package tarun.djangorestclient.com.djangorestclient.fragment.requestsList
 
-package tarun.djangorestclient.com.djangorestclient.fragment.requestsList;
-
-import android.content.Context;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-
-import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.google.android.material.snackbar.Snackbar;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.SearchView;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.paging.PagedList;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import tarun.djangorestclient.com.djangorestclient.R;
-import tarun.djangorestclient.com.djangorestclient.adapter.HeadersRecyclerViewAdapter;
-import tarun.djangorestclient.com.djangorestclient.databinding.BottomSheetRequestInfoBinding;
-import tarun.djangorestclient.com.djangorestclient.databinding.FragmentRequestsListBinding;
-import tarun.djangorestclient.com.djangorestclient.fragment.DjangoViewModelFactory;
-import tarun.djangorestclient.com.djangorestclient.model.entity.Header;
-import tarun.djangorestclient.com.djangorestclient.model.entity.Request;
-import tarun.djangorestclient.com.djangorestclient.model.entity.RequestWithHeaders;
-import tarun.djangorestclient.com.djangorestclient.utils.HttpUtil;
+import android.content.Context
+import android.content.DialogInterface
+import android.os.Bundle
+import android.view.*
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.SearchView
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModelProvider
+import androidx.paging.PagedList
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.snackbar.Snackbar
+import tarun.djangorestclient.com.djangorestclient.R
+import tarun.djangorestclient.com.djangorestclient.adapter.HeadersRecyclerViewAdapter
+import tarun.djangorestclient.com.djangorestclient.databinding.BottomSheetRequestInfoBinding
+import tarun.djangorestclient.com.djangorestclient.databinding.FragmentRequestsListBinding
+import tarun.djangorestclient.com.djangorestclient.fragment.DjangoViewModelFactory
+import tarun.djangorestclient.com.djangorestclient.fragment.requestsList.RecyclerItemTouchHelper.RecyclerItemTouchHelperListener
+import tarun.djangorestclient.com.djangorestclient.fragment.requestsList.RequestListAdapter.RequestListAdapterListener
+import tarun.djangorestclient.com.djangorestclient.model.entity.Header
+import tarun.djangorestclient.com.djangorestclient.model.entity.RequestWithHeaders
+import tarun.djangorestclient.com.djangorestclient.utils.HttpUtil
+import java.util.*
 
 /**
  * The fragment for showing a list of Requests.
  */
-public class RequestsListFragment extends Fragment implements
-        RecyclerItemTouchHelper.RecyclerItemTouchHelperListener,
-        RequestListAdapter.RequestListAdapterListener {
-    public static final String TAG = "RequestsListFragment";
+class RequestsListFragment : Fragment(), RecyclerItemTouchHelperListener, RequestListAdapterListener {
+    companion object {
+        const val TAG = "RequestsListFragment"
+        const val LIST_REQUESTS_HISTORY = 1001
+        const val LIST_SAVED_REQUESTS = 1002
+        const val KEY_REQUESTS_LIST_TYPE = "key_requests_list_type"
 
-    public static final int LIST_REQUESTS_HISTORY = 1001;
-    public static final int LIST_SAVED_REQUESTS = 1002;
-
-    public static final String KEY_REQUESTS_LIST_TYPE = "key_requests_list_type";
-
-    private int requestsListToShow;
-    private RequestsListViewModel requestsListViewModel;
-    private FragmentRequestsListBinding binding;
-    private RequestListAdapter adapter;
-    private Snackbar requestDeletedSnackbar;
-    private RequestsListFragmentListener listener;
-    private LiveData<PagedList<RequestWithHeaders>> requestsList;
-
-    public RequestsListFragment() {
-        // Required empty public constructor
+        /**
+         * Factory method to get an instance of [RequestsListFragment].
+         *
+         * @param args The arguments to be passed to this fragment.
+         * @return A new instance of fragment [RequestsListFragment].
+         */
+        fun newInstance(args: Bundle?): RequestsListFragment {
+            val fragment = RequestsListFragment()
+            fragment.arguments = args
+            return fragment
+        }
     }
 
-    public interface RequestsListFragmentListener {
+    private var requestsListToShow = 0
+    private lateinit var requestsListViewModel: RequestsListViewModel
+    private lateinit var binding: FragmentRequestsListBinding
+    private lateinit var adapter: RequestListAdapter
+    private lateinit var requestDeletedSnackbar: Snackbar
+    private var listener: RequestsListFragmentListener? = null
+    private var requestsList: LiveData<PagedList<RequestWithHeaders>>? = null
+
+    interface RequestsListFragmentListener {
         /**
          * Handles the event when a user selects a request.
          *
          * @param requestId The Id of the request selected
          */
-        void onRequestClicked(long requestId);
+        fun onRequestClicked(requestId: Long)
     }
 
-    /**
-     * Factory method to get an instance of {@link RequestsListFragment}.
-     *
-     * @param args The arguments to be passed to this fragment.
-     * @return A new instance of fragment {@link RequestsListFragment}.
-     */
-    public static RequestsListFragment newInstance(Bundle args) {
-        RequestsListFragment fragment = new RequestsListFragment();
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof RequestsListFragmentListener) {
-            listener = (RequestsListFragmentListener) context;
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        listener = if (context is RequestsListFragmentListener) {
+            context
         } else {
-            throw new RuntimeException("Activity must implement RequestsListFragmentListener");
+            throw RuntimeException("Activity must implement RequestsListFragmentListener")
         }
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        listener = null;
+    override fun onDetach() {
+        super.onDetach()
+        listener = null
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-        if (getArguments() != null) {
-            requestsListToShow = getArguments().getInt(KEY_REQUESTS_LIST_TYPE);
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+        if (arguments != null) {
+            requestsListToShow = requireArguments().getInt(KEY_REQUESTS_LIST_TYPE)
         }
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        binding = FragmentRequestsListBinding.inflate(inflater, container, false);
-        return binding.getRoot();
+        binding = FragmentRequestsListBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        adapter = new RequestListAdapter(requireContext(), this);
-        setupRecyclerView(adapter);
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        adapter = RequestListAdapter(requireContext(), this)
+        setupRecyclerView(adapter)
 
-        requestsListViewModel = new ViewModelProvider(this,
-                new DjangoViewModelFactory(requireActivity().getApplication(), requestsListToShow))
-                .get(RequestsListViewModel.class);
+        requestsListViewModel = ViewModelProvider(this,
+                DjangoViewModelFactory(requireActivity().application, requestsListToShow))
+                .get(RequestsListViewModel::class.java)
 
-        binding.tvEmptyLabel.setText(requestsListToShow == LIST_REQUESTS_HISTORY ?
-                R.string.no_requests_history : R.string.no_requests_saved);
+        binding.tvEmptyLabel.setText(if (requestsListToShow == LIST_REQUESTS_HISTORY)
+            R.string.no_requests_history else R.string.no_requests_saved)
 
-        observeRequestsList(requestsListViewModel.getAllRequests());
+        observeRequestsList(requestsListViewModel.allRequests)
     }
 
     /**
@@ -143,16 +122,14 @@ public class RequestsListFragment extends Fragment implements
      *
      * @param updatedRequestsList The list of Requests to be observed.
      */
-    private void observeRequestsList(LiveData<PagedList<RequestWithHeaders>> updatedRequestsList) {
-        if (requestsList != null) {
-            requestsList.removeObservers(getViewLifecycleOwner());
-        }
-        requestsList = updatedRequestsList;
-        requestsList.observe(getViewLifecycleOwner(), requests -> {
-            adapter.submitList(requests);
-            adapter.notifyDataSetChanged();
-            binding.tvEmptyLabel.setVisibility(requests.isEmpty() ? View.VISIBLE : View.GONE);
-        });
+    private fun observeRequestsList(updatedRequestsList: LiveData<PagedList<RequestWithHeaders>>) {
+        requestsList?.removeObservers(viewLifecycleOwner)
+        requestsList = updatedRequestsList
+        requestsList?.observe(viewLifecycleOwner, { requests: PagedList<RequestWithHeaders> ->
+            adapter.submitList(requests)
+            adapter.notifyDataSetChanged()
+            binding.tvEmptyLabel.visibility = if (requests.isEmpty()) View.VISIBLE else View.GONE
+        })
     }
 
     /**
@@ -160,20 +137,19 @@ public class RequestsListFragment extends Fragment implements
      *
      * @param adapter The adapter to be attached to the recycler view.
      */
-    private void setupRecyclerView(RequestListAdapter adapter) {
-        binding.requestsListRecyclerView.setAdapter(adapter);
-        binding.requestsListRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        binding.requestsListRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(),
-                DividerItemDecoration.VERTICAL));
+    private fun setupRecyclerView(adapter: RequestListAdapter) {
+        binding.requestsListRecyclerView.adapter = adapter
+        binding.requestsListRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.requestsListRecyclerView.addItemDecoration(DividerItemDecoration(context,
+                DividerItemDecoration.VERTICAL))
 
-        ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new RecyclerItemTouchHelper(0, ItemTouchHelper.LEFT, this);
-        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(binding.requestsListRecyclerView);
+        val itemTouchHelperCallback: ItemTouchHelper.SimpleCallback = RecyclerItemTouchHelper(0, ItemTouchHelper.LEFT, this)
+        ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(binding.requestsListRecyclerView)
     }
 
-    @Override
-    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
-        deleteRequestFromList(position);
-        adapter.removeRequest(position);
+    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int, position: Int) {
+        deleteRequestFromList(position)
+        adapter.removeRequest(position)
     }
 
     /**
@@ -181,8 +157,8 @@ public class RequestsListFragment extends Fragment implements
      *
      * @param position The position from which the request is to be deleted.
      */
-    void deleteRequestFromList(int position) {
-        RequestWithHeaders requestToDelete = adapter.getRequestAtPosition(position);
+    private fun deleteRequestFromList(position: Int) {
+        val (request) = adapter.getRequestAtPosition(position)
 
         //FixMe: Currently, We have the following problem :
         // 1. Delete row "request-2" at position 2, snackbar with undo option will pop up. This will just remove row "request-2" from
@@ -220,125 +196,118 @@ public class RequestsListFragment extends Fragment implements
 //        requestDeletedSnackbar.show();
 
         requestsListViewModel
-                .deleteRequestById(requestToDelete.getRequest().getRequestId());
+                .deleteRequestById(request.requestId)
     }
 
     /**
      * Restores a request back into the Requests list at the position specified.
      *
-     * @param deletedRequest The instance of the deleted {@link RequestWithHeaders} which needs to be restored.
-     * @param position       The position at which to restore the deleted {@link RequestWithHeaders}.
+     * @param deletedRequest The instance of the deleted [RequestWithHeaders] which needs to be restored.
+     * @param position       The position at which to restore the deleted [RequestWithHeaders].
      */
-    void restoreRequestIntoList(RequestWithHeaders deletedRequest, int position) {
-        adapter.insertRequest(position);
+    fun restoreRequestIntoList(deletedRequest: RequestWithHeaders?, position: Int) {
+        adapter.insertRequest(position)
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.requests_list_fragment_menu, menu);
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.requests_list_fragment_menu, menu)
 
-        MenuItem searchViewMenuItem = menu.findItem(R.id.action_search);
-        SearchView searchView = (SearchView) searchViewMenuItem.getActionView();
-        searchView.setQueryHint(getString(R.string.search_request_url));
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                if (!query.isEmpty()) {
-                    observeRequestsList(requestsListViewModel.searchRequestsByUrl(query));
-                    binding.tvEmptyLabel.setText(R.string.no_results);
+        val searchViewMenuItem = menu.findItem(R.id.action_search)
+        val searchView = searchViewMenuItem.actionView as SearchView
+        searchView.queryHint = getString(R.string.search_request_url)
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+                if (query.isNotEmpty()) {
+                    observeRequestsList(requestsListViewModel.searchRequestsByUrl(query))
+                    binding.tvEmptyLabel.setText(R.string.no_results)
                 }
-                return false;
+                return false
             }
 
-            @Override
-            public boolean onQueryTextChange(String s) {
-                if (s.isEmpty()) {
-                    observeRequestsList(requestsListViewModel.getAllRequests());
-                    binding.tvEmptyLabel.setText(requestsListToShow == LIST_REQUESTS_HISTORY ?
-                            R.string.no_requests_history : R.string.no_requests_saved);
+            override fun onQueryTextChange(s: String): Boolean {
+                // FixMe: Search for a request in history and click it, the app crashes. To fix it
+                //  "isVisible" flag had to be checked in the below condition, but ideal solution
+                //  would be to somehow remove this listener from searchView when onDestroyView() is
+                //  called. To reproduce the bug, remove "isVisible" flag and perform the above steps.
+                if (s.isEmpty() && isVisible) {
+                    observeRequestsList(requestsListViewModel.allRequests)
+                    binding.tvEmptyLabel.setText(if (requestsListToShow == LIST_REQUESTS_HISTORY) R.string.no_requests_history else R.string.no_requests_saved)
                 }
-                return false;
+                return false
             }
-        });
+        })
 
-        searchViewMenuItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
-            @Override
-            public boolean onMenuItemActionExpand(MenuItem menuItem) {
-                return true;
+        searchViewMenuItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
+            override fun onMenuItemActionExpand(menuItem: MenuItem): Boolean {
+                return true
             }
 
-            @Override
-            public boolean onMenuItemActionCollapse(MenuItem menuItem) {
-                observeRequestsList(requestsListViewModel.getAllRequests());
-                binding.tvEmptyLabel.setText(requestsListToShow == LIST_REQUESTS_HISTORY ?
-                        R.string.no_requests_history : R.string.no_requests_saved);
-                return true;
+            override fun onMenuItemActionCollapse(menuItem: MenuItem): Boolean {
+                observeRequestsList(requestsListViewModel.allRequests)
+                binding.tvEmptyLabel.setText(if (requestsListToShow == LIST_REQUESTS_HISTORY)
+                    R.string.no_requests_history else R.string.no_requests_saved)
+                return true
             }
-        });
+        })
 
-        super.onCreateOptionsMenu(menu, inflater);
+        super.onCreateOptionsMenu(menu, inflater)
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_delete_all_requests:
-                showDeleteAllConfirmationDialog();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_delete_all_requests -> {
+                showDeleteAllConfirmationDialog()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 
     /**
      * Shows the confirmation dialog when user tries to delete all the requests.
      */
-    void showDeleteAllConfirmationDialog() {
-        new AlertDialog.Builder(requireContext())
+    private fun showDeleteAllConfirmationDialog() {
+        AlertDialog.Builder(requireContext())
                 .setTitle(R.string.delete_requests_dialog_title)
-                .setMessage(requestsListToShow == LIST_REQUESTS_HISTORY ?
-                        R.string.delete_requests_history : R.string.delete_saved_requests)
-                .setPositiveButton(R.string.accept, (dialog, which) -> requestsListViewModel.deleteAllRequests())
+                .setMessage(if (requestsListToShow == LIST_REQUESTS_HISTORY)
+                    R.string.delete_requests_history else R.string.delete_saved_requests)
+                .setPositiveButton(R.string.accept) { dialog: DialogInterface?, which: Int -> requestsListViewModel.deleteAllRequests() }
                 .setNegativeButton(android.R.string.cancel, null)
-                .show();
+                .show()
     }
 
-    @Override
-    public void onRequestClicked(long requestId) {
-        listener.onRequestClicked(requestId);
+    override fun onRequestClicked(requestId: Long) {
+        listener?.onRequestClicked(requestId)
     }
 
-    @Override
-    public void onRequestInfoButtonClicked(RequestWithHeaders requestWithHeaders) {
-        showAdditionalRequestInfoBottomSheet(requestWithHeaders);
+    override fun onRequestInfoButtonClicked(requestWithHeaders: RequestWithHeaders) {
+        showAdditionalRequestInfoBottomSheet(requestWithHeaders)
     }
 
     /**
      * Show the additional response information inside a bottom sheet dialog.
      */
-    private void showAdditionalRequestInfoBottomSheet(RequestWithHeaders requestWithHeaders) {
-        BottomSheetRequestInfoBinding requestInfoBinding =
-                BottomSheetRequestInfoBinding.inflate(getLayoutInflater());
+    private fun showAdditionalRequestInfoBottomSheet(requestWithHeaders: RequestWithHeaders) {
+        val requestInfoBinding = BottomSheetRequestInfoBinding.inflate(layoutInflater)
+        val request = requestWithHeaders.request
+        requestInfoBinding.tvRequestUrl.text = request.url
+        requestInfoBinding.tvRequestType.text = request.requestType.name
 
-        Request request = requestWithHeaders.getRequest();
-        requestInfoBinding.tvRequestUrl.setText(request.getUrl());
-        requestInfoBinding.tvRequestType.setText(request.getRequestType().name());
-
-        if (!requestWithHeaders.getHeaders().isEmpty()) {
-            setupHeadersRecyclerView(requestInfoBinding.headersRecyclerView, requestWithHeaders.getHeaders());
+        if (requestWithHeaders.headers.isNotEmpty()) {
+            setupHeadersRecyclerView(requestInfoBinding.headersRecyclerView, requestWithHeaders.headers)
         } else {
-            requestInfoBinding.requestHeadersContainer.setVisibility(View.GONE);
+            requestInfoBinding.requestHeadersContainer.visibility = View.GONE
         }
 
-        if (request.getBody() != null && !request.getBody().isEmpty()) {
-            requestInfoBinding.tvRequestBody.setText(HttpUtil.getFormattedJsonText(request.getBody()));
+        if (request.body != null && request.body!!.isNotEmpty()) {
+            requestInfoBinding.tvRequestBody.text = HttpUtil.getFormattedJsonText(request.body)
         } else {
-            requestInfoBinding.requestBodyContainer.setVisibility(View.GONE);
+            requestInfoBinding.requestBodyContainer.visibility = View.GONE
         }
 
-        BottomSheetDialog dialog = new BottomSheetDialog(getContext());
-        dialog.setContentView(requestInfoBinding.getRoot());
-        dialog.show();
+        val dialog = BottomSheetDialog(requireContext())
+        dialog.setContentView(requestInfoBinding.root)
+        dialog.show()
     }
 
     /**
@@ -347,14 +316,14 @@ public class RequestsListFragment extends Fragment implements
      * @param headersRecyclerView The instance of recycler view to be setup.
      * @param headers             The list of headers to be shown.
      */
-    private void setupHeadersRecyclerView(RecyclerView headersRecyclerView, List<Header> headers) {
-        HeadersRecyclerViewAdapter headersRecyclerViewAdapter = new HeadersRecyclerViewAdapter(true,
-                new ArrayList<>(headers));
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-        headersRecyclerView.setLayoutManager(linearLayoutManager);
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(),
-                linearLayoutManager.getOrientation());
-        headersRecyclerView.addItemDecoration(dividerItemDecoration);
-        headersRecyclerView.setAdapter(headersRecyclerViewAdapter);
+    private fun setupHeadersRecyclerView(headersRecyclerView: RecyclerView, headers: List<Header>) {
+        val headersRecyclerViewAdapter = HeadersRecyclerViewAdapter(true,
+                ArrayList(headers))
+        val linearLayoutManager = LinearLayoutManager(context)
+        headersRecyclerView.layoutManager = linearLayoutManager
+        val dividerItemDecoration = DividerItemDecoration(context,
+                linearLayoutManager.orientation)
+        headersRecyclerView.addItemDecoration(dividerItemDecoration)
+        headersRecyclerView.adapter = headersRecyclerViewAdapter
     }
 }
