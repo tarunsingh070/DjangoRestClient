@@ -15,9 +15,9 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import tarun.djangorestclient.com.djangorestclient.R
 import tarun.djangorestclient.com.djangorestclient.databinding.BottomSheetResponseInfoBinding
 import tarun.djangorestclient.com.djangorestclient.databinding.FragmentResponseBinding
+import tarun.djangorestclient.com.djangorestclient.extensions.displayShortToast
+import tarun.djangorestclient.com.djangorestclient.extensions.getFormattedJsonText
 import tarun.djangorestclient.com.djangorestclient.model.RestResponse
-import tarun.djangorestclient.com.djangorestclient.utils.HttpUtil
-import tarun.djangorestclient.com.djangorestclient.utils.MiscUtil
 
 /**
  * This fragment shows user the response information received as a result of the REST request made by user.
@@ -81,7 +81,7 @@ class ResponseFragment : Fragment() {
         requireActivity().invalidateOptionsMenu()
         binding.tvResponseCode.text = getString(R.string.response_code_label_with_value, restResponse.responseCode)
         binding.tvResponseTime.text = getString(R.string.response_time_ms_label_with_value, restResponse.responseTime)
-        binding.tvResponseBody.text = HttpUtil.getFormattedJsonText(restResponse.responseBody)
+        binding.tvResponseBody.text = restResponse.responseBody.getFormattedJsonText()
     }
 
     /**
@@ -106,9 +106,9 @@ class ResponseFragment : Fragment() {
             val clipboard = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             val clip = ClipData.newPlainText(getString(R.string.response_body_label), restResponse?.responseBody)
             clipboard.setPrimaryClip(clip)
-            MiscUtil.displayShortToast(context, getString(R.string.fab_copy_success))
+            context?.displayShortToast(R.string.fab_copy_success)
         } else {
-            MiscUtil.displayShortToast(context, getString(R.string.fab_copy_empty))
+            context?.displayShortToast(R.string.fab_copy_empty)
         }
     }
 }

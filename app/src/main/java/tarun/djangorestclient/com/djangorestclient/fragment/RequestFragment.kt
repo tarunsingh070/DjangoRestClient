@@ -33,18 +33,18 @@ import tarun.djangorestclient.com.djangorestclient.adapter.HeadersRecyclerViewAd
 import tarun.djangorestclient.com.djangorestclient.adapter.HeadersRecyclerViewAdapter.HeaderOptionsClickedListener
 import tarun.djangorestclient.com.djangorestclient.databinding.DialogAddHeaderBinding
 import tarun.djangorestclient.com.djangorestclient.databinding.FragmentRequestBinding
+import tarun.djangorestclient.com.djangorestclient.extensions.*
 import tarun.djangorestclient.com.djangorestclient.model.RequestRepository
+import tarun.djangorestclient.com.djangorestclient.model.RestClient
 import tarun.djangorestclient.com.djangorestclient.model.RestResponse
 import tarun.djangorestclient.com.djangorestclient.model.entity.Header
 import tarun.djangorestclient.com.djangorestclient.model.entity.Header.HeaderType
 import tarun.djangorestclient.com.djangorestclient.model.entity.Request
 import tarun.djangorestclient.com.djangorestclient.model.entity.Request.RequestType
 import tarun.djangorestclient.com.djangorestclient.model.entity.RequestWithHeaders
-import tarun.djangorestclient.com.djangorestclient.utils.DateFormatHelper
 import tarun.djangorestclient.com.djangorestclient.utils.HttpUtil
-import tarun.djangorestclient.com.djangorestclient.utils.MiscUtil
-import tarun.djangorestclient.com.djangorestclient.model.RestClient
 import java.io.IOException
+import java.util.*
 
 /**
  * This fragment shows user all necessary fields to make REST requests.
@@ -172,7 +172,7 @@ class RequestFragment : Fragment(), HeaderOptionsClickedListener {
         // Handle item selection
         return when (item.itemId) {
             R.id.action_send_request -> {
-                MiscUtil.hideKeyboard(context, requireActivity())
+                requireActivity().hideKeyboard()
                 sendRequest()
                 true
             }
@@ -230,7 +230,7 @@ class RequestFragment : Fragment(), HeaderOptionsClickedListener {
 
         // Set Request body text.
         if (request.body != null && request.body!!.isNotEmpty()) {
-            binding.etRequestBody.setText(HttpUtil.getFormattedJsonText(request.body))
+            binding.etRequestBody.setText(request.body?.let { it.getFormattedJsonText() })
         }
 
         // Refresh the headers list.
@@ -257,16 +257,16 @@ class RequestFragment : Fragment(), HeaderOptionsClickedListener {
         // internet connectivity is available before proceeding.
         val url = binding.etInputUrl.text.toString()
         if (!Patterns.WEB_URL.matcher(url).matches()) {
-            MiscUtil.displayLongToast(context, R.string.invalid_url_msg)
+            context?.displayLongToast(R.string.invalid_url_msg)
             return
-        } else if (!HttpUtil.isNetworkAvailable(context)) {
-            MiscUtil.displayShortToast(context, R.string.no_connection_msg)
+        } else if (!requireContext().isNetworkAvailable()) {
+            context?.displayShortToast(R.string.no_connection_msg)
             return
         }
 
         val request = prepareRequestObject()
         try {
-            MiscUtil.showSpinner(activity)
+            activity?.showSpinner()
             when (request.requestType) {
                 RequestType.GET -> restClient[request.url, request.headers, requestCallback]
                 RequestType.POST -> restClient.post(request.url, request.headers, request.body, requestCallback)
@@ -277,7 +277,7 @@ class RequestFragment : Fragment(), HeaderOptionsClickedListener {
             }
         } catch (e: IllegalArgumentException) {
             // If any headers have an invalid value, then IllegalArgumentException is thrown.
-            MiscUtil.hideSpinner(activity)
+            activity?.hideSpinner()
             Toast.makeText(requireContext(), e.message, Toast.LENGTH_LONG).show()
             return
         }
@@ -311,7 +311,7 @@ class RequestFragment : Fragment(), HeaderOptionsClickedListener {
             request.body = null
         }
 
-        request.updatedAt = DateFormatHelper.getCurrentDate()
+        request.updatedAt = Calendar.getInstance().time
         return request
     }
 
@@ -327,7 +327,7 @@ class RequestFragment : Fragment(), HeaderOptionsClickedListener {
                     return
                 }
 
-                MiscUtil.hideSpinner(activity)
+                activity?.hideSpinner()
                 if (call.isCanceled()) {
                     return
                 }
@@ -350,7 +350,7 @@ class RequestFragment : Fragment(), HeaderOptionsClickedListener {
                     requireActivity().runOnUiThread { mListener.onResponseReceived(restResponse) }
                 }
 
-                MiscUtil.hideSpinner(activity)
+                activity?.hideSpinner()
             }
 
             /**
@@ -381,7 +381,7 @@ class RequestFragment : Fragment(), HeaderOptionsClickedListener {
      * @param exception The exception that caused the rest call to fail.
      */
     private fun handleError(exception: IOException) {
-        requireActivity().runOnUiThread { MiscUtil.displayLongToast(context, exception.message) }
+        requireActivity().runOnUiThread { context?.displayLongToast(exception.message?: "") }
     }
 
     /**
@@ -434,7 +434,7 @@ class RequestFragment : Fragment(), HeaderOptionsClickedListener {
     private fun saveRequest() {
         val url = binding.etInputUrl.text.toString()
         if (!Patterns.WEB_URL.matcher(url).matches()) {
-            MiscUtil.displayLongToast(context, R.string.invalid_url_msg)
+            context?.displayLongToast(R.string.invalid_url_msg)
             return
         }
 
@@ -484,7 +484,7 @@ class RequestFragment : Fragment(), HeaderOptionsClickedListener {
             val existingRequestWithHeaders = requestWithHeadersLiveData.value
             requestRepository.update(request, existingRequestWithHeaders!!.headers!!)
         }
-        MiscUtil.displayShortToast(context, messageToDisplay)
+        context?.displayShortToast(messageToDisplay)
     }
 
     /**
@@ -528,7 +528,7 @@ class RequestFragment : Fragment(), HeaderOptionsClickedListener {
         addHeaderBinding.okButton.setOnClickListener(getOkButtonClickListener(addHeaderBinding.spinnerHeaderTypes,
                 addHeaderBinding.etHeaderValue1, addHeaderBinding.etHeaderValue2, alertDialog, position))
         addHeaderBinding.cancelButton.setOnClickListener {
-            MiscUtil.hideKeyboard(context, activity)
+            requireActivity().hideKeyboard()
             if (alertDialog.isShowing) {
                 alertDialog.dismiss()
             }
@@ -585,11 +585,11 @@ class RequestFragment : Fragment(), HeaderOptionsClickedListener {
                 // Perform add/update operations on the current header based on header type.
                 if (isAuthBasicHeader || isCustomHeader) {
                     if (TextUtils.isEmpty(userInput1) || TextUtils.isEmpty(userInput2)) {
-                        MiscUtil.displayShortToast(context, R.string.input_fields_empty_msg)
+                        context?.displayShortToast(R.string.input_fields_empty_msg)
                         return
                     }
-                    if (isCustomHeader && MiscUtil.containsWhiteSpaces(userInput1)) {
-                        MiscUtil.displayLongToast(context, R.string.custom_header_name_no_whitespaces)
+                    if (isCustomHeader && userInput1.containsWhiteSpaces()) {
+                        context?.displayLongToast(R.string.custom_header_name_no_whitespaces)
                         return
                     }
 
@@ -603,7 +603,7 @@ class RequestFragment : Fragment(), HeaderOptionsClickedListener {
                     }
                 } else {
                     if (TextUtils.isEmpty(userInput1)) {
-                        MiscUtil.displayShortToast(context, R.string.input_fields_empty_msg)
+                        context?.displayShortToast(R.string.input_fields_empty_msg)
                         return
                     }
 
@@ -616,7 +616,7 @@ class RequestFragment : Fragment(), HeaderOptionsClickedListener {
                 }
 
                 // Hide the keyboard and dismiss dialog since header has been added/updated at this point.
-                MiscUtil.hideKeyboard(context, activity)
+                requireActivity().hideKeyboard()
                 if (alertDialog != null && alertDialog.isShowing) {
                     alertDialog.dismiss()
                 }

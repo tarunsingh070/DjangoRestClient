@@ -7,12 +7,7 @@
 package tarun.djangorestclient.com.djangorestclient.utils;
 
 import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.util.Base64;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -80,38 +75,4 @@ public class HttpUtil {
         }
         return headerBuilder.build();
     }
-
-    /**
-     * Checks the internet connectivity status of user's device.
-     *
-     * @return True if connected, False otherwise.
-     */
-    public static boolean isNetworkAvailable(Context context) {
-        ConnectivityManager cm =
-                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        boolean isConnected = (activeNetwork != null &&
-                activeNetwork.isConnectedOrConnecting());
-        return isConnected;
-    }
-
-    /**
-     * Formats a supposedly unformatted JSON input text and returns a formatted version text.
-     *
-     * @param text The unformatted JSON input text to be formatted.
-     * @return The formatted JSON string or the same unformatted text if JSON string couldn't
-     * be parsed due to it being not a valid JSON data or some other reason.
-     */
-    public static String getFormattedJsonText(String text) {
-        try {
-            JSONObject jsonObject = new JSONObject(text);
-            return jsonObject.toString(4);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            // If data couldn't be parsed as JSON data, then simply return the text as it is.
-            return text;
-        }
-    }
-
 }

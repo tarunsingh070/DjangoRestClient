@@ -25,6 +25,7 @@ import tarun.djangorestclient.com.djangorestclient.R
 import tarun.djangorestclient.com.djangorestclient.adapter.HeadersRecyclerViewAdapter
 import tarun.djangorestclient.com.djangorestclient.databinding.BottomSheetRequestInfoBinding
 import tarun.djangorestclient.com.djangorestclient.databinding.FragmentRequestsListBinding
+import tarun.djangorestclient.com.djangorestclient.extensions.getFormattedJsonText
 import tarun.djangorestclient.com.djangorestclient.fragment.DjangoViewModelFactory
 import tarun.djangorestclient.com.djangorestclient.fragment.requestsList.RecyclerItemTouchHelper.RecyclerItemTouchHelperListener
 import tarun.djangorestclient.com.djangorestclient.fragment.requestsList.RequestListAdapter.RequestListAdapterListener
@@ -299,7 +300,7 @@ class RequestsListFragment : Fragment(), RecyclerItemTouchHelperListener, Reques
         }
 
         if (request?.body != null && request.body!!.isNotEmpty()) {
-            requestInfoBinding.tvRequestBody.text = HttpUtil.getFormattedJsonText(request.body)
+            requestInfoBinding.tvRequestBody.text = request.body!!.getFormattedJsonText()
         } else {
             requestInfoBinding.requestBodyContainer.visibility = View.GONE
         }

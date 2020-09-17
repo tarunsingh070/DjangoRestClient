@@ -7,7 +7,6 @@ package tarun.djangorestclient.com.djangorestclient.model
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.text.TextUtils
 import androidx.preference.PreferenceManager
 import okhttp3.Callback
 import okhttp3.OkHttpClient
@@ -15,9 +14,9 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.internal.EMPTY_REQUEST
 import tarun.djangorestclient.com.djangorestclient.R
+import tarun.djangorestclient.com.djangorestclient.extensions.isNumber
 import tarun.djangorestclient.com.djangorestclient.model.entity.Header
 import tarun.djangorestclient.com.djangorestclient.utils.HttpUtil
-import tarun.djangorestclient.com.djangorestclient.utils.MiscUtil
 import java.util.concurrent.TimeUnit
 
 /**
@@ -39,9 +38,9 @@ class RestClient(private val context: Context?) {
 
         // Check if shared preference values for each preference has been explicitly set by user or not.
         // Also verify if the value set is actually a valid number or not.
-        val isTimeOutConnectPrefSet = !TextUtils.isEmpty(timeoutConnectPrefValueString) && MiscUtil.isNumber(timeoutConnectPrefValueString)
-        val isTimeOutReadPrefSet = !TextUtils.isEmpty(timeoutReadPrefValueString) && MiscUtil.isNumber(timeoutReadPrefValueString)
-        val isTimeOutWritePrefSet = !TextUtils.isEmpty(timeoutWritePrefValueString) && MiscUtil.isNumber(timeoutWritePrefValueString)
+        val isTimeOutConnectPrefSet = timeoutConnectPrefValueString?.run { isNotEmpty() && isNumber() } ?: false
+        val isTimeOutReadPrefSet = timeoutReadPrefValueString?.run { isNotEmpty() && isNumber() } ?: false
+        val isTimeOutWritePrefSet = timeoutWritePrefValueString?.run { isNotEmpty() && isNumber() } ?: false
 
         val builder = client.newBuilder()
 

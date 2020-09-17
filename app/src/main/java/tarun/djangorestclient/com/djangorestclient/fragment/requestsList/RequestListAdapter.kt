@@ -16,10 +16,10 @@ import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import tarun.djangorestclient.com.djangorestclient.databinding.ItemRequestBinding
+import tarun.djangorestclient.com.djangorestclient.extensions.getFormattedDate
 import tarun.djangorestclient.com.djangorestclient.fragment.requestsList.RequestListAdapter.RequestListAdapterListener
 import tarun.djangorestclient.com.djangorestclient.fragment.requestsList.RequestListAdapter.RequestViewHolder
 import tarun.djangorestclient.com.djangorestclient.model.entity.RequestWithHeaders
-import tarun.djangorestclient.com.djangorestclient.utils.DateFormatHelper
 
 class RequestListAdapter
 /**
@@ -90,7 +90,7 @@ class RequestListAdapter
         holder.requestUrl.text = request?.url
         //        holder.requestHeadersCount.setText(String.format(context.getString(R.string.header_count),
 //                requestWithHeaders.getHeaders().size()));
-        holder.requestLastUpdatedTimestamp.text = DateFormatHelper.getString(request?.updatedAt)
+        holder.requestLastUpdatedTimestamp.text = request?.updatedAt?.getFormattedDate()
         holder.requestInfo.setOnClickListener { listener.onRequestInfoButtonClicked(getItem(position)) }
         holder.viewForeground.setOnClickListener { listener.onRequestClicked(request?.requestId) }
     }

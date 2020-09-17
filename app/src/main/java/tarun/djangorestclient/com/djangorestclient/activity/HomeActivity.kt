@@ -14,6 +14,7 @@ import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import tarun.djangorestclient.com.djangorestclient.R
 import tarun.djangorestclient.com.djangorestclient.databinding.ActivityHomeBinding
+import tarun.djangorestclient.com.djangorestclient.extensions.hideKeyboard
 import tarun.djangorestclient.com.djangorestclient.fragment.AboutFragment
 import tarun.djangorestclient.com.djangorestclient.fragment.RequestFragment
 import tarun.djangorestclient.com.djangorestclient.fragment.RequestFragment.OnResponseReceivedListener
@@ -22,7 +23,6 @@ import tarun.djangorestclient.com.djangorestclient.fragment.SettingsPreferenceFr
 import tarun.djangorestclient.com.djangorestclient.fragment.requestsList.RequestsListFragment
 import tarun.djangorestclient.com.djangorestclient.fragment.requestsList.RequestsListFragment.RequestsListFragmentListener
 import tarun.djangorestclient.com.djangorestclient.model.RestResponse
-import tarun.djangorestclient.com.djangorestclient.utils.MiscUtil
 
 /**
  * This is the home activity which would allow user to navigate to other screens through its navigation drawer.
@@ -67,7 +67,7 @@ class HomeActivity : AppCompatActivity(), OnResponseReceivedListener, RequestsLi
             // set item as selected to persist highlight
             menuItem.isChecked = true
             title = menuItem.title
-            MiscUtil.hideKeyboard(this@HomeActivity, this@HomeActivity)
+            hideKeyboard()
 
             // Swap the fragments to update the UI based on the item selected.
             val args: Bundle
