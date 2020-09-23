@@ -2,6 +2,9 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'com.google.gms.google-services'
+// Apply the Crashlytics Gradle plugin
+apply plugin: 'com.google.firebase.crashlytics'
 
 // Load keystore.properties file for our signing configs
 def keystorePropertiesFile = rootProject.file("keystore.properties")
@@ -68,6 +71,11 @@ dependencies {
 
     // UI
     implementation "com.google.android.material:material:$rootProject.materialVersion"
+
+    // Firebase SDK for Google Analytics
+    implementation 'com.google.firebase:firebase-analytics-ktx:17.5.0'
+    // Add the Firebase Crashlytics SDK.
+    implementation 'com.google.firebase:firebase-crashlytics-ktx:17.2.1'
 
     testImplementation 'junit:junit:4.13'
     testImplementation "androidx.paging:paging-common:$paging_version"

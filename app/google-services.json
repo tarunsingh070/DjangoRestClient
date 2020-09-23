@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "230335251258",
+    "firebase_url": "https://django-rest-client.firebaseio.com",
+    "project_id": "django-rest-client",
+    "storage_bucket": "django-rest-client.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:230335251258:android:4c3e0398202daac1f58603",
+        "android_client_info": {
+          "package_name": "tarun.djangorestclient.com.djangorestclient"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "230335251258-39j8mct80g9jtjnb9p4rrvv6propqu86.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAFcOob572ozkOjN0ym5a1ODBO04sm_P-w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "230335251258-39j8mct80g9jtjnb9p4rrvv6propqu86.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
