@@ -74,7 +74,7 @@ class RequestFragment : Fragment(), HeaderOptionsClickedListener {
     private lateinit var headersRecyclerViewAdapter: HeadersRecyclerViewAdapter
     private lateinit var binding: FragmentRequestBinding
     private lateinit var request: Request
-    private lateinit var requestWithHeadersLiveData: LiveData<RequestWithHeaders?>
+    private var requestWithHeadersLiveData: LiveData<RequestWithHeaders?>? = null
     private lateinit var mListener: OnResponseReceivedListener
     private lateinit var restClient: RestClient
     private lateinit var requestRepository: RequestRepository
@@ -135,7 +135,7 @@ class RequestFragment : Fragment(), HeaderOptionsClickedListener {
      * Stops observing the current request for new updates.
      */
     private fun stopObservingRequestById() {
-        requestWithHeadersLiveData.removeObservers(viewLifecycleOwner)
+        requestWithHeadersLiveData?.removeObservers(viewLifecycleOwner)
     }
 
     /**
@@ -145,7 +145,7 @@ class RequestFragment : Fragment(), HeaderOptionsClickedListener {
      */
     private fun fetchRequestById(requestId: Long) {
         requestWithHeadersLiveData = requestRepository.getRequestById(requestId)
-        requestWithHeadersLiveData
+        requestWithHeadersLiveData!!
                 .observe(viewLifecycleOwner, { requestWithHeaders: RequestWithHeaders? ->
                     // Update the existing headers list object itself and set it in the Request object
                     // since that's the one "HeadersRecyclerViewAdapter" is using to populate the list.
@@ -481,7 +481,7 @@ class RequestFragment : Fragment(), HeaderOptionsClickedListener {
             request.clearIds()
             requestRepository.insertRequest(request)
         } else {
-            val existingRequestWithHeaders = requestWithHeadersLiveData.value
+            val existingRequestWithHeaders = requestWithHeadersLiveData?.value
             requestRepository.update(request, existingRequestWithHeaders!!.headers)
         }
         context?.displayShortToast(messageToDisplay)
