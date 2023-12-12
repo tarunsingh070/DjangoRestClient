@@ -22,7 +22,7 @@ class DjangoViewModelFactory
  * @param requestsListToShow The type of requests list to show.
  */(private val application: Application, private val requestsListToShow: Int) : ViewModelProvider.Factory {
 
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(RequestsListViewModel::class.java)) {
             return RequestsListViewModel(application, requestsListToShow) as T
         }

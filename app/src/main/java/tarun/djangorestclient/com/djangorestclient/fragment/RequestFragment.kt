@@ -83,7 +83,7 @@ class RequestFragment : Fragment(), HeaderOptionsClickedListener {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         request = Request()
-        restClient = RestClient(context)
+        restClient = RestClient(requireContext())
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
