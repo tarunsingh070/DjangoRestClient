@@ -73,8 +73,8 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat(), SharedPreferences
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
     }
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
-        setTimeoutPrefSummary(key)
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        key?.let { setTimeoutPrefSummary(it) }
     }
 
     override fun onPause() {
