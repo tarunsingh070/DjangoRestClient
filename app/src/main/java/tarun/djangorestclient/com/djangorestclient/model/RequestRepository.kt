@@ -121,7 +121,7 @@ class RequestRepository(application: Application) {
              */
             outer@ for (existingHeader in existingHeaders) {
                 for (updatedHeader in headersToUpdate) {
-                    if (existingHeader.headerId == updatedHeader!!.headerId) {
+                    if (existingHeader.headerId == updatedHeader.headerId) {
                         continue@outer
                     }
                 }
