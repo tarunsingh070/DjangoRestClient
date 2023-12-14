@@ -106,8 +106,8 @@ class RequestRepository(application: Application) {
     fun update(updatedRequest: Request, existingHeaders: List<Header>) {
         RequestRoomDatabase.databaseWriteExecutor.execute {
             val headersToInsert: MutableList<Header> = ArrayList()
-            val headersToUpdate: MutableList<Header?> = ArrayList()
-            val headersToDelete: MutableList<Header?> = ArrayList()
+            val headersToUpdate: MutableList<Header> = ArrayList()
+            val headersToDelete: MutableList<Header> = ArrayList()
             for (header in updatedRequest.headers) {
                 header.parentRequestId = updatedRequest.requestId
                 if (header.headerId > 0) {

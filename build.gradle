@@ -30,7 +30,7 @@ tasks.register('clean', Delete) {
 }
 
 ext {
-    roomVersion = '2.2.5'
+    roomVersion = '2.6.1'
     archLifecycleVersion = '2.2.0'
     coreTestingVersion = '2.2.0'
     materialVersion = '1.10.0'
