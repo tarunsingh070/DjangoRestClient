@@ -1,0 +1,129 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "d55ae76ee93be3d89b635f49ab212e50",
+    "entities": [
+      {
+        "tableName": "request",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`requestId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `url` TEXT NOT NULL, `body` TEXT, `is_in_history` INTEGER NOT NULL, `is_saved` INTEGER NOT NULL, `updated_at_timestamp` INTEGER, `request_type` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "requestId",
+            "columnName": "requestId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "url",
+            "columnName": "url",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "body",
+            "columnName": "body",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "isInHistory",
+            "columnName": "is_in_history",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isSaved",
+            "columnName": "is_saved",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updated_at_timestamp",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "requestType",
+            "columnName": "request_type",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "requestId"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "header",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`header_type` TEXT NOT NULL, `header_value` TEXT NOT NULL, `headerId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `parentRequestId` INTEGER NOT NULL, FOREIGN KEY(`parentRequestId`) REFERENCES `request`(`requestId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "headerType",
+            "columnName": "header_type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "headerValue",
+            "columnName": "header_value",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "headerId",
+            "columnName": "headerId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "parentRequestId",
+            "columnName": "parentRequestId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "headerId"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_header_parentRequestId",
+            "unique": false,
+            "columnNames": [
+              "parentRequestId"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_header_parentRequestId` ON `${TABLE_NAME}` (`parentRequestId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "request",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "parentRequestId"
+            ],
+            "referencedColumns": [
+              "requestId"
+            ]
+          }
+        ]
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd55ae76ee93be3d89b635f49ab212e50')"
+    ]
+  }
+}

@@ -15,7 +15,7 @@ import tarun.djangorestclient.com.djangorestclient.model.entity.Request
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-@Database(entities = [Request::class, Header::class], version = 1)
+@Database(entities = [Request::class, Header::class], version = 1, exportSchema = true)
 @TypeConverters(Converters::class)
 abstract class RequestRoomDatabase : RoomDatabase() {
     //    Note: When you modify the database schema, you'll need to update the version number and define a migration strategy
