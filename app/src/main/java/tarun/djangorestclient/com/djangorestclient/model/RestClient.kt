@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit
 /**
  * This network utility class contains methods to make all supported types of rest requests.
  */
-class RestClient(private val context: Context?) {
+class RestClient(private val context: Context) {
     private val sharedPreferences: SharedPreferences =
             PreferenceManager.getDefaultSharedPreferences(context)
     private var client = OkHttpClient.Builder().build()

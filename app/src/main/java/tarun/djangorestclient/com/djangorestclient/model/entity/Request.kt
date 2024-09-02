@@ -5,6 +5,7 @@
  */
 package tarun.djangorestclient.com.djangorestclient.model.entity
 
+import androidx.annotation.NonNull
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Ignore
@@ -36,7 +37,13 @@ data class Request(@PrimaryKey(autoGenerate = true)
     }
 
     @ColumnInfo(name = "request_type")
-    lateinit var requestType: RequestType
+    // [[[ WARNING ]]] : Do NOT remove the @NonNull annotation. Without this, for some unknown reason
+    // the Room DB generates a schema (see file under schemas sub-folder) where "request_type" column
+    // gets marked as Nullable! It should be Non-nullable based on the RequestType variable
+    // being a non-null variable here. Anyways, this was causing the app to crash on updating because
+    // Room DB sees this change as an update to the schema and hence forces to increase the DB
+    // version as well as provide a migration strategy which is clearly not needed as Room messed up.
+    @NonNull lateinit var requestType: RequestType
 
     /**
      * Creates and returns a copy of the current object.

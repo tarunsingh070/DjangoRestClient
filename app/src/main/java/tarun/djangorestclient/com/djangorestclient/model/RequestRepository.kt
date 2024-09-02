@@ -7,7 +7,7 @@ package tarun.djangorestclient.com.djangorestclient.model
 
 import android.app.Application
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.Transformations
+import androidx.lifecycle.distinctUntilChanged
 import androidx.paging.DataSource
 import tarun.djangorestclient.com.djangorestclient.model.entity.Header
 import tarun.djangorestclient.com.djangorestclient.model.entity.Request
@@ -36,7 +36,7 @@ class RequestRepository(application: Application) {
         // We want this live data object to emit value only when this particular instance has changed
         // instead of emitting every time some data changes in the whole RequestWithHeaders room DB table
         // which is what happens by default.
-        return Transformations.distinctUntilChanged(requestDao.getRequestById(requestId))
+        return requestDao.getRequestById(requestId).distinctUntilChanged()
     }
 
     /**
@@ -106,8 +106,8 @@ class RequestRepository(application: Application) {
     fun update(updatedRequest: Request, existingHeaders: List<Header>) {
         RequestRoomDatabase.databaseWriteExecutor.execute {
             val headersToInsert: MutableList<Header> = ArrayList()
-            val headersToUpdate: MutableList<Header?> = ArrayList()
-            val headersToDelete: MutableList<Header?> = ArrayList()
+            val headersToUpdate: MutableList<Header> = ArrayList()
+            val headersToDelete: MutableList<Header> = ArrayList()
             for (header in updatedRequest.headers) {
                 header.parentRequestId = updatedRequest.requestId
                 if (header.headerId > 0) {
@@ -121,7 +121,7 @@ class RequestRepository(application: Application) {
              */
             outer@ for (existingHeader in existingHeaders) {
                 for (updatedHeader in headersToUpdate) {
-                    if (existingHeader.headerId == updatedHeader!!.headerId) {
+                    if (existingHeader.headerId == updatedHeader.headerId) {
                         continue@outer
                     }
                 }

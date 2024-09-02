@@ -15,19 +15,19 @@ import tarun.djangorestclient.com.djangorestclient.model.entity.RequestWithHeade
 @Dao
 abstract class RequestDao {
     @Insert
-    abstract fun insertRequest(request: Request?): Long
+    abstract fun insertRequest(request: Request): Long
 
     @Update
-    abstract fun updateRequest(request: Request?)
+    abstract fun updateRequest(request: Request)
 
     @Insert
-    abstract fun insertHeaders(headers: List<Header>?)
+    abstract fun insertHeaders(headers: List<Header>)
 
     @Update
-    abstract fun updateHeaders(headers: List<Header?>?)
+    abstract fun updateHeaders(headers: List<Header>)
 
     @Delete
-    abstract fun deleteHeaders(headers: List<Header?>?)
+    abstract fun deleteHeaders(headers: List<Header>)
 
     @Transaction
     open fun insertRequestWithHeaders(request: Request) {
@@ -42,8 +42,8 @@ abstract class RequestDao {
     }
 
     @Transaction
-    open fun updateRequestWithHeaders(request: Request?, headersToInsert: List<Header>?,
-                                      headersToUpdate: List<Header?>?, headersToDelete: List<Header?>?) {
+    open fun updateRequestWithHeaders(request: Request, headersToInsert: List<Header>,
+                                      headersToUpdate: List<Header>, headersToDelete: List<Header>) {
         updateRequest(request)
         updateHeaders(headersToUpdate)
         insertHeaders(headersToInsert)

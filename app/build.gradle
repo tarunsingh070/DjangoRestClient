@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'com.google.gms.google-services'
 // Apply the Crashlytics Gradle plugin
@@ -20,14 +19,19 @@ android {
             storePassword keystoreProperties['storePassword']
         }
     }
-    compileSdkVersion 29
+    compileSdk 34
     defaultConfig {
         applicationId "tarun.djangorestclient.com.djangorestclient"
-        minSdkVersion 21
-        targetSdkVersion 29
-        versionCode 5
-        versionName "2.0.1"
+        minSdkVersion 23
+        targetSdkVersion 34
+        versionCode 6
+        versionName "2.0.2"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments += ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+        }
     }
     buildTypes {
         release {
@@ -44,16 +48,16 @@ android {
     productFlavors {
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
+    namespace 'tarun.djangorestclient.com.djangorestclient'
 }
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'com.google.android.material:material:1.2.1'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'com.squareup.okhttp3:okhttp:4.8.0'
     // Kotlin
@@ -67,7 +71,7 @@ dependencies {
 
     // Lifecycle components
     implementation "androidx.lifecycle:lifecycle-extensions:$rootProject.archLifecycleVersion"
-    annotationProcessor "android.arch.lifecycle:common-java8:$rootProject.archLifecycleVersion"
+//    annotationProcessor "android.arch.lifecycle:common-java8:$rootProject.archLifecycleVersion"
 
     // UI
     implementation "com.google.android.material:material:$rootProject.materialVersion"
@@ -80,10 +84,10 @@ dependencies {
     implementation 'com.google.firebase:firebase-crashlytics-ktx'
     implementation 'com.google.firebase:firebase-analytics-ktx'
 
-    testImplementation 'junit:junit:4.13.1'
+    testImplementation 'junit:junit:4.13.2'
     testImplementation "androidx.paging:paging-common:$paging_version"
 
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     androidTestImplementation "androidx.arch.core:core-testing:$rootProject.coreTestingVersion"
 }

@@ -32,7 +32,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat(), SharedPreferences
         }
     }
 
-    private lateinit var sharedPreferences: SharedPreferences
+    private var sharedPreferences: SharedPreferences? = null
 
     /**
      * A [Preference.OnPreferenceChangeListener] for when a shared preference value is changed.
@@ -70,15 +70,15 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat(), SharedPreferences
 
     override fun onResume() {
         super.onResume()
-        sharedPreferences.registerOnSharedPreferenceChangeListener(this)
+        sharedPreferences?.registerOnSharedPreferenceChangeListener(this)
     }
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
-        setTimeoutPrefSummary(key)
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        key?.let { setTimeoutPrefSummary(it) }
     }
 
     override fun onPause() {
-        sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
+        sharedPreferences?.unregisterOnSharedPreferenceChangeListener(this)
         super.onPause()
     }
 
@@ -98,7 +98,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat(), SharedPreferences
      */
     private fun setTimeoutPrefSummary(preferenceKey: String) {
         val timeoutPref = findPreference<Preference>(preferenceKey)
-        val timeoutPrefValue = sharedPreferences.getString(preferenceKey, "")
+        val timeoutPrefValue = sharedPreferences?.getString(preferenceKey, "")
 
         timeoutPref?.summary =
                 if (TextUtils.isEmpty(timeoutPrefValue)) getString(R.string.value_not_set)
