@@ -5,6 +5,8 @@ import android.content.Context
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import tarun.djangorestclient.com.djangorestclient.R
 import java.util.regex.Pattern
 
@@ -102,4 +104,16 @@ fun String.containsWhiteSpaces(): Boolean {
     val pattern = Pattern.compile("\\s")
     val matcher = pattern.matcher(this)
     return matcher.find()
+}
+
+/**
+ * Toggles the drawer of the [DrawerLayout]
+ * @param drawer Drawer view to check it's current state
+ */
+fun DrawerLayout.toggleDrawer(drawer: View) {
+    if (isDrawerOpen(drawer)) {
+        closeDrawer(GravityCompat.START)
+    } else {
+        openDrawer(GravityCompat.START)
+    }
 }

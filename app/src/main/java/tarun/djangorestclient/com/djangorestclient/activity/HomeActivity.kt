@@ -10,11 +10,11 @@ import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import tarun.djangorestclient.com.djangorestclient.R
 import tarun.djangorestclient.com.djangorestclient.databinding.ActivityHomeBinding
 import tarun.djangorestclient.com.djangorestclient.extensions.hideKeyboard
+import tarun.djangorestclient.com.djangorestclient.extensions.toggleDrawer
 import tarun.djangorestclient.com.djangorestclient.fragment.AboutFragment
 import tarun.djangorestclient.com.djangorestclient.fragment.RequestFragment
 import tarun.djangorestclient.com.djangorestclient.fragment.RequestFragment.OnResponseReceivedListener
@@ -123,11 +123,7 @@ class HomeActivity : AppCompatActivity(), OnResponseReceivedListener, RequestsLi
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> {
-                if (binding.drawerLayout.isDrawerOpen(binding.navigationView)) {
-                    binding.drawerLayout.closeDrawer(GravityCompat.START)
-                } else {
-                    binding.drawerLayout.openDrawer(GravityCompat.START)
-                }
+                binding.drawerLayout.toggleDrawer(binding.navigationView)
                 return true
             }
         }
@@ -153,10 +149,10 @@ class HomeActivity : AppCompatActivity(), OnResponseReceivedListener, RequestsLi
         AlertDialog.Builder(this)
                 .setTitle(R.string.confirmation_dialog_title)
                 .setMessage(R.string.confirmation_dialog_message)
-                .setPositiveButton(android.R.string.yes) {
+                .setPositiveButton(R.string.confirmation_dialog_yes) {
                     dialog: DialogInterface?, which: Int -> super@HomeActivity.onBackPressed()
                 }
-                .setNegativeButton(android.R.string.no, null)
+                .setNegativeButton(R.string.confirmation_dialog_no, null)
                 .show()
     }
 
